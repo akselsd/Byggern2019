@@ -10,35 +10,34 @@
 
 void uart_init(void)
 {
-	UCSRC &= ~BV(UMSEL); // Ascync mode
-	UCSRC &= ~((1 << UPM1) | (1 << UMP0));
+	UCSR0C |= (1 << URSEL0); //Write to UCSR0C
+	UCSR0C &= ~(1 << UMSEL0); // Ascync mode
+	UCSR0C &= ~((1 << UPM01) | (1 << UPM00));
+	UCSR0C &= ~(1 << USBS0);
+	UCSR0C &= ~((1 << UCSZ01) | (1 << UCSZ00));
 	
-	SET_BIT(UCSRC, UCSZ1);
-	SET_BIT(UCSRC, UCSZ0);
-	CLEAR_BIT(UCSRB, UCSZ2);
 		
-	UBRRH = UBBRH_VALUE; // High bits of counter
-	UBBRL = UBBRL_VALUE; // Low bits of counter
+	UBRR0H = UBRRH_VALUE; // High bits of counter
+	UBRR0L = UBRRL_VALUE; // Low bits of counter
 
-	UCSRB |= _BV(RXEN) | _BV(TXEN);
+	UCSR0B |= (1 << RXEN0) | (1 << TXEN0);
 
 	//UCSRB |= (1 << RXCIE); // Enable interrupt on RXC
 	//UCSRB |= (1 << TXCIE); // Enable interrupt on TXC
 	//UCSRB |= (1 << UDRIE); // Enable interrput on UDRE
 }
 
-void uart_send_char(const unsigned char c)
+void uart_send_char(const char c)
 {
-	while (!(UCSRA & (1 << UDRE)));
-
-	UDR = c;
+	while (!(UCSR0A & (1 << UDRE0)));
+	UDR0 = c;
 }
 
 unsigned char uart_recieve_char(void)
 {
-	while(!(USCRA & (1 << RXC)))
+	while(!(UCSR0A & (1 << RXC0)))
 
-	return UDR;
+	return UDR0;
 }
 //TXEN Transmit Enable
 //UMSEL bit in UCSRC velger Async/Sync (0 for Async)

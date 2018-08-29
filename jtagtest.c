@@ -11,8 +11,8 @@ int main()
 
 	while(1){
 		SET_BIT(PORTC, PIN0);
-		_delay_ms(20);
+		_delay_ms(50);
 		CLEAR_BIT(PORTC, PIN0);
-		_delay_ms(20);
+		_delay_ms(50);
 	}
 }
