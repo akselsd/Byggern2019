@@ -1,4 +1,5 @@
 #define F_CPU 4915200
+#define BAUDRATE 9600
 #include <avr/io.h>
 #include <util/delay.h>
 
@@ -12,7 +13,7 @@ int main()
 	CLEAR_BIT(DDRD, PIN0); //0 for input
 	SET_BIT(DDRD, PIN1); //1 for output
 
-	uart_init();
+	uart_init(F_CPU, BAUDRATE);
 
 	while(1){
 		uart_send_char('a');

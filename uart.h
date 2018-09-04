@@ -3,9 +3,9 @@
 
 //Make interrupt?
 
-void uart_init(void);
-void uart_send_char(const char c);
-//void uart_send_string(const unsigned char * c);
-unsigned char uart_recieve_char(void);
+void uart_init(const unsigned int cpu_frq, const unsigned int baudrate);
+int uart_send_char(char c, FILE* neverused); // Gjøre static?
+int uart_recieve_char(FILE* neverused); // Gjøre static?
+
 
 #endif

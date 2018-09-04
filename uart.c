@@ -1,39 +1,35 @@
-#define F_CPU 4915200
-#define BAUD 9600
-#include <util/setbaud.h>
 #include <avr/io.h> //Trengs denne?
+#include <stdio.h>
 #include "uart.h"
+
 
 #define SET_BIT(reg, bit) (reg |= (1 << bit))
 #define CLEAR_BIT(reg, bit) (reg &= ~(1 << bit))
 
 
-void uart_init(void)
+void uart_init(const unsigned int cpu_frq, const unsigned int baudrate)
 {
-	UCSR0C |= (1 << URSEL0); //Write to UCSR0C
-	UCSR0C &= ~(1 << UMSEL0); // Ascync mode
-	UCSR0C &= ~((1 << UPM01) | (1 << UPM00));
-	UCSR0C &= ~(1 << USBS0);
-	UCSR0C &= ~((1 << UCSZ01) | (1 << UCSZ00));
-	
-		
-	UBRR0H = UBRRH_VALUE; // High bits of counter
-	UBRR0L = UBRRL_VALUE; // Low bits of counter
+	int ubrr = cpu_frq/16/baudrate - 1;
+	UBRR0H = (unsigned char)(ubrr >> 8); // High bits of counter
+	UBRR0L = (unsigned char)ubrr; // Low bits of counter
 
-	UCSR0B |= (1 << RXEN0) | (1 << TXEN0);
+	// Burde disse bytte plass?
+	UCSR0B = (1<<RXEN0)|(1<<TXEN0);
+	UCSR0C = (1<<URSEL0)|(1<<USBS0)|(3<<UCSZ00);
 
-	//UCSRB |= (1 << RXCIE); // Enable interrupt on RXC
-	//UCSRB |= (1 << TXCIE); // Enable interrupt on TXC
-	//UCSRB |= (1 << UDRIE); // Enable interrput on UDRE
+	fdevopen(uart_send_char, uart_recieve_char);	
 }
 
-void uart_send_char(const char c)
+int uart_send_char(char c, FILE* dummy)
 {
 	while (!(UCSR0A & (1 << UDRE0)));
 	UDR0 = c;
+
+	return 0;
 }
 
-unsigned char uart_recieve_char(void)
+
+int uart_recieve_char(FILE* dummy)
 {
 	while(!(UCSR0A & (1 << RXC0)))
 
