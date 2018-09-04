@@ -23,6 +23,7 @@ struct ringbuffer recieve_buffer = {{0}, 0, 0, 0};
 
 void uart_init(const unsigned int cpu_frq, const unsigned int baudrate)
 {
+	cli();
 	int ubrr = cpu_frq/16/baudrate - 1;
 	UBRR0H = (unsigned char)(ubrr >> 8); // High bits of counter
 	UBRR0L = (unsigned char)ubrr; // Low bits of counter
@@ -31,7 +32,7 @@ void uart_init(const unsigned int cpu_frq, const unsigned int baudrate)
 	UCSR0B = (1<<RXEN0)|(1<<TXEN0);
 	UCSR0C = (1<<URSEL0)|(1<<USBS0)|(3<<UCSZ00); //Endre til UCSZ01 og UCSZ00?
 	UCSR0B |= (1 << RXCIE0); //Recieve interrupt
-	sei(); // Enable interrupts
+	sei();
 	fdevopen(uart_send_char, uart_recieve_char);	
 }
 
@@ -94,6 +95,23 @@ ISR(USART0_UDRE_vect)
 	if (send_buffer.size == 0)
 		UCSR0B &= ~(1 << UDRIE0); //Disable Transmit register empty interrupt
 
+}
+
+int uart_flush_send_buffer(void)
+{
+	// Force send all chars
+	cli();
+	while (send_buffer.size != 0){
+		while (!(UCSR0A & (1 << UDRE0)));
+		UDR0 = send_buffer.buffer[send_buffer.next_out++];
+		--send_buffer.size;
+
+		if (send_buffer.next_out == BUFFER_SIZE)
+			send_buffer.next_out = 0;
+	}
+	UCSR0B &= ~(1 << UDRIE0); // Buffer empty, disable interrput
+	sei();
+	return 0;
 }
 //TXEN Transmit Enable
 //UMSEL bit in UCSRC velger Async/Sync (0 for Async)
