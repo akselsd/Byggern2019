@@ -3,6 +3,7 @@
 #define UBRR F_CPU/16/BAUDRATE - 1
 #include <stdio.h> //Trengs denne?
 #include <avr/io.h>
+#include <stdio.h>
 #include <util/delay.h>
 
 #include "uart.h"
@@ -34,6 +35,10 @@ int main()
 		char c = uart_recieve_char(NULL);
 		_delay_ms(100);
 		uart_send_char(c, NULL);
+		printf('a');
+		//char c = uart_recieve_char(NULL);
+		//_delay_ms(100);
+		//uart_send_char(c, NULL);
 		_delay_ms(100);
 		*/
 	}
