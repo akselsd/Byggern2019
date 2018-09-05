@@ -24,6 +24,8 @@ struct ringbuffer recieve_buffer = {{0}, 0, 0, 0};
 void uart_init(const unsigned int ubrr)
 {
 	cli();
+	CLEAR_BIT(DDRD, PIN0); //0 for input
+	SET_BIT(DDRD, PIN1); //1 for output
 
 	/* Set baud rate */
 	UBRR0H = (unsigned char)(ubrr >> 8); // High bits of counter
@@ -57,6 +59,9 @@ int uart_send_char(char c, FILE* dummy)
 	if (send_buffer.next_in >= BUFFER_SIZE)
 		send_buffer.next_in = 0;
 
+	/* Add missing carriage return for each newline */
+	if (c == '\n')
+		uart_send_char('\r', NULL);
 	sei();
 	return 0; // Success
 }

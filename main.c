@@ -7,39 +7,31 @@
 #include <util/delay.h>
 
 #include "uart.h"
+#include "sram_test.h"
 
 #define SET_BIT(reg, bit) (reg |= (1 << bit))
 #define CLEAR_BIT(reg, bit) (reg &= ~(1 << bit))
 
+int MY_PINS[8] = {PIN0, PIN1, PIN2, PIN3, PIN4, PIN5, PIN6, PIN7};
+
+void test_address(void)
+{
+	SET_BIT(MCUCR, SRE);
+	int * a = 0x1FFF;
+	while(1){
+		*a = 255;
+		_delay_ms(10);
+	}	
+}
 
 int main()
 {
-	CLEAR_BIT(DDRD, PIN0); //0 for input
-	SET_BIT(DDRD, PIN1); //1 for output
-
 	uart_init(UBRR);
+    SRAM_test();
 
-	char c = 'c';
-	char * a = {"hei"};
-	
 	while(1){
-		//printf(a);
-		//_delay_ms(100);
-		//printf(c);
-		char d = fgetc(stdin);
 		_delay_ms(100);
-		uart_send_char(d, NULL);
-		_delay_ms(100);
-		//printf(c);
-		/*
-		char c = uart_recieve_char(NULL);
-		_delay_ms(100);
-		uart_send_char(c, NULL);
-		printf('a');
-		//char c = uart_recieve_char(NULL);
-		//_delay_ms(100);
-		//uart_send_char(c, NULL);
-		_delay_ms(100);
-		*/
 	}
 }
+//DDRx input/output. 1 = output, 0 = input
+//PORTx toggle high/low for output, read from input
