@@ -7,10 +7,8 @@
 #define CLEAR_BIT(reg, bit) (reg &= ~(1 << bit))
 
 
-void uart_init(const unsigned int cpu_frq, const unsigned int baudrate)
+void uart_init(const unsigned int ubrr)
 {
-	int ubrr = cpu_frq/16/baudrate - 1;
-
 	/* Set baud rate */
 	UBRR0H = (unsigned char)(ubrr >> 8); // High bits of counter
 	UBRR0L = (unsigned char)ubrr; // Low bits of counter
@@ -21,7 +19,7 @@ void uart_init(const unsigned int cpu_frq, const unsigned int baudrate)
 	/* Set frame format: 8data, 2stop bit */
 	UCSR0C = (1<<URSEL0)|(1<<USBS0)|(3<<UCSZ00);
 
-	fdevopen(uart_send_char, uart_recieve_char);	
+	//fdevopen(uart_send_char, uart_recieve_char);	
 }
 
 int uart_send_char(char c, FILE* dummy)
@@ -39,7 +37,7 @@ int uart_send_char(char c, FILE* dummy)
 int uart_recieve_char(FILE* dummy)
 {
 	/* Wait for data to be received */
-	while(!(UCSR0A & (1 << RXC0)))
+	while(!(UCSR0A & (1 << RXC0)));
 
 	/* Get and return received data from buffer */
 	return UDR0;
