@@ -47,7 +47,7 @@ int uart_send_char(char c, FILE* dummy)
 {
 	cli();
 	if (send_buffer.size >= BUFFER_SIZE)
-		abort(); // Handle overflow here. Return 1 to fdevopen?
+		uart_flush_send_buffer(); // Handle overflow here. Return 1 to fdevopen?
 
 	if (send_buffer.size == 0)
 		UCSR0B |= (1 << UDRIE0); //Enable Transmit register empty interrupt
