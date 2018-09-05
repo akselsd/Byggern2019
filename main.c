@@ -26,9 +26,11 @@ void test_address(void)
 
 int main()
 {
+	/* Initialize external memory adressing */
+	SET_BIT(MCUCR, SRE);
 	uart_init(UBRR);
-    SRAM_test();
-
+    //SRAM_test();
+	SRAM_test();
 	while(1){
 		_delay_ms(100);
 	}
