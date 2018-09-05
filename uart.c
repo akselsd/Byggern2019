@@ -11,20 +11,19 @@
 
 struct ringbuffer
 {
-	char buffer[BUFFER_SIZE];
-	int next_out;
-	int next_in;
-	int size;
+	volatile char buffer[BUFFER_SIZE];
+	volatile int next_out;
+	volatile int next_in;
+	volatile int size;
 };
 
 struct ringbuffer send_buffer = {{0}, 0, 0, 0};
 struct ringbuffer recieve_buffer = {{0}, 0, 0, 0};
 
 
-void uart_init(const unsigned int cpu_frq, const unsigned int baudrate)
+void uart_init(const unsigned int ubrr)
 {
 	cli();
-	int ubrr = cpu_frq/16/baudrate - 1;
 	UBRR0H = (unsigned char)(ubrr >> 8); // High bits of counter
 	UBRR0L = (unsigned char)ubrr; // Low bits of counter
 
@@ -60,9 +59,9 @@ int uart_send_char(char c, FILE* dummy)
 // Sjekke errorflag?
 int uart_recieve_char(FILE* dummy)
 {
-	cli();
 	// Block if there is no current input
 	while (recieve_buffer.size == 0);
+	cli();
 
 	char c = recieve_buffer.buffer[recieve_buffer.next_out++];
 	if (recieve_buffer.next_out == BUFFER_SIZE)
