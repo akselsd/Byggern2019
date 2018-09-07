@@ -46,16 +46,19 @@ void uart_init(const unsigned int ubrr)
 int uart_send_char(char c, FILE* dummy)
 {
 	cli();
+	/* If buffer is full, force flush */
 	if (send_buffer.size >= BUFFER_SIZE)
-		uart_flush_send_buffer(); // Handle overflow here. Return 1 to fdevopen?
+		uart_flush_send_buffer();
 
+	/*  If buffer is empty, enable Transmit Register Empty Interrupt */
 	if (send_buffer.size == 0)
-		UCSR0B |= (1 << UDRIE0); //Enable Transmit register empty interrupt
+		UCSR0B |= (1 << UDRIE0);
 
 	/* Put data into buffer */
 	send_buffer.buffer[send_buffer.next_in++] = c;
 	++send_buffer.size;
 
+	/* Wrap write pointer if necessary*/
 	if (send_buffer.next_in >= BUFFER_SIZE)
 		send_buffer.next_in = 0;
 
@@ -69,11 +72,14 @@ int uart_send_char(char c, FILE* dummy)
 // Sjekke errorflag?
 int uart_recieve_char(FILE* dummy)
 {
-	// Block if there is no current input
+	/* Block if there is no current input */
 	while (recieve_buffer.size == 0);
 	cli();
 
+	/* Retrieve next char from buffer */
 	char c = recieve_buffer.buffer[recieve_buffer.next_out++];
+
+	/* Wrap if necessary */
 	if (recieve_buffer.next_out == BUFFER_SIZE)
 		recieve_buffer.next_out = 0;
 
@@ -89,7 +95,10 @@ ISR(USART0_RXC_vect)
 	if (recieve_buffer.size == BUFFER_SIZE)
 		abort(); // Handle overflow here;
 
+	/* Write recieved char to buffer */
 	recieve_buffer.buffer[recieve_buffer.next_in++] = UDR0;
+
+	/* Wrap if necessary */
 	if (recieve_buffer.next_in == BUFFER_SIZE)
 		recieve_buffer.next_in = 0;
 
@@ -98,22 +107,25 @@ ISR(USART0_RXC_vect)
 
 ISR(USART0_UDRE_vect)
 {
+	/* Put next char in HW register */
 	UDR0 = send_buffer.buffer[send_buffer.next_out++];
+
+	/* Wrap if necessary */
 	if (send_buffer.next_out == BUFFER_SIZE)
 		send_buffer.next_out = 0;
 	
 	--send_buffer.size;
+	/* If buffer is now empty, disable Transmit Register Empty Interrupt */
 	if (send_buffer.size == 0)
-		UCSR0B &= ~(1 << UDRIE0); //Disable Transmit register empty interrupt
+		UCSR0B &= ~(1 << UDRIE0); 
 
 }
 
 int uart_flush_send_buffer(void)
 {
-	// Force send all chars
 	cli();
 	while (send_buffer.size != 0){
-		/* Wait for data to be received */
+		/* Wait for data to be transmitted */
 		while (!(UCSR0A & (1 << UDRE0)));
 		UDR0 = send_buffer.buffer[send_buffer.next_out++];
 		--send_buffer.size;
@@ -121,7 +133,8 @@ int uart_flush_send_buffer(void)
 		if (send_buffer.next_out == BUFFER_SIZE)
 			send_buffer.next_out = 0;
 	}
-	UCSR0B &= ~(1 << UDRIE0); // Buffer empty, disable interrput
+	/* Buffer empty, disable interrupt */
+	UCSR0B &= ~(1 << UDRIE0);
 	sei();
 	return 0;
 }
