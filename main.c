@@ -31,9 +31,22 @@ int main()
 	uart_init(UBRR);
     //SRAM_test();
 	SRAM_test();
+	volatile char* ADC = 0x1000;
 	while(1){
-		_delay_ms(100);
+		ADC[1] = 69;
 	}
 }
 //DDRx input/output. 1 = output, 0 = input
 //PORTx toggle high/low for output, read from input
+// Sram 1000 0000 0000 to 1111 1111 1111 
+// ADC 0100 0000 0000 to 0111 1111 1111
+// OLED_DATA 0010 0000 0000 to 0011 1111 1111
+// OLED_COMMAND 0000 0000 0000 to 0001 1111 1111
+//A11 1: SRAM -> Set P19 high (CS2)
+// P18: ADC
+// P17: OLED_DATA
+// P16: OLED_COMMAND
+//A10 and not A11: ADC
+//A9 and not A11 and not A10: OLED_DATA
+//not A11 and not A10 and not A9: OLED_COMMAND
+
