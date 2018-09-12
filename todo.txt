@@ -1,0 +1,4 @@
+Change joystick to interrupt driven?
+Find delay for joystick rd to wr
+Offset with absolute value instead of percent (joystick)
+Switch from 0-100 to -100 to 100 % (joystick)
