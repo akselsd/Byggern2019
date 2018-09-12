@@ -5,7 +5,7 @@
 #include <avr/io.h>
 #include <stdio.h>
 #include <util/delay.h>
-
+#include "tests/tests.h"
 #include "uart.h"
 #include "sram_test.h"
 
@@ -14,31 +14,33 @@
 
 int MY_PINS[8] = {PIN0, PIN1, PIN2, PIN3, PIN4, PIN5, PIN6, PIN7};
 
-void test_address(void)
-{
-	SET_BIT(MCUCR, SRE);
-	int * a = 0x1FFF;
-	while(1){
-		*a = 255;
-		_delay_ms(10);
-	}	
-}
-
 int main()
 {
 	/* Initialize external memory adressing */
 	SET_BIT(MCUCR, SRE);
 	uart_init(UBRR);
-    //SRAM_test();
 	SRAM_test();
-	volatile char* ADC = 0x1000;
+	joystick_calibrate_joystick();
+	_delay_ms(4000);
+	test_joystick_position();
+    test_slider_position();
 	while(1){
-		ADC[1] = 69;
+		_delay_ms(50);
 	}
+    
+
+    /*
+  	volatile char * SRAM = 0x1800;
+	volatile char * ADC = 0x1400;
+	volatile char * OLED_DATA = 0x1200;
+	volatile char * OLED_COMMAND = 0x1000;
+	while(1){
+		SRAM[1] = 69;
+	}*/
 }
 //DDRx input/output. 1 = output, 0 = input
 //PORTx toggle high/low for output, read from input
-// Sram 1000 0000 0000 to 1111 1111 1111 
+// Sram 1000 0000 0000 to 1111 1111 1111
 // ADC 0100 0000 0000 to 0111 1111 1111
 // OLED_DATA 0010 0000 0000 to 0011 1111 1111
 // OLED_COMMAND 0000 0000 0000 to 0001 1111 1111
@@ -49,4 +51,3 @@ int main()
 //A10 and not A11: ADC
 //A9 and not A11 and not A10: OLED_DATA
 //not A11 and not A10 and not A9: OLED_COMMAND
-
