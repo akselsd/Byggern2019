@@ -4,6 +4,7 @@
 #include <util/delay.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdio.h>
 #include "oled.h"
 #include "fonts.h"
@@ -11,11 +12,29 @@
 #define N_PAGES 8
 #define N_COLUMNS 128
 
+/* 
+Timer1 resolution is 16
+Generate interrput every 16.6 ms (60Hz)
+2**16 - (4912500/1024)/60 = 65456 = 0xFFB0
+*/
+#define OCRH_VALUE 0xFF
+#define OCRL_VALUE 0xB0
+
+#define OLED_BUFFER_SIZE 1024
 #define CHAR_LENGTH 8
 #define FONT_NAME font8
 
-volatile char* OLED_CMD = (volatile char*) 0x1000; // A9 0
-volatile char* OLED_DATA = (volatile char*) 0x1200; // A9 1
+static volatile char* OLED_CMD = (volatile char*) 0x1000; // A9 0
+static volatile char* OLED_DATA = (volatile char*) 0x1200; // A9 1
+static volatile char * OLED_BUFFER = (volatile char*) 0x1C00;
+
+static struct oled_data_marker_struct
+{
+    char page;
+    char column;
+}
+
+static struct oled_data_marker_struct oled_data;
 
 static void write_command(unsigned int command)
 {
@@ -24,7 +43,12 @@ static void write_command(unsigned int command)
 
 static void write_data(unsigned int data)
 {
-    *OLED_DATA = data;
+    OLED_BUFFER[oled_data.page*N_COLUMNS + oled_data.column] = data;
+    if (++oled_data.column == N_COLUMNS){
+        oled_data.column = 0;
+        if (++oled_data.page == N_PAGES)
+            oled_data.page = 0;
+    }
 }
 
 void oled_set_page(unsigned int page)
@@ -34,9 +58,8 @@ void oled_set_page(unsigned int page)
         while(1);
     }
 
-    write_command(0x22);
-    write_command(page);
-    write_command(N_PAGES - 1);
+    oled_data.page = page;
+
 }
 
 void oled_set_column(unsigned int column)
@@ -46,9 +69,7 @@ void oled_set_column(unsigned int column)
         while(1);
     }
 
-    write_command(0x21);
-    write_command(column);
-    write_command(N_COLUMNS - 1);
+    oled_data.column = column;
 }
 
 void oled_clear_screen(void)
@@ -129,4 +150,36 @@ void oled_init(void) {
 
     oled_set_column(0);
     oled_set_page(0);
+
+    oled_data.page = 0;
+    oled_data.column = 0;
+
+    /* Set up interrupt*/
+    /* Count value */
+    TCNT1 = TCNT1_VALUE;
+
+    /* Normal operation */
+    TCCR1A = 0;
+
+    /* 1024 prescalar */
+    TCCR1B = (1 << CS10 | (1 << CS12));
+
+    /* Load Compare registers */
+    OCR1AH = OCRH_VALUE;
+    OCR1AL = OCRL_VALUE;
+
+    /* Enable interrupt */
+    TIMSK |= (1 << OCIE1A);
+
 }
+
+ISR(TIMER1_COMPA_vect )
+{
+    oled_set_page(0);
+    oled_set_column(0);
+    for (uint16_t i = 0; i < OLED_BUFFER_SIZE; ++i)
+    {
+        *OLED_DATA = OLED_BUFFER[i];
+    }
+}
+
