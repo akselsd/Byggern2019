@@ -3,7 +3,7 @@
 #include <stdlib.h> // Abort
 #include <avr/interrupt.h>
 #include "uart.h"
-#define BUFFER_SIZE 256
+#define BUFFER_SIZE 64
 
 
 #define SET_BIT(reg, bit) (reg |= (1 << bit))
