@@ -1,5 +1,5 @@
-#ifndef rightUTTONS_H
-#define rightUTTONS_H
+#ifndef USB_MULTIFUNCTION_BUTTONS_H
+#define USB_MULTIFUNCTION_BUTTONS_H
 
 #include <stdbool.h>
 
@@ -9,6 +9,7 @@ typedef struct button_clicked
     bool right; 
 } buttons_status;
 
-buttons_status buttons_get_status(void);
+buttons_status usb_multifunction_buttons_get_status(void);
+void usb_multifunction_buttons_init(void);
 
 #endif
