@@ -65,6 +65,24 @@ void oled_clear_screen(void)
     }
 }
 
+// Will clear an area of the OLED (including the _end column or page)
+void oled_clear_area(const int page_start, const int page_end,
+	const int column_start, const int column_end)
+{
+    for (int i = page_start; i < page_end - page_start + 1; i++)
+    {
+	oled_set_page(i);
+	oled_set_column(column_start);
+
+	int n = 0;
+	while (n < column_end - column_start + 1)
+	{
+	    write_data(0);
+	    ++n;
+	}
+    }
+}
+
 static void print_char(const char c)
 {
     for (int i = 0; i < CHAR_LENGTH; i++) {
