@@ -37,7 +37,7 @@ void menu_select(int * current_menu_choice)
 	    break;
     }
     
-    if (*current_menu_choice == MENU_ACTIONS - 1) {
+    if (*current_menu_choice > MENU_ACTIONS - 1) {
 	*current_menu_choice = 0;
     }
     else if (*current_menu_choice < 0) {
