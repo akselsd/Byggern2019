@@ -22,10 +22,11 @@ int main()
 	SRAM_test();
 	joystick_calibrate_joystick();
 	_delay_ms(4000);
-	test_joystick_position();
-    test_slider_position();
 	while(1){
 		_delay_ms(50);
+        test_joystick_position();
+        printf("; ");
+        test_slider_position();
 	}
     
 
