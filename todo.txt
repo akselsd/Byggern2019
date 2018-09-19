@@ -1,6 +1,10 @@
 Change joystick to interrupt driven?
 Find delay for joystick rd to wr
 Offset with absolute value instead of percent (joystick)
-Switch from 0-100 to -100 to 100 % (joystick)
-
+Fix full range for positive joystick values (now max is 99)
 Write our own driver for multifunction board? (Is there old software on it?)
+Button for joystick
+
+SPM TIL STUDASS
+CS2 power down CS1
+KNAPP
