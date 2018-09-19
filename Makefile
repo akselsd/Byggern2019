@@ -1,5 +1,5 @@
 # List all source files to be compiled; separate with space
-SOURCE_FILES := main.c uart.c sram_test.c tests/joystick_test.c tests/slider_tests.c usb_multifunction_card/joystick.c usb_multifunction_card/usb_multifunction_card_io.c usb_multifunction_card/slider.c
+SOURCE_FILES := main.c uart.c sram_test.c tests/joystick_test.c tests/slider_tests.c usb_multifunction_card/joystick.c usb_multifunction_card/usb_multifunction_card_io.c usb_multifunction_card/slider.c tests/button_test.c usb_multifunction_card/buttons.c
 
 # Set this flag to "yes" (no quotes) to use JTAG; otherwise ISP (SPI) is used
 PROGRAM_WITH_JTAG := yes
