@@ -12,8 +12,9 @@ typedef enum joystick_direction_enum
 
 typedef struct joystick_position
 {
-	unsigned char x;
-	unsigned char y;
+	char x;
+	char y;
+	joystick_direction dir;
 } joystick_status;
 
 /* 
@@ -21,7 +22,7 @@ typedef struct joystick_position
 	@return x and y axis percentage (0-100). 0 is down/left 100 is up/right
 */
 joystick_status joystick_get_status(void);
-joystick_direction joystick_get_direction(const joystick_status * status);
+const char * joystick_direction_to_string(joystick_direction dir);
 void joystick_calibrate_joystick(void);
 
 #endif
