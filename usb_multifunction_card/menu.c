@@ -6,6 +6,7 @@
 
 #define MENU_ACTIONS 4
 #define CURSOR "->"
+#define CURSOR_SPACE 20
 
 const char * const menu[MENU_ACTIONS] = {
     "Singleplayer",
@@ -16,6 +17,8 @@ const char * const menu[MENU_ACTIONS] = {
 
 static void move_cursor(const int menu_row)
 {
+    oled_clear_area(0, MENU_ACTIONS, 0, CURSOR_SPACE);
+
     oled_set_column(0);
     oled_set_page(menu_row);
     oled_printf(CURSOR);
@@ -55,7 +58,7 @@ void menu_init(void)
     for (int i = 0; i < MENU_ACTIONS; i++)
     {
 	// Make space for the cursor
-        oled_set_column(20);
+        oled_set_column(CURSOR_SPACE);
         oled_set_page(i);
         oled_printf(menu[i]);
     }
