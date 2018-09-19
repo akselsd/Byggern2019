@@ -53,3 +53,5 @@ dkms.conf
 
 # Swap files (from vim?)
 *.swp
+*.swo
+
