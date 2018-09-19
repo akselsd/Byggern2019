@@ -44,9 +44,9 @@ int main()
 	init_all();
 	_delay_ms(1000);
 
-
-	while(1){
-		_delay_ms(50);
+	// MENU SELECTION
+	while(!menu_select()){
+		_delay_ms(500);
 	}
     
 
