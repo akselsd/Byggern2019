@@ -28,8 +28,9 @@ static volatile char * OLED_BUFFER = (volatile char*) 0x1C00;
 
 struct oled_data_marker_struct
 {
-    char page;
-    char column;
+    char page; /* Current page */
+    char column; /* Current column */
+    int changed; /* Dont flush SRAM if nothing have changed */
 };
 
 static struct oled_data_marker_struct oled_data;
@@ -44,6 +45,7 @@ static void write_command(unsigned int command)
 static void write_data(unsigned int data)
 {
     cli();
+    oled_data.changed = 1;
     uint16_t index = oled_data.page*N_COLUMNS + oled_data.column;
     OLED_BUFFER[index] = data;
     if (++oled_data.column == N_COLUMNS){
@@ -160,6 +162,7 @@ void oled_init(void) {
 
     oled_data.page = 0;
     oled_data.column = 0;
+    oled_data.changed = 0;
 
     /* Set up timer interrupt */ 
     /* Normal operation */
@@ -179,12 +182,18 @@ void oled_init(void) {
 
 ISR(TIMER1_COMPA_vect )
 {
+    /* Check if flush is needed */
+    if (!oled_data.changed)
+        return;
+    /* Move to (0, 0) of oled */
     write_command(0x21);
     write_command(0);
     write_command(N_COLUMNS - 1);
     write_command(0x22);
     write_command(0);
     write_command(N_PAGES - 1);
+
+    /* Write buffer */
     for (uint16_t i = 0; i < OLED_BUFFER_SIZE; ++i)
     {
         *OLED_DATA = OLED_BUFFER[i];
