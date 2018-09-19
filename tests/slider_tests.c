@@ -5,5 +5,5 @@
 void test_slider_position(void)
 {
    slider_status status = slider_get_status();
-   printf("Left: %u, Right: %u\n", status.left, status.right);
+   printf("Left: %u, Right: %u", status.left, status.right);
 }

@@ -2,8 +2,8 @@
 #include "tests.h"
 #include "../usb_multifunction_card/buttons.h"
 
-void button_test(void)
+void test_buttons(void)
 {
-    buttons_status status = buttons_get_status();
+    buttons_status status = usb_multifunction_buttons_get_status();
     printf("button_left: %d, button_right: %d", status.left, status.right);
 }
