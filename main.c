@@ -8,25 +8,45 @@
 #include "tests/tests.h"
 #include "uart.h"
 #include "sram_test.h"
+#include "usb_multifunction_card/buttons.h"
+#include "usb_multifunction_card/joystick.h"
+#include "usb_multifunction_card/usb_multifunction_card_io.h"
 
 #define SET_BIT(reg, bit) (reg |= (1 << bit))
 #define CLEAR_BIT(reg, bit) (reg &= ~(1 << bit))
 
 int MY_PINS[8] = {PIN0, PIN1, PIN2, PIN3, PIN4, PIN5, PIN6, PIN7};
 
-int main()
+void init_all(void)
 {
 	/* Initialize external memory adressing */
 	SET_BIT(MCUCR, SRE);
+
 	uart_init(UBRR);
-	SRAM_test();
+
 	joystick_calibrate_joystick();
-	_delay_ms(4000);
+
+	usb_multifunction_buttons_init();
+
+}
+
+int main()
+{
+	/* Initialize system */
+	init_all();
+	SRAM_test();
+	_delay_ms(1000);
+	//volatile char * OLED_DATA = 0x1000;
 	while(1){
 		_delay_ms(50);
+		//*OLED_DATA = 255;
+		
         test_joystick_position();
         printf("; ");
         test_slider_position();
+        printf("; ");
+        test_buttons();
+        printf("\n");
 	}
     
 
@@ -40,7 +60,9 @@ int main()
 	}*/
 }
 //DDRx input/output. 1 = output, 0 = input
-//PORTx toggle high/low for output, read from input
+//PORTx Write for output, pull up for input
+//PINx Read for input
+
 // Sram 1000 0000 0000 to 1111 1111 1111
 // ADC 0100 0000 0000 to 0111 1111 1111
 // OLED_DATA 0010 0000 0000 to 0011 1111 1111
