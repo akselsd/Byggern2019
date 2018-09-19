@@ -37,7 +37,8 @@ void menu_select(int * current_menu_choice)
 	    ++(*current_menu_choice);
 	    break;
 	default:
-	    break;
+		/* Return if no input */
+		return;
     }
     
     if (*current_menu_choice > MENU_ACTIONS - 1) {
