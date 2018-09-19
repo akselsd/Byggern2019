@@ -21,27 +21,31 @@ static void move_cursor(const int menu_row)
     oled_printf(CURSOR);
 }
 
-bool menu_select(void)
+void menu_select(int * current_menu_choice)
 {
-    int current_menu_row = 0;
-    joystick_status joystick = joystick_get_status(); 
+    joystick_status joystick = joystick_get_status();  
 
     switch(joystick.dir)
     {
 	case UP:
-	    --current_menu_row;
+	    --(*current_menu_choice);
 	    break;
 	case DOWN:
-	    ++current_menu_row;
+	    ++(*current_menu_choice);
 	    break;
 	default:
 	    break;
     }
+    
+    if (*current_menu_choice == MENU_ACTIONS - 1) {
+	*current_menu_choice = 0;
+    }
+    else if (*current_menu_choice < 0) {
+	*current_menu_choice = MENU_ACTIONS - 1;
+    }
 
-    move_cursor(current_menu_row );
+    move_cursor(*current_menu_choice);
 
-    // TODO implement button functionality
-    return false;
 }
 
 void menu_init(void)
