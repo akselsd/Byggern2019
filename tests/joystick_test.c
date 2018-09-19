@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "tests.h"
 #include "../usb_multifunction_card/joystick.h"
 
 void test_joystick_position(void)

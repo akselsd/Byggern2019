@@ -1,4 +1,3 @@
-#include <util/delay.h>
 #include "slider.h"
 #include "usb_multifunction_card_io.h"
 
@@ -8,7 +7,7 @@
 
 slider_status slider_get_status(void)
 {
-    volatile char * ADC = 0x1400;
+    volatile char * ADC = (volatile char *) 0x1400;
 
     unsigned char left = read_channel(6, ADC);
     unsigned char right = read_channel(7, ADC);
