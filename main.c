@@ -11,6 +11,8 @@
 #include "usb_multifunction_card/buttons.h"
 #include "usb_multifunction_card/joystick.h"
 #include "usb_multifunction_card/usb_multifunction_card_io.h"
+#include "usb_multifunction_card/oled.h"
+#include "usb_multifunction_card/menu.h"
 
 #define SET_BIT(reg, bit) (reg |= (1 << bit))
 #define CLEAR_BIT(reg, bit) (reg &= ~(1 << bit))
@@ -24,9 +26,15 @@ void init_all(void)
 
 	uart_init(UBRR);
 
-	joystick_calibrate_joystick();
+	//joystick_calibrate_joystick();
 
 	usb_multifunction_buttons_init();
+
+	oled_init();
+	while(1) {
+	menu_init();
+		
+	}
 
 }
 
@@ -34,19 +42,11 @@ int main()
 {
 	/* Initialize system */
 	init_all();
-	SRAM_test();
 	_delay_ms(1000);
-	//volatile char * OLED_DATA = 0x1000;
+
+
 	while(1){
 		_delay_ms(50);
-		//*OLED_DATA = 255;
-		
-        test_joystick_position();
-        printf("; ");
-        test_slider_position();
-        printf("; ");
-        test_buttons();
-        printf("\n");
 	}
     
 
