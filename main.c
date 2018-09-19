@@ -31,11 +31,7 @@ void init_all(void)
 	usb_multifunction_buttons_init();
 
 	oled_init();
-	while(1) {
 	menu_init();
-		
-	}
-
 }
 
 int main()
@@ -44,9 +40,13 @@ int main()
 	init_all();
 	_delay_ms(1000);
 
+	int current_menu_choice = 0;
+
 	// MENU SELECTION
-	while(!menu_select()){
-		_delay_ms(500);
+	while(1)
+	{
+	    menu_select(&current_menu_choice);
+	    _delay_ms(200);
 	}
     
 
