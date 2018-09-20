@@ -143,7 +143,7 @@ int uart_flush_send_buffer(void)
 void uart_write_input_to_buffer(char * buffer, unsigned int n_bytes)
 {
 	/* Wait for buffer to fill up */
-	while (recieve_buffer.size < n_bytes);
+	while (recieve_buffer.size <= n_bytes);
 
 	/* If the bytes have wrapped, split copy in two */
 	int diff = BUFFER_SIZE - recieve_buffer.next_out;
@@ -158,7 +158,7 @@ void uart_write_input_to_buffer(char * buffer, unsigned int n_bytes)
 	/* Wrap */
 	else{
 		memcpy(buffer,
-			&recieve_buffer.buffer[BUFFER_SIZE - 1],
+			&recieve_buffer.buffer[recieve_buffer.next_out],
 			diff);
 		memcpy(buffer,
 			recieve_buffer.buffer,
