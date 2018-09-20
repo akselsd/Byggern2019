@@ -4,7 +4,4 @@ Offset with absolute value instead of percent (joystick)
 Fix full range for positive joystick values (now max is 99)
 Write our own driver for multifunction board? (Is there old software on it?)
 Button for joystick
-
-SPM TIL STUDASS
-CS2 power down CS1
-KNAPP
+Handle overflow for input buffer

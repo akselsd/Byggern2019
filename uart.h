@@ -15,6 +15,8 @@ void uart_init(const unsigned int ubrr);
 */
 int uart_flush_send_buffer(void);
 
+void uart_write_input_to_buffer(char * buffer, unsigned int n_bytes)
+
 /* Functions not used outside uart.c Make static and hide from interface? */
 int uart_send_char(char c, FILE* neverused);
 int uart_recieve_char(FILE* neverused);

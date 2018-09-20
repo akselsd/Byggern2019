@@ -8,5 +8,5 @@ void oled_set_page(unsigned int page);
 void oled_set_column(unsigned int column);
 void oled_clear_screen(void);
 void oled_clear_area(const int page_start, const int page_end, const int column_start, const int column_end);
-
+void oled_display_image(const char* imgname, unsigned int size, unsigned int page, unsigned int column);
 #endif

@@ -93,7 +93,8 @@ int uart_recieve_char(FILE* dummy)
 ISR(USART0_RXC_vect)
 {
 	if (recieve_buffer.size == BUFFER_SIZE)
-		abort(); // Handle overflow here;
+		printf("Recieve buffer overflow\n");
+		abort();
 
 	/* Write recieved char to buffer */
 	recieve_buffer.buffer[recieve_buffer.next_in++] = UDR0;
@@ -139,6 +140,37 @@ int uart_flush_send_buffer(void)
 	return 0;
 }
 
+void uart_write_input_to_buffer(char * buffer, unsigned int n_bytes)
+{
+	/* Wait for buffer to fill up */
+	while (recieve_buffer.size < n_bytes);
+
+	/* If the bytes have wrapped, split copy in two */
+	int diff = BUFFER_SIZE - recieve_buffer.next_out;
+
+	/* No wrap */
+	if (diff >= n_bytes){
+		memcpy(buffer,
+			&recieve_buffer.buffer[recieve_buffer.next_out],
+			n_bytes)
+		recieve_buffer.next_out+=n_bytes;
+	}
+	/* Wrap */
+	else{
+		memcpy(buffer,
+			&recieve_buffer.buffer[BUFFER_SIZE - 1],
+			diff);
+		memcpy(buffer,
+			recieve_buffer.buffer,
+			n_bytes - diff)
+		recieve_buffer = n_bytes - diff;
+	}
+
+	/* Reduce buffer size */
+	cli();
+	recieve_buffer.size-=n_bytes;
+	sei();
+}
 
 //TXEN Transmit Enable
 //UMSEL bit in UCSRC velger Async/Sync (0 for Async)

@@ -94,8 +94,11 @@ void oled_clear_screen(void)
 }
 
 // Will clear an area of the OLED (including the _end column or page)
-void oled_clear_area(const int page_start, const int page_end,
-	const int column_start, const int column_end)
+void oled_clear_area(
+    const int page_start,
+    const int page_end,
+	const int column_start,
+    const int column_end)
 {
     cli();
     for (int i = page_start; i < page_end - page_start + 1; i++)
@@ -127,6 +130,21 @@ void oled_printf(const char* string)
     while(*stringPtr != '\0') {
         print_char(*stringPtr);
         ++stringPtr;
+    }
+}
+
+void oled_display_image
+    (const char* imgname,
+    unsigned int size,
+    unsigned int page,
+    unsigned int column)
+{
+    char * buffer = OLED_BUFFER + page*N_COLUMNS + column;
+    int n_pages = size/CHAR_LENGTH;
+    printf("@i %s", imgname);
+    for (int p = 0; p < n_pages; ++p){
+        buffer+=N_COLUMNS;
+        uart_write_input_to_buffer(buffer, size);
     }
 }
 
