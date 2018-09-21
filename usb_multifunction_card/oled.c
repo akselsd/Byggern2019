@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "oled.h"
+#include "../uart.h"
 #include "fonts.h"
 
 #define N_PAGES 8
@@ -133,19 +134,18 @@ void oled_printf(const char* string)
     }
 }
 
-void oled_display_image
-    (const char* imgname,
+void oled_display_image(
+    const char* imgname,
     unsigned int size,
     unsigned int page,
     unsigned int column)
 {
-    char * buffer = OLED_BUFFER + page*N_COLUMNS + column;
-    int n_pages = size/CHAR_LENGTH;
-    printf("@i %s", imgname);
-    for (int p = 0; p < n_pages; ++p){
-        buffer+=N_COLUMNS;
-        uart_write_input_to_buffer(buffer, size);
-    }
+    /* Find start address and set up input buffer bypass */
+    volatile char * buffer = OLED_BUFFER + page*N_COLUMNS + column;
+    uart_write_image_to_SRAM(buffer, size);
+
+    /* Request image */
+    printf("@i %s\n", imgname);
 }
 
 void oled_init(void) {

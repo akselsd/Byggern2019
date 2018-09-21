@@ -4,6 +4,7 @@
 #include <avr/interrupt.h>
 #include "uart.h"
 #define BUFFER_SIZE 64
+#define PAGE_LENGTH 128
 
 
 #define SET_BIT(reg, bit) (reg |= (1 << bit))
@@ -17,9 +18,17 @@ struct ringbuffer
 	volatile int size;
 };
 
+struct image_buffer
+{
+	volatile char * buffer;
+	volatile unsigned int n_bytes;
+	volatile unsigned int n_pages;
+	unsigned int size;
+};
+
 struct ringbuffer send_buffer = {{0}, 0, 0, 0};
 struct ringbuffer recieve_buffer = {{0}, 0, 0, 0};
-
+struct image_buffer img_buffer = {NULL, 0, 0, 0};
 
 void uart_init(const unsigned int ubrr)
 {
@@ -92,10 +101,30 @@ int uart_recieve_char(FILE* dummy)
 
 ISR(USART0_RXC_vect)
 {
-	if (recieve_buffer.size == BUFFER_SIZE)
+	/* Skip intermediate buffer */
+	if (img_buffer.buffer){
+		*(img_buffer.buffer++) = UDR0;
+
+		if (img_buffer.n_bytes == 0){
+
+			/* Image completed */
+			if (img_buffer.n_pages == 0)
+				img_buffer.buffer = NULL;
+
+			/* New page */
+			else{
+				--img_buffer.n_pages;
+				img_buffer.n_bytes = img_buffer.size;
+				img_buffer.buffer+= PAGE_LENGTH - img_buffer.size;
+			}
+		}
+		return;
+	}
+	
+	if (recieve_buffer.size == BUFFER_SIZE){
 		printf("Recieve buffer overflow\n");
 		abort();
-
+	}
 	/* Write recieved char to buffer */
 	recieve_buffer.buffer[recieve_buffer.next_in++] = UDR0;
 
@@ -140,35 +169,13 @@ int uart_flush_send_buffer(void)
 	return 0;
 }
 
-void uart_write_input_to_buffer(char * buffer, unsigned int n_bytes)
+void uart_write_image_to_SRAM(volatile char * buffer, unsigned int img_size)
 {
-	/* Wait for buffer to fill up */
-	while (recieve_buffer.size <= n_bytes);
-
-	/* If the bytes have wrapped, split copy in two */
-	int diff = BUFFER_SIZE - recieve_buffer.next_out;
-
-	/* No wrap */
-	if (diff >= n_bytes){
-		memcpy(buffer,
-			&recieve_buffer.buffer[recieve_buffer.next_out],
-			n_bytes)
-		recieve_buffer.next_out+=n_bytes;
-	}
-	/* Wrap */
-	else{
-		memcpy(buffer,
-			&recieve_buffer.buffer[recieve_buffer.next_out],
-			diff);
-		memcpy(buffer,
-			recieve_buffer.buffer,
-			n_bytes - diff)
-		recieve_buffer = n_bytes - diff;
-	}
-
-	/* Reduce buffer size */
 	cli();
-	recieve_buffer.size-=n_bytes;
+	img_buffer.buffer = buffer;
+	img_buffer.n_bytes = img_size;
+	img_buffer.size = img_size;
+	img_buffer.n_pages = img_size/8;
 	sei();
 }
 
