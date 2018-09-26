@@ -31,5 +31,10 @@ FILTER[4] to PD[1] slider_R (0-index)
 JOYCON[0] to ADC[4]
 JOYCON[1] to ADC[3]
 
+####
+DB9 
+signal ground 5 - GND
+transmit data 3 - 
+receive data 2 	- 
 
 
