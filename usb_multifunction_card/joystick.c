@@ -8,7 +8,9 @@
 #include "joystick.h"
 #include "usb_multifunction_card_io.h"
 
+#define SET_BIT(reg, bit) (reg |= (1 << bit))
 #define READ_BIT(reg, bit) ((reg) & (1 << bit))
+#define CLEAR_BIT(reg, bit) (reg &= ~(1 << bit))
 
 #define MAX_JOYSTICK_VALUE 255
 /* MAX_JOYSTICK_VALUE / 100 */
@@ -23,6 +25,13 @@
 
 /* Offset for joystick, initialized to zero for first read(calibration) */
 joystick_status calibration_offset = {0, 0};
+
+
+void usb_multifunction_joystick_init(void)
+{
+	CLEAR_BIT(DDRB, PB2);
+	SET_BIT(PORTB, PB2);
+}
 
 static joystick_direction coordinates_to_direction(char x, char y)
 {
@@ -59,7 +68,7 @@ joystick_status joystick_get_status(void)
     volatile char * ADC = (volatile char *)0x1400;
 
 	/* Read and offset 0*/
-	bool pressed = READ_BIT(PINB, PB2);
+	bool pressed = !READ_BIT(PINB, PB2);
 	char x = read_channel(CHANNEL_1, ADC) - 128;
 	char y = read_channel(CHANNEL_2, ADC) - 128;
 

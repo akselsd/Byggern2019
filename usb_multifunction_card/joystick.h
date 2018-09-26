@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 
+void usb_multifunction_joystic_init(void);
+
 typedef enum joystick_direction_enum
 {
 	UP = 0,

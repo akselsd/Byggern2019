@@ -216,7 +216,6 @@ ISR(TIMER1_COMPA_vect)
     {
         *OLED_DATA = OLED_BUFFER[i];
     }
-    printf("Updating\n");
     //oled_data.changed = 0;
     /* Is it neccecary to clear high register? */
     TCNT1H = 0;
