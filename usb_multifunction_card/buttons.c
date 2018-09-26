@@ -10,8 +10,8 @@
 void usb_multifunction_buttons_init(void)
 {
 	/* Configure pins to input */
-	CLEAR_BIT(DDRB, PB1);
-	CLEAR_BIT(DDRB, PB0);
+	CLEAR_BIT(DDRB, PB1); /* Left */ 
+	CLEAR_BIT(DDRB, PB0); /* Right */
 }
 
 buttons_status usb_multifunction_buttons_get_status(void)

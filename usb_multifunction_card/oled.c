@@ -17,7 +17,7 @@
 /* 
 Timer1 resolution is 16
 Generate interrput every 16.6 ms (60Hz)
-(4912500/1024)/60 = 65456 = 0xFFB0
+(4915200/1024)/60 = 80
 */
 #define OLED_BUFFER_SIZE 1024
 #define CHAR_LENGTH 8
@@ -191,14 +191,14 @@ void oled_init(void) {
 
     /* Load Compare registers */
     OCR1AH = 0;
-    OCR1AL = 80;
+    OCR1AL = 160;
 
     /* Enable interrupt */
     TIMSK |= (1 << OCIE1A);
 
 }
 
-ISR(TIMER1_COMPA_vect )
+ISR(TIMER1_COMPA_vect)
 {
     /* Check if flush is needed */
     if (!oled_data.changed)
@@ -216,6 +216,8 @@ ISR(TIMER1_COMPA_vect )
     {
         *OLED_DATA = OLED_BUFFER[i];
     }
+    printf("Updating\n");
+    //oled_data.changed = 0;
     /* Is it neccecary to clear high register? */
     TCNT1H = 0;
     TCNT1L = 0;

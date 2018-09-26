@@ -45,6 +45,7 @@ int main()
 	// MENU SELECTION
 	while(1)
 	{
+	    //test_usb_multifunction_board();
 	    menu_select(&current_menu_choice);
 	    _delay_ms(200);
 	}

@@ -4,9 +4,5 @@
 // Always flush stderr?
 
 int test_uart_output_streams(void);
-void test_joystick_position(void);
-void test_joystick_button(void);
-void test_slider_position(void);
-void test_buttons(void);
-
+void test_usb_multifunction_board(void);
 #endif
