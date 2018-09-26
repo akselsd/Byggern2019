@@ -10,3 +10,9 @@ void test_joystick_position(void)
     	status.y,
     	joystick_direction_to_string(status.dir));
 }
+
+void test_joystick_button(void)
+{
+    joystick_status status = joystick_get_status();
+    printf("JB: %d", status.pressed);
+}
