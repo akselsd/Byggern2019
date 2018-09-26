@@ -8,6 +8,8 @@
 #include "joystick.h"
 #include "usb_multifunction_card_io.h"
 
+#define READ_BIT(reg, bit) ((reg) & (1 << bit))
+
 #define MAX_JOYSTICK_VALUE 255
 /* MAX_JOYSTICK_VALUE / 100 */
 #define JOYSTICK_PERCENTAGE_FACTOR 1.28
@@ -57,6 +59,7 @@ joystick_status joystick_get_status(void)
     volatile char * ADC = (volatile char *)0x1400;
 
 	/* Read and offset 0*/
+	bool pressed = READ_BIT(PINB, PB2);
 	char x = read_channel(CHANNEL_1, ADC) - 128;
 	char y = read_channel(CHANNEL_2, ADC) - 128;
 
@@ -74,6 +77,7 @@ joystick_status joystick_get_status(void)
 
 	/* Populate struct */
 	joystick_status status = {
+		pressed,
 		x,
 		y,
 		coordinates_to_direction(x, y)

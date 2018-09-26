@@ -1,6 +1,8 @@
 #ifndef INCLUDED_JOYSTICK_H
 #define INCLUDED_JOYSTICK_H
 
+#include <stdbool.h>
+
 typedef enum joystick_direction_enum
 {
 	UP = 0,
@@ -10,8 +12,9 @@ typedef enum joystick_direction_enum
 	NO_DIRECTION = 4
 } joystick_direction;
 
-typedef struct joystick_position
+typedef struct joystick_status_struct
 {
+	bool pressed;
 	char x;
 	char y;
 	joystick_direction dir;
