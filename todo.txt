@@ -5,3 +5,10 @@ Fix full range for positive joystick values (now max is 99)
 Write our own driver for multifunction board? (Is there old software on it?)
 Button for joystick
 Handle overflow for input buffer
+Fix oled clear screen for cursorp
+Change from char to uint, because char can vary in size ¿
+Fix OLED interrupt optimalization
+
+
+Optionals:
+Create drawing functions ¿
