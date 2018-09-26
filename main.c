@@ -6,9 +6,10 @@
 #include <stdio.h>
 #include <util/delay.h>
 #include "tests/tests.h"
-#include "uart.h"
-#include "can/can_driver.h"
-#include "sram_test.h"
+#include "utils/uart.h"
+#include "can/MCP_driver.h"
+#include "can/SPI_driver.h"
+#include "tests/sram_test.h"
 #include "usb_multifunction_card/buttons.h"
 #include "usb_multifunction_card/joystick.h"
 #include "usb_multifunction_card/usb_multifunction_card_io.h"
@@ -33,6 +34,8 @@ void init_all(void)
 
 	oled_init();
 	menu_init();
+	SPI_master_init();
+	MCP_init();
 }
 
 int main()
@@ -40,15 +43,15 @@ int main()
 	/* Initialize system */
 	init_all();
 	_delay_ms(1000);
+	printf("Initialized\n");
 
 	int current_menu_choice = 0;
 
 	// MENU SELECTION
 	while(1)
 	{
-	    //test_usb_multifunction_board();
-	    menu_select(&current_menu_choice);
-	    _delay_ms(200);
+		printf("Test\n");
+		_delay_ms(1000);
 	}
     
 
