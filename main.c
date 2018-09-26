@@ -50,7 +50,6 @@ int main()
 	// MENU SELECTION
 	while(1)
 	{
-		printf("Test\n");
 		_delay_ms(1000);
 	}
     

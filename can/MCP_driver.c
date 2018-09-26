@@ -29,18 +29,25 @@ uint8_t MCP_read(uint8_t address)
 
 void MCP_init(void)
 {
-	printf("%d\n", MCP_read(MCP_CANSTAT));
+	printf("MCP_CAN_STATUS: %d\n", MCP_read(MCP_CANSTAT));
+	printf("Resetting MCP. \n");
+	MCP_reset();
+	printf("MCP_CAN_STATUS: %d\n", MCP_read(MCP_CANSTAT));
+
+	/* Enter normal mode */
+	MCP_write(MCP_CANCTRL, MODE_NORMAL);
+
+	printf("MCP_CAN_STATUS: %d\n", MCP_read(MCP_CANSTAT));
+	_delay_ms(1000);
+	printf("MCP_CAN_STATUS: %d\n", MCP_read(MCP_CANSTAT));
+}
+
+void MCP_reset(void)
+{
 	SPI_start_transmit();
 	_delay_ms(10);
 	SPI_transmit(MCP_RESET);
-	printf("%d\n", MCP_read(MCP_CANSTAT));
 	SPI_end_transmit();
-	MCP_write(MCP_CANCTRL, MODE_NORMAL);
-	printf("%d\n", MCP_read(MCP_CANSTAT));
-	_delay_ms(1000);
-	printf("%d\n", MCP_read(MCP_CANSTAT));
 }
-
-
 
 
