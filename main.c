@@ -7,6 +7,7 @@
 #include <util/delay.h>
 #include "tests/tests.h"
 #include "uart.h"
+#include "can/can_driver.h"
 #include "sram_test.h"
 #include "usb_multifunction_card/buttons.h"
 #include "usb_multifunction_card/joystick.h"
