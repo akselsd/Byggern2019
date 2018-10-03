@@ -41,7 +41,7 @@ PD[0] to Atmega[1]/PB0 // Touch_button (RIGHT)¿
 ####
 DB9 
 signal ground 5 to GND
-transmit data 3 to MAX233[4] 
-receive data 2 to MAX233[5]
+transmit data 3 to MAX233[5] T1_out
+receive data 2 to MAX233[4] R1_in
 
 
