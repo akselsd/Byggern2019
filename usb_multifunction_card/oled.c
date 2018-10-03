@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "oled.h"
-#include "../uart.h"
+#include "../utils/uart.h"
 #include "fonts.h"
 
 #define N_PAGES 8

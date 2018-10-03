@@ -23,8 +23,8 @@ void SPI_master_init(void)
 
 void SPI_start_transmit(void)
 {
-    /* Select slave */
-    CLEAR_BIT(PORTB, PB4);    
+    /* Select slave - Chip select to low */
+    CLEAR_BIT(PORTB, PB4);
 }
 
 void SPI_end_transmit(void)
