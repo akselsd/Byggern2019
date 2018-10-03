@@ -7,8 +7,20 @@ Button for joystick
 Handle overflow for input buffer
 Fix oled clear screen for cursorp
 Change from char to uint, because char can vary in size ¿
-Fix OLED interrupt optimalization
+Fix OLED interrupt optimalizatio
+Avoid copying structs where possible
+Implement LOAD TX BUFFER and READ RX BUFFER (Save one SPI cycle pr msg)
+Const qualifier
+
+
+--> Add filter for message reception
+
 
 
 Optionals:
 Create drawing functions ¿
+
+
+Tekniske spm:
+Spør studass om riktig kondensator
+MCP_reset() - hijacking reset¿
