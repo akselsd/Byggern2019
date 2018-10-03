@@ -31,10 +31,17 @@ FILTER[4] to PD[1] slider_R (0-index)
 JOYCON[0] to ADC[4]
 JOYCON[1] to ADC[3]
 
+//Tentative//
+
+JOYCON[2] to Atmega[3]/PB2 // Joy_button
+
+PB[5] to Atmega[2]/PB1 // Touch_button (LEFT)¿
+PD[0] to Atmega[1]/PB0 // Touch_button (RIGHT)¿
+
 ####
 DB9 
-signal ground 5 - GND
-transmit data 3 - 
-receive data 2 	- 
+signal ground 5 to GND
+transmit data 3 to MAX233[4] 
+receive data 2 to MAX233[5]
 
 
