@@ -27,6 +27,7 @@ void init_all(void)
 
 	uart_init(UBRR);
 
+	// Currently does nothing
 	//joystick_calibrate_joystick();
 
 	usb_multifunction_buttons_init();
@@ -76,7 +77,10 @@ int main()
 		printf("%d\n", received_msg.data[6]);
 		printf("%d\n", received_msg.data[7]);
 	}
-	while(1){};
+	while(1){
+		menu_select(&current_menu_choice);
+		_delay_ms(100);
+	};
     
 
     /*
