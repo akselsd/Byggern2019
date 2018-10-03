@@ -33,9 +33,14 @@ void SPI_end_transmit(void)
     SET_BIT(PORTB, PB4);    
 }
 
-uint8_t SPI_transmit(uint8_t data)
+void SPI_write(uint8_t data)
 {
     SPDR = data;
     while(!(SPSR & (1 << SPIF)));
+}
+
+uint8_t SPI_read(void)
+{
+    SPI_write(0);
     return SPDR;
 }
