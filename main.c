@@ -7,8 +7,7 @@
 #include <util/delay.h>
 #include "tests/tests.h"
 #include "utils/uart.h"
-#include "can/MCP_driver.h"
-#include "can/SPI_driver.h"
+#include "can/CAN_driver.h"
 #include "tests/sram_test.h"
 #include "usb_multifunction_card/buttons.h"
 #include "usb_multifunction_card/joystick.h"
@@ -34,8 +33,8 @@ void init_all(void)
 
 	oled_init();
 	menu_init();
-	SPI_master_init();
-	MCP_init();
+
+	CAN_init();
 }
 
 int main()
@@ -43,15 +42,41 @@ int main()
 	/* Initialize system */
 	init_all();
 	_delay_ms(1000);
-	printf("Initialized\n");
+	printf("\n\n\nInitialized\n");
 
 	int current_menu_choice = 0;
 
-	// MENU SELECTION
-	while(1)
+	//while(1)
 	{
+		
+		CAN_message msg;
+		msg.id = 1;
+		msg.data[0] = 69;
+		msg.data[1] = 202;
+		msg.data[2] = 5;		
+		msg.data[3] = '¿';		
+		msg.data[4] = 5;		
+		msg.data[5] = 5;		
+		msg.data[6] = 5;		
+		msg.data[7] = 2;		
+		msg.length = 8;
+		CAN_send(&msg);
+		printf("CAN message sent.\n");
 		_delay_ms(1000);
+
+		CAN_message received_msg;
+		CAN_receive(&received_msg);
+		printf("CAN message received.\n");
+		printf("%d\n", received_msg.data[0]);
+		printf("%d\n", received_msg.data[1]);
+		printf("%d\n", received_msg.data[2]);
+		printf("%d\n", received_msg.data[3]);
+		printf("%d\n", received_msg.data[4]);
+		printf("%d\n", received_msg.data[5]);
+		printf("%d\n", received_msg.data[6]);
+		printf("%d\n", received_msg.data[7]);
 	}
+	while(1){};
     
 
     /*
