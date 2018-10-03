@@ -62,11 +62,11 @@ void CAN_receive(CAN_message * message)
 	// Wait for RX0 interrupt flag
 	while(!READ_BIT(MCP_read(MCP_CANINTF), RX0IF));
 
-	// Clear flag bit
-	MCP_bit_modify(MCP_CANINTF, (1 << RX0IF), 0);
-
 
 	message->id = (MCP_read(MCP_RXB0CTRL + SIDL_OFFSET)) >> SID0;
 	message->length = (MCP_read(MCP_RXB0CTRL + DLC_OFFSET)) & DLC_MASK;
 	MCP_read_n(MCP_RXB0CTRL + D_OFFSET, message->data, message->length);
+
+	// Clear flag bit
+	MCP_bit_modify(MCP_CANINTF, (1 << RX0IF), 0);
 }
