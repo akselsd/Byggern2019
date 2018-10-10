@@ -18,8 +18,8 @@ Run `catf FILENAME > /dev/ttyS0` from source folder (Byggern2019).
 ##### POWER
 mulitf[0-index]	|	breadboard[1-index] | comment
 ----------------|---------------------|--------
-+ | 12V
-- |  0V GND
+**+** | 12V
+**-** |  0V GND
 
 
 ##### OLED bus
