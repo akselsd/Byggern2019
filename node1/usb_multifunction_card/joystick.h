@@ -1,7 +1,7 @@
 #ifndef INCLUDED_JOYSTICK_H
 #define INCLUDED_JOYSTICK_H
 
-#include <stdbool.h>
+#include <stdint.h>
 
 void usb_multifunction_joystic_init(void);
 
@@ -16,7 +16,7 @@ typedef enum joystick_direction_enum
 
 typedef struct joystick_status_struct
 {
-	bool pressed;
+	uint8_t pressed;
 	char x;
 	char y;
 	joystick_direction dir;
@@ -29,5 +29,6 @@ typedef struct joystick_status_struct
 joystick_status joystick_get_status(void);
 const char * joystick_direction_to_string(joystick_direction dir);
 void joystick_calibrate_joystick(void);
+void joystick_transmit_position(void);
 
 #endif

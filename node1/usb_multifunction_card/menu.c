@@ -2,7 +2,7 @@
 
 #include "menu.h"
 #include "oled.h"
-#include "../usb_multifunction_card/joystick.h"
+#include "joystick.h"
 
 #define MENU_ACTIONS 4
 #define CURSOR "->"

@@ -7,6 +7,7 @@
 
 #include "joystick.h"
 #include "usb_multifunction_card_io.h"
+#include "can/CAN_driver.h"
 
 #define SET_BIT(reg, bit) (reg |= (1 << bit))
 #define READ_BIT(reg, bit) ((reg) & (1 << bit))
@@ -21,7 +22,7 @@
 /* Y-axis */
 #define CHANNEL_2 5
 
-#define DEADZONE 5
+#define DEADZONE 10
 
 /* Offset for joystick, initialized to zero for first read(calibration) */
 joystick_status calibration_offset = {0, 0};
@@ -29,6 +30,7 @@ joystick_status calibration_offset = {0, 0};
 
 void usb_multifunction_joystick_init(void)
 {
+	/* Set as input and enable pull-up */
 	CLEAR_BIT(DDRB, PB2);
 	SET_BIT(PORTB, PB2);
 }
@@ -68,7 +70,8 @@ joystick_status joystick_get_status(void)
     volatile char * ADC = (volatile char *)0x1400;
 
 	/* Read and offset 0*/
-	bool pressed = !READ_BIT(PINB, PB2);
+	uint8_t pressed = !READ_BIT(PINB, PB2);
+	printf("Pressed: %d\n", pressed);
 	char x = read_channel(CHANNEL_1, ADC) - 128;
 	char y = read_channel(CHANNEL_2, ADC) - 128;
 
@@ -105,4 +108,19 @@ void joystick_calibrate_joystick(void)
 		calibration_offset.x,
 		calibration_offset.y);
 	printf("--Calibrating joystick finish--\n");
+}
+
+void joystick_transmit_position(void)
+{
+	joystick_status status = joystick_get_status();
+
+	CAN_message msg;
+	msg.id = 1;
+	msg.data[0] = status.pressed;
+	msg.data[1] = status.x;
+	msg.data[2] = status.y;
+	msg.data[3] = status.dir;
+	msg.length = 4;
+
+	CAN_send(&msg);
 }

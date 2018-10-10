@@ -1,0 +1,13 @@
+#ifndef SYSTEM_CONSTANTS_H_INCLUDED
+#define SYSTEM_CONSTANTS_H_INCLUDED
+
+#define F_CPU 4915200
+#define RX_VECTOR USART0_RXC_vect
+#define UART_DATA_BIT URSEL0
+#define MOSI_PIN DDB5
+#define SCK_PIN DDB7
+#define SS_PIN PB4
+#define SELECT_PIN PB4
+
+
+#endif

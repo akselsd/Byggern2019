@@ -1,5 +1,12 @@
+VPATH = ../utils
+
 # List all source files to be compiled; separate with space
-SOURCE_FILES := main.c utils/uart.c tests/sram_test.c tests/usb_multifunction_board_test.c usb_multifunction_card/joystick.c usb_multifunction_card/usb_multifunction_card_io.c usb_multifunction_card/slider.c usb_multifunction_card/buttons.c usb_multifunction_card/oled.c usb_multifunction_card/menu.c can/SPI_driver.c can/MCP_driver.c can/CAN_driver.c
+SOURCE_FILES := main.c tests/sram_test.c tests/usb_multifunction_board_test.c usb_multifunction_card/joystick.c usb_multifunction_card/usb_multifunction_card_io.c usb_multifunction_card/slider.c usb_multifunction_card/buttons.c usb_multifunction_card/oled.c usb_multifunction_card/menu.c
+SOURCE_FILES += uart/uart.c
+SOURCE_FILES += can/SPI_driver.c can/MCP_driver.c can/CAN_driver.c
+
+INCLUDE_FOLDERS := constants ../utils
+INCLUDE_FLAGS = $(addprefix -I, $(INCLUDE_FOLDERS))
 
 # Set this flag to "yes" (no quotes) to use JTAG; otherwise ISP (SPI) is used
 PROGRAM_WITH_JTAG := yes
@@ -15,7 +22,7 @@ TARGET_CPU := atmega162
 TARGET_DEVICE := m162
 
 CC := avr-gcc
-CFLAGS := -O -std=c11 -mmcu=$(TARGET_CPU)
+CFLAGS := -O -std=c11 -mmcu=$(TARGET_CPU) $(INCLUDE_FLAGS)
 
 OBJECT_FILES = $(SOURCE_FILES:%.c=$(BUILD_DIR)/%.o)
 
@@ -42,3 +49,7 @@ clean:
 .PHONY: erase
 erase:
 	avrdude -p $(TARGET_DEVICE) -c $(PROGRAMMER) -e
+
+.PHONY: echo
+echo:
+	echo $(OBJECT_FILES)
