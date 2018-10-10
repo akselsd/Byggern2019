@@ -1,11 +1,17 @@
+VPATH = ../utils
 # List all source files to be compiled; separate with space
 SOURCE_FILES := main.c
-# Set this flag to "yes" (no quotes) to use JTAG; otherwise ISP (SPI) is used
+SOURCE_FILES += uart/uart.c
+SOURCE_FILES += can/SPI_driver.c can/MCP_driver.c can/CAN_driver.c
 
+INCLUDE_FOLDERS := constants ../utils
+INCLUDE_FLAGS = $(addprefix -I, $(INCLUDE_FOLDERS))
+
+# Set this flag to "yes" (no quotes) to use JTAG; otherwise ISP (SPI) is used
 PROGRAM_WITH_JTAG := no 
 
 # Feel free to ignore anything below this line
-PROGRAMMER := arduino
+PROGRAMMER := atmelice_isp
 ifeq ($(PROGRAM_WITH_JTAG), yes)
 	PROGRAMMER := atmelice
 endif
@@ -15,7 +21,7 @@ TARGET_CPU := atmega2560
 TARGET_DEVICE := m2560 
 
 CC := avr-gcc
-CFLAGS := -O -std=c11 -mmcu=$(TARGET_CPU)
+CFLAGS := -O -std=c11 -mmcu=$(TARGET_CPU) $(INCLUDE_FLAGS)
 
 OBJECT_FILES = $(SOURCE_FILES:%.c=$(BUILD_DIR)/%.o)
 
@@ -42,3 +48,5 @@ clean:
 .PHONY: erase
 erase:
 	avrdude -p $(TARGET_DEVICE) -c $(PROGRAMMER) -e
+
+
