@@ -49,10 +49,11 @@ multif[index-0]| breadboard[1-index] | comment
 PB[5] | Atmega[2]/PB1 | Touch_button (LEFT)¿
 PD[0] | Atmega[1]/PB0 | Touch_button (RIGHT)¿
 
-####
-DB9 
-signal ground 5 to GND
-transmit data 3 to MAX233[5] T1_out
-receive data 2 to MAX233[4] R1_in
+##### DB9 
+DB9|breadboard[1-index] | comment
+---|--------------------|--------
+signal ground 5 | GND
+transmit data 3 | MAX233[5] T1_out
+receive data 2 | MAX233[4] R1_in
 
 
