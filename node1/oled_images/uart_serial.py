@@ -2,7 +2,7 @@ from PIL import Image
 import sys
 import math
 
-SIZE = 16
+SIZE = 64
 THRESHOLD = 100
 
 # Data is a square image represented by a flat list
@@ -26,7 +26,8 @@ def convert_to_page_mode(data):
 			for pixel in range(BYTE_LENGTH):
 				column_list.append(
 					data[page*n*PAGE_WIDTH + column + pixel*n])
-			byte_list.append(column_list)
+			print(column_list)
+			byte_list.append(list(reversed(column_list)))
 	return byte_list
 
 def mapping(pix):
@@ -41,10 +42,6 @@ def convert_image(filename):
 	im = im.point(mapping, mode='1')
 	data = list(im.getdata())
 	data = [0 if i else 1 for i in data]
-	for i in range(SIZE):
-		for j in range(SIZE):
-			print(data[i*SIZE + j], end="")
-		print()
 	bytelist = convert_to_page_mode(data)
 	bytelist = ["".join([str(bit) for bit in i]) for i in bytelist]
 	bytelist = [int(i, 2) for i in bytelist]
