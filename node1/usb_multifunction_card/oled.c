@@ -140,6 +140,7 @@ void oled_display_image(
     unsigned int page,
     unsigned int column)
 {
+    oled_clear_screen();
     /* Find start address and set up input buffer bypass */
     volatile char * buffer = OLED_BUFFER + page*N_COLUMNS + column;
     uart_write_image_to_SRAM(buffer, size);

@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-void usb_multifunction_joystic_init(void);
+void usb_multifunction_joystick_init(void);
 
 typedef enum joystick_direction_enum
 {

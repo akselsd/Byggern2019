@@ -47,13 +47,9 @@ int main()
 	printf("\n\n\nInitialized\n");
 
 	int current_menu_choice = 0;
-
+	oled_display_image("mario64", 64, 0, 0);
 		
 	while(1){
-		//menu_select(&current_menu_choice);
-		// TODO: Remember to calculate frequence on CAN bus.
-		joystick_transmit_position();
-		_delay_ms(100);
 	};
 }
     

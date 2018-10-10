@@ -24,7 +24,7 @@ struct image_buffer
 	volatile char * buffer;
 	volatile unsigned int n_bytes;
 	volatile unsigned int n_pages;
-	unsigned int size;
+	volatile unsigned int size;
 };
 
 struct ringbuffer send_buffer = {{0}, 0, 0, 0};
@@ -106,7 +106,7 @@ ISR(RX_VECTOR)
 	if (img_buffer.buffer){
 		*(img_buffer.buffer++) = UDR0;
 
-		if (img_buffer.n_bytes == 0){
+		if (--img_buffer.n_bytes == 0){
 
 			/* Image completed */
 			if (img_buffer.n_pages == 0)
