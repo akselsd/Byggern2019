@@ -1,3 +1,4 @@
+#include "system_constants.h"
 #include <avr/io.h> //Trengs denne?
 #include <stdio.h>
 #include <stdlib.h> // Abort
@@ -45,7 +46,7 @@ void uart_init(const unsigned int ubrr)
 	UCSR0B = (1<<RXEN0)|(1<<TXEN0);
 
 	/* Set frame format: 8data, 2stop bit */
-	UCSR0C = (1<<URSEL0)|(1<<USBS0)|(3<<UCSZ00); //Endre til UCSZ01 og UCSZ00?
+	UCSR0C = (1<<UART_DATA_BIT)|(1<<USBS0)|(3<<UCSZ00); //Endre til UCSZ01 og UCSZ00?
 	UCSR0B |= (1 << RXCIE0); //Recieve interrupt
 	sei();
 	fdevopen(uart_send_char, uart_recieve_char);	
@@ -99,7 +100,7 @@ int uart_recieve_char(FILE* dummy)
 	return c;
 }
 
-ISR(USART0_RXC_vect)
+ISR(RX_VECTOR)
 {
 	/* Skip intermediate buffer */
 	if (img_buffer.buffer){

@@ -1,4 +1,5 @@
-#include "../utils/bit_macros.h"
+#include "bit_macros.h"
+#include "system_constants.h"
 #include "CAN_driver.h"
 #include "MCP_driver.h"
 #include "MCP2515.h"
