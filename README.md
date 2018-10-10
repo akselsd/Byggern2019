@@ -45,8 +45,8 @@ JOYCON[2] | Atmega[3] PB2| Joy_button
 ##### Touch buttons 
 multif[index-0]| breadboard[1-index] | comment
 ---------------|---------------------|--------
-PB[5] | Atmega[2]/PB1 | Touch_button (LEFT)¿
-PD[0] | Atmega[1]/PB0 | Touch_button (RIGHT)¿
+PB[5] | Atmega[2] PB1 | Touch_button (LEFT)¿
+PD[0] | Atmega[1] PB0 | Touch_button (RIGHT)¿
 
 ### DB9 
 DB9|breadboard[1-index] | comment
