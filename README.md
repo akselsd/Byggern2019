@@ -1,20 +1,20 @@
 # Byggern2019
 
-### Atmel microcontroller – ATmega162
-#### Listening to output from the microcontroller
+## Atmel microcontroller – ATmega162
+### Listening to output from the microcontroller
 `picocom -b 9600 /dev/ttyS0`
 
 */dev/ttyS0:* DB9 port on PC.
 
-#### Writing to the microcontroller using `printf`
+### Writing to the microcontroller using `printf`
 Run `printf STRING > /dev/ttyS0` from source folder (Byggern2019).
 *STRING:* Any string.
 
-#### Writing to the microcontroller using `cat` (to write entire file)
+### Writing to the microcontroller using `cat` (to write entire file)
 Run `catf FILENAME > /dev/ttyS0` from source folder (Byggern2019).
 *FILENAME:* Any file.
 
-#### Usb multifunction board to breadboard pins
+### Usb multifunction board to breadboard pins
 POWER+/- to 12V and 0 volts
 
 
@@ -41,7 +41,6 @@ JOYCON[0] | ADC[4] |
 JOYCON[1] | ADC[3] | 
 JOYCON[2] | Atmega[3] PB2| Joy_button
 
-//Tentative//
 
 ##### Touch buttons 
 multif[index-0]| breadboard[1-index] | comment
@@ -49,7 +48,7 @@ multif[index-0]| breadboard[1-index] | comment
 PB[5] | Atmega[2]/PB1 | Touch_button (LEFT)¿
 PD[0] | Atmega[1]/PB0 | Touch_button (RIGHT)¿
 
-##### DB9 
+### DB9 
 DB9|breadboard[1-index] | comment
 ---|--------------------|--------
 signal ground 5 | GND
