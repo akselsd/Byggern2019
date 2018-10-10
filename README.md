@@ -15,7 +15,11 @@ Run `catf FILENAME > /dev/ttyS0` from source folder (Byggern2019).
 *FILENAME:* Any file.
 
 ### Usb multifunction board to breadboard pins
-POWER+/- to 12V and 0 volts
+##### POWER
+mulitf[0-index]	|	breadboard[1-index] | comment
+----------------|---------------------|--------
++ | 12V
+- |  0V GND
 
 
 ##### OLED bus
