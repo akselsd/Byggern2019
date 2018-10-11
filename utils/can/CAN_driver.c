@@ -4,6 +4,7 @@
 #include "MCP_driver.h"
 #include "MCP2515.h"
 #include <stdio.h>
+#include <stdint.h>
 #include <util/delay.h>
 
 /* Bits in TXBnCTRL */
@@ -30,7 +31,6 @@
 /* Bits in TXBnSIDL / RXBnSIDL*/
 #define SID0 5
 
-
 void CAN_init(void)
 {
 	//TODO will later be expanded to work with multiple modes
@@ -42,6 +42,33 @@ void CAN_init(void)
 	MCP_bit_modify(MCP_CANINTE, (1 << RX0IE), 1);
 
 	MCP_bit_modify(MCP_CANINTF, (1 << RX0IF), 0);
+}
+
+CAN_message * CAN_message_constructor(uint8_t id, uint8_t length)
+{
+	CAN_message * msg = malloc(sizeof(CAN_message));
+	
+	if (msg == NULL)
+		return NULL;
+	
+	msg->id = id;
+	msg->data = malloc(sizeof(uint8_t) * length);
+	
+	if (msg->data == NULL){
+		free(msg);
+		return NULL;
+	}
+	
+	return msg;
+}
+
+void CAN_message_destructor(CAN_message * msg)
+{
+	if (msg != NULL){
+		if (msg->data != NULL)
+			free(msg->data);
+		free(msg);
+	}
 }
 
 void CAN_send(CAN_message * message)
