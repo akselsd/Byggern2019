@@ -4,6 +4,7 @@
 #include "MCP_driver.h"
 #include "MCP2515.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <util/delay.h>
 
