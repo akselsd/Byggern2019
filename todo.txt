@@ -18,6 +18,7 @@ Make frequency map. Make sure that all data sent is received, by not sending dat
 
 --> Add filter for message reception
 
+Make joystick and slider structs common, msg to status and status to msg functions
 
 
 OPTIONALS:

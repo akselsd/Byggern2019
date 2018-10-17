@@ -65,9 +65,9 @@ def main():
 			print("Node 1$ " + line)
 			if line.startswith('@'):
 				do_command(line[1:], node_one)
-		#line = read_line(node_two)
-		#if line:
-		#	print("Node 2$ " + line)
+		line = read_line(node_two)
+		if line:
+			print("Node 2$ " + line)
 
 
 
