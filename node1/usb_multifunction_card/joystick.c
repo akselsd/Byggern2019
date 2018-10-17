@@ -71,21 +71,20 @@ joystick_status joystick_get_status(void)
 
 	/* Read and offset 0*/
 	uint8_t pressed = !READ_BIT(PINB, PB2);
-	printf("Pressed: %d\n", pressed);
-	char x = read_channel(CHANNEL_1, ADC) - 128;
-	char y = read_channel(CHANNEL_2, ADC) - 128;
+	uint8_t x = read_channel(CHANNEL_1, ADC);
+	uint8_t y = read_channel(CHANNEL_2, ADC);
 
 	/* Convert to percentages */
-	x = (float)x/JOYSTICK_PERCENTAGE_FACTOR;
-	y = (float)y/JOYSTICK_PERCENTAGE_FACTOR;
+	//x = (float)x/JOYSTICK_PERCENTAGE_FACTOR;
+	//y = (float)y/JOYSTICK_PERCENTAGE_FACTOR;
 	
 	/* Offset from calibration */
 	// x = x - calibration_offset.x;
 	// y = y - calibration_offset.y;
 
 	/* Check region for 0 output */
-	x = abs(x) < DEADZONE ? 0 : x;
-	y = abs(y) < DEADZONE ? 0 : y;
+	//x = abs(x) < DEADZONE ? 0 : x;
+	//y = abs(y) < DEADZONE ? 0 : y;
 
 	/* Populate struct */
 	joystick_status status = {
@@ -96,8 +95,6 @@ joystick_status joystick_get_status(void)
 	};
 	return status;
 }
-
-
 
 void joystick_calibrate_joystick(void)
 {
@@ -114,13 +111,12 @@ void joystick_transmit_position(void)
 {
 	joystick_status status = joystick_get_status();
 
-	CAN_message msg;
-	msg.id = 1;
-	msg.data[0] = status.pressed;
-	msg.data[1] = status.x;
-	msg.data[2] = status.y;
-	msg.data[3] = status.dir;
-	msg.length = 4;
+	CAN_message * msg = CAN_message_constructor(1, 4);
+	msg->data[0] = status.pressed;
+	msg->data[1] = status.x;
+	msg->data[2] = status.y;
+	msg->data[3] = status.dir;
 
-	CAN_send(&msg);
+	CAN_send(msg);
+	CAN_message_destructor(msg);
 }

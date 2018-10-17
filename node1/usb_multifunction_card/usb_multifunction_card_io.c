@@ -4,7 +4,7 @@
 #include "usb_multifunction_card_io.h"
 
 // TODO change this to either be specific for ADC or more general in terms of timing
-unsigned char read_channel(char channel_config, volatile char* unit)
+uint8_t read_channel(char channel_config, volatile uint8_t* unit)
 {
 	*unit = channel_config;
 	_delay_us(50);

@@ -17,8 +17,8 @@ typedef enum joystick_direction_enum
 typedef struct joystick_status_struct
 {
 	uint8_t pressed;
-	char x;
-	char y;
+	uint8_t x;
+	uint8_t y;
 	joystick_direction dir;
 } joystick_status;
 

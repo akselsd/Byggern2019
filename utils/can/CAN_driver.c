@@ -59,6 +59,7 @@ CAN_message * CAN_message_constructor(uint8_t id, uint8_t length)
 		free(msg);
 		return NULL;
 	}
+	msg->length = length;
 	
 	return msg;
 }
@@ -86,16 +87,19 @@ void CAN_send(CAN_message * message)
 	MCP_request_to_send();
 }
 
-void CAN_receive(CAN_message * message)
+CAN_message * CAN_receive(void)
 {
 	// Wait for RX0 interrupt flag
 	while(!READ_BIT(MCP_read(MCP_CANINTF), RX0IF));
 
+	uint8_t id = (MCP_read(MCP_RXB0CTRL + SIDL_OFFSET)) >> SID0;
+	uint8_t length = (MCP_read(MCP_RXB0CTRL + DLC_OFFSET)) & DLC_MASK;
 
-	message->id = (MCP_read(MCP_RXB0CTRL + SIDL_OFFSET)) >> SID0;
-	message->length = (MCP_read(MCP_RXB0CTRL + DLC_OFFSET)) & DLC_MASK;
-	MCP_read_n(MCP_RXB0CTRL + D_OFFSET, message->data, message->length);
+	CAN_message * msg = CAN_message_constructor(id, length);
+	
+	MCP_read_n(MCP_RXB0CTRL + D_OFFSET, msg->data, msg->length);
 
 	// Clear flag bit
 	MCP_bit_modify(MCP_CANINTF, (1 << RX0IF), 0);
+	return msg;
 }
