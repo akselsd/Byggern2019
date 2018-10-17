@@ -41,11 +41,10 @@ def convert_image(filename):
 	im = im.convert(mode='L', dither=None)
 	im = im.point(mapping, mode='1')
 	data = list(im.getdata())
-	data = [0 if i else 1 for i in data]
-	bytelist = convert_to_page_mode(data)
-	bytelist = ["".join([str(bit) for bit in i]) for i in bytelist]
-	bytelist = [int(i, 2) for i in bytelist]
-	bytelist = [chr(i) for i in bytelist]
+	bytelist = convert_to_page_mode(data) # [["1", "0", "1" ...], ["1", "0"...]]
+	bytelist = ["".join([str(bit) for bit in i]) for i in bytelist] # ["101...", "10..."]
+	bytelist = [int(i, 2) for i in bytelist] #[64, 89, 18]
+	bytelist = [chr(i) for i in bytelist] # ["a", "x", "?"]
 	f = open(filename[0:filename.find('.')] + str(SIZE) + str(".txt"), 'w')
 	f.write("".join(bytelist))
 	f.close()
