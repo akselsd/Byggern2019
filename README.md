@@ -30,7 +30,7 @@ mulitf[0-index]	|	breadboard[1-index] | comment
 ----------------|---------------------|--------
 OLED_BUS[0] | GAL[17] |
 OLED_BUS[1] | GAL[3] |
-OLED_BUS[2] | Atmega[16] | ¬WR
+OLED_BUS[2] | Atmega[16] | ¬WR (The one to the right)
 OLED_BUS[3:11] | LATCH[9:2] |
 
 ##### 1.2.1.3 Sliders
@@ -61,6 +61,16 @@ DB9|breadboard[1-index] | comment
 signal ground 5 | GND
 transmit data 3 | MAX233[5] T1_out
 receive data 2 | MAX233[4] R1_in
+
+#### 1.2.3 Atmel ICE JTAG
+AVR JTAG[1-index]| breadboard[1-index] | comment
+-----------------|---------------------|--------
+TCK/1|	ATmega[25]|
+TMS/5|	ATmega[26]|
+TDO/3|ATmega[27]|
+TDI/9|ATmega[28]|
+GND/2|GND|
+GND/(1)0|GND|
 
 ## Node 2: Arduino: AVR ATmega 2560 - I/O Card - Motorbox - Servo - Solenoid
 ### 2.1 Communication
