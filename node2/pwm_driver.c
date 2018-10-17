@@ -2,6 +2,7 @@
 #include "bit_macros.h"
 #include "system_constants.h"
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include <stdint.h>
 #include <stdio.h>
 
@@ -20,15 +21,16 @@
 */
 
 #define F_PWM 50
-#define PWM_CENTER_PERCENTAGE 1.5 * F_PWM
-#define PWM_GAIN_PERCENTAGE 0.6 * F_PWM 
+#define PWM_CENTER_PERCENTAGE 1.5 / 20
+#define PWM_GAIN_PERCENTAGE 0.6 / 20 
 #define PRESCALER 8
 
 static uint16_t top; 
 
 void pwm_init(void) {
-	/* Enable PWM output */
-	SET_BIT(DDRB, PB5);
+	cli();
+	/* Enable PWM output on OC1B = PB6 */
+	SET_BIT(DDRB, PB6);
 
 	/* Set timer mode to mode 14: Fast PWM mode */
 	CLEAR_BIT(TCCR1A, WGM10);
@@ -43,26 +45,29 @@ void pwm_init(void) {
 
 	/* Calculate top counter value based on desired PWM frequency */
 	top = F_CPU / (PRESCALER * F_PWM) - 1;
-	printf("PWM top: %d\n", top);
+	ICR1 = top;
+	printf("PWM top: %u\n", top);
 
 	pwm_set_duty_cycle(0);
 
 	/* Set PWM output mode to be non-inverted */
-	SET_BIT(TCCR1A, COM1A1);
-	CLEAR_BIT(TCCR1A, COM1A0);
+	SET_BIT(TCCR1A, COM1B1);
+	CLEAR_BIT(TCCR1A, COM1B0);
+	sei();
 }
 
 void pwm_set_duty_cycle(float percentage) {
 	if ((percentage < -100) || (percentage > 100))
 	{	
-		fprintf(stderr, "Error: Duty cycle percentage out of range.");
+		printf("Error: Duty cycle percentage out of range: %d\n", (int)percentage);
 		return;
 	}
 
 	/* Map [-100, 100] linearly to [0.9 / 20, 2.1 / 20] */
-	float duty_cycle_percentage = PWM_CENTER_PERCENTAGE + PWM_GAIN_PERCENTAGE * percentage / 100;
-	duty_cycle_percentage *= top;
-	printf("PWM duty_cycle_percentage: %.3f\n", duty_cycle_percentage);
-
-	OCR1A = (uint16_t) duty_cycle_percentage;
+	float duty_cycle = PWM_CENTER_PERCENTAGE + PWM_GAIN_PERCENTAGE * percentage / 100;
+	//printf("PWM duty_cycle: %d\n", (int)(duty_cycle*100));
+	duty_cycle *= top;
+	cli();
+	OCR1B = (uint16_t) duty_cycle;
+	sei();
 }
