@@ -3,6 +3,7 @@ VPATH = ../utils
 SOURCE_FILES := main.c
 SOURCE_FILES += uart/uart.c
 SOURCE_FILES += can/SPI_driver.c can/MCP_driver.c can/CAN_driver.c
+SOURCE_FILES += pwm_driver.c
 
 INCLUDE_FOLDERS := constants ../utils
 INCLUDE_FLAGS = $(addprefix -I, $(INCLUDE_FOLDERS))
