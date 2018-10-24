@@ -1,9 +1,8 @@
 #include "system_constants.h"
 #include <avr/io.h>
-#include "SPI_driver.h"
 
-#define SET_BIT(reg, bit) (reg |= (1 << bit))
-#define CLEAR_BIT(reg, bit) (reg &= ~(1 << bit))
+#include "bit_macros.h"
+#include "SPI_driver.h"
 
 void SPI_master_init(void)
 {

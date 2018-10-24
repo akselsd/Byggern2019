@@ -3,13 +3,12 @@
 #include <stdio.h>
 #include <stdlib.h> // Abort
 #include <avr/interrupt.h>
+
+#include "bit_macros.h"
 #include "uart.h"
+
 #define BUFFER_SIZE 64
 #define PAGE_LENGTH 128
-
-
-#define SET_BIT(reg, bit) (reg |= (1 << bit))
-#define CLEAR_BIT(reg, bit) (reg &= ~(1 << bit))
 
 struct ringbuffer
 {
@@ -179,15 +178,3 @@ void uart_write_image_to_SRAM(volatile char * buffer, unsigned int img_size)
 	img_buffer.n_pages = img_size/8;
 	sei();
 }
-
-//TXEN Transmit Enable
-//UMSEL bit in UCSRC velger Async/Sync (0 for Async)
-//UBRR
-//UDR = Register to send data (Transmit buffer)
-//UDRE USART Data Register Empty (Ready to recieve new data, set when empty)
-//Write to zero when writing to USCRA
-//TXC Transmit Complete
-//Set when completed with frame in Transmit Shift Register
-//Cleared by writing one to its bit location
-//RXEN Recieve Enable
-//RXC Ready to recieve, set when ready
