@@ -18,6 +18,9 @@ void ir_disable(void)
 
 uint8_t ir_check_goal(void)
 {
+	if (!scoring_enabled)
+		return;
+	
 	uint8_t scored = adc_read < THRESHOLD;
 	if (scored)
 		++n_goals;

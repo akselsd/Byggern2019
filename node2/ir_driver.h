@@ -4,5 +4,7 @@
 
 uint8_t ir_check_goal(void);
 uint8_t ir_get_goal_count(void);
+void ir_enable(void);
+void ir_disable(void);
 
 #endif

@@ -1,5 +1,6 @@
 #include "game_board_driver.h"
 #include "pwm_driver.h"
+#include "ir_driver.c"
 
 static void update_pwm(CAN_message * msg)
 {
@@ -15,3 +16,9 @@ void game_board_receive(CAN_message * msg)
 	update_pwm(msg);
 }
 
+void game_board_shoot(void)
+{
+	// TODO: Shoot here
+	ir_enable();
+
+}
