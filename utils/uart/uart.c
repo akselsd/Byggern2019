@@ -123,7 +123,7 @@ ISR(RX_VECTOR)
 	
 	if (recieve_buffer.size == BUFFER_SIZE){
 		printf("Recieve buffer overflow\n");
-		abort();
+		return;
 	}
 	/* Write recieved char to buffer */
 	recieve_buffer.buffer[recieve_buffer.next_in++] = UDR0;
