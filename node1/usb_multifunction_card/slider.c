@@ -8,10 +8,10 @@
 
 slider_status slider_get_status(void)
 {
-    volatile char * ADC = (volatile char *) 0x1400;
+    volatile uint8_t * ADC = (volatile uint8_t *) 0x1400;
 
-    unsigned char left = read_channel(6, ADC);
-    unsigned char right = read_channel(7, ADC);
+    unsigned uint8_t left = read_channel(6, ADC);
+    unsigned uint8_t right = read_channel(7, ADC);
 
     slider_status status = {
         left,

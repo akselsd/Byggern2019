@@ -3,6 +3,6 @@
 
 #include <stdint.h>
 
-uint8_t read_channel(char channel_config, volatile uint8_t* unit);
+uint8_t read_channel(uint8_t channel_config, volatile uint8_t * unit);
 
 #endif

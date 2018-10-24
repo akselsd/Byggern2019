@@ -4,9 +4,9 @@
 void oled_init(void);
 void oled_test(void);
 void oled_printf(const char* string);
-void oled_set_page(unsigned int page);
-void oled_set_column(unsigned int column);
+void oled_set_page(uint8_t page);
+void oled_set_column(uint8_t column);
 void oled_clear_screen(void);
-void oled_clear_area(const int page_start, const int page_end, const int column_start, const int column_end);
-void oled_display_image(const char* imgname, unsigned int size, unsigned int page, unsigned int column);
+void oled_clear_area(const uint8_t page_start, const uint8_t page_end, const uint8_t column_start, const uint8_t column_end);
+void oled_display_image(const char* imgname, uint8_t size, uint8_t page, uint8_t column);
 #endif

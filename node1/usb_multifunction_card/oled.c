@@ -23,27 +23,27 @@ Generate interrput every 16.6 ms (60Hz)
 #define CHAR_LENGTH 8
 #define FONT_NAME font8
 
-static volatile char* OLED_CMD = (volatile char*) 0x1000; // A9 0
-static volatile char* OLED_DATA = (volatile char*) 0x1200; // A9 1
-static volatile char * OLED_BUFFER = (volatile char*) 0x1C00;
+static volatile uint8_t * OLED_CMD = (volatile uint8_t *) 0x1000; // A9 0
+static volatile uint8_t * OLED_DATA = (volatile uint8_t *) 0x1200; // A9 1
+static volatile uint8_t * OLED_BUFFER = (volatile uint8_t *) 0x1C00;
 
 struct oled_data_marker_struct
 {
-    char page; /* Current page */
-    char column; /* Current column */
+    uint8_t page; /* Current page */
+    uint8_t column; /* Current column */
     int changed; /* Dont flush SRAM if nothing have changed */
 };
 
 static struct oled_data_marker_struct oled_data;
 
-static void write_command(unsigned int command)
+static void write_command(uint8_t command)
 {
     cli();
     *OLED_CMD = command;
     sei();
 }
 
-static void write_data(unsigned int data)
+static void write_data(uint8_t data)
 {
     cli();
     oled_data.changed = 1;
@@ -57,7 +57,7 @@ static void write_data(unsigned int data)
     sei();
 }
 
-void oled_set_page(unsigned int page)
+void oled_set_page(uint8_t page)
 {
     if (page >= N_PAGES){
         printf("Illegal page access");
@@ -68,7 +68,7 @@ void oled_set_page(unsigned int page)
 
 }
 
-void oled_set_column(unsigned int column)
+void oled_set_column(uint8_t column)
 {
     if (column >= N_COLUMNS){
         printf("Illegal column access");
@@ -96,10 +96,10 @@ void oled_clear_screen(void)
 
 // Will clear an area of the OLED (including the _end column or page)
 void oled_clear_area(
-    const int page_start,
-    const int page_end,
-	const int column_start,
-    const int column_end)
+    const uint8_t page_start,
+    const uint8_t page_end,
+	const uint8_t column_start,
+    const uint8_t column_end)
 {
     cli();
     for (int i = page_start; i < page_end - page_start + 1; i++)
@@ -136,13 +136,13 @@ void oled_printf(const char* string)
 
 void oled_display_image(
     const char* imgname,
-    unsigned int size,
-    unsigned int page,
-    unsigned int column)
+    uint8_t size,
+    uint8_t page,
+    uint8_t column)
 {
     oled_clear_screen();
     /* Find start address and set up input buffer bypass */
-    volatile char * buffer = OLED_BUFFER + page*N_COLUMNS + column;
+    volatile uint8_t * buffer = OLED_BUFFER + page*N_COLUMNS + column;
     uart_write_image_to_SRAM(buffer, size);
 
     /* Request image */

@@ -35,7 +35,7 @@ void usb_multifunction_joystick_init(void)
 	SET_BIT(PORTB, PB2);
 }
 
-static joystick_direction coordinates_to_direction(char x, char y)
+static joystick_direction coordinates_to_direction(uint8_t x, uint8_t y)
 {
 	if (x == 0 && y == 0)
     	return NO_DIRECTION;
@@ -67,7 +67,7 @@ const char * joystick_direction_to_string(joystick_direction dir)
 
 joystick_status joystick_get_status(void)
 {
-    volatile char * ADC = (volatile char *)0x1400;
+    volatile uint8_t * ADC = (volatile uint8_t *)0x1400;
 
 	/* Read and offset 0*/
 	uint8_t pressed = !READ_BIT(PINB, PB2);

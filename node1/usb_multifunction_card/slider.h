@@ -4,8 +4,8 @@
 
 typedef struct slider_position
 {
-    unsigned char left;
-    unsigned char right;
+    uint8_t left;
+    uint8_t right;
 } slider_status;
 
 slider_status slider_get_status(void);
