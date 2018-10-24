@@ -1,4 +1,4 @@
-#define F_CPU 4915200
+#include "system_constants.h"
 
 #include <util/delay.h>
 #include "usb_multifunction_card_io.h"

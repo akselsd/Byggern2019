@@ -1,4 +1,4 @@
-#define F_CPU 4915200
+#include "system_constants.h"
 #include "SPI_driver.h"
 #include "MCP_driver.h"
 #include "MCP2515.h"

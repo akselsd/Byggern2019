@@ -1,4 +1,5 @@
-#define F_CPU 4915200
+#include "system_constants.h"
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
@@ -7,9 +8,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
+
+#include "fonts.h"
 #include "oled.h"
 #include "uart/uart.h"
-#include "fonts.h"
 
 #define N_PAGES 8
 #define N_COLUMNS 128
