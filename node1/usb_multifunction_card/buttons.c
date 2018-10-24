@@ -1,11 +1,7 @@
 #include <avr/io.h>
 #include <stdio.h>
 #include "buttons.h"
-
-#define READ_BIT(reg, bit) ((reg) & (1 << bit))
-#define CLEAR_BIT(reg, bit) (reg &= ~(1 << bit))
-#define SET_BIT(reg, bit) (reg |= (1 << bit))
-
+#include "bit_macros.h"
 
 void usb_multifunction_buttons_init(void)
 {
@@ -14,14 +10,8 @@ void usb_multifunction_buttons_init(void)
 	CLEAR_BIT(DDRB, PB0); /* Right */
 }
 
-buttons_status usb_multifunction_buttons_get_status(void)
+void usb_multifunction_buttons_get_status(buttons_status * status)
 {
-	bool button_left = READ_BIT(PINB, PB1);
-    bool button_right = READ_BIT(PINB, PB0);
-
-    buttons_status status = {
-		button_left,
-		button_right,
-    };
-    return status;
+	status->left = READ_BIT(PINB, PB1);
+    status->right = READ_BIT(PINB, PB0);
 }

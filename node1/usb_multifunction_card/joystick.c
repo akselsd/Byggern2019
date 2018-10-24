@@ -1,17 +1,14 @@
-#define F_CPU 4915200
+#include "system_constants.h"
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "bit_macros.h"
+#include "can/CAN_driver.h"
 #include "joystick.h"
 #include "usb_multifunction_card_io.h"
-#include "can/CAN_driver.h"
-
-#define SET_BIT(reg, bit) (reg |= (1 << bit))
-#define READ_BIT(reg, bit) ((reg) & (1 << bit))
-#define CLEAR_BIT(reg, bit) (reg &= ~(1 << bit))
 
 #define MAX_JOYSTICK_VALUE 255
 /* MAX_JOYSTICK_VALUE / 100 */
@@ -24,8 +21,11 @@
 
 #define DEADZONE 10
 
+#define ADC 0x1400
+
 /* Offset for joystick, initialized to zero for first read(calibration) */
-joystick_status calibration_offset = {0, 0};
+static joystick_status calibration_offset = {0, 0, 0, 0};
+static joystick_status current;
 
 
 void usb_multifunction_joystick_init(void)
@@ -65,14 +65,15 @@ const char * joystick_direction_to_string(joystick_direction dir)
 	}
 }
 
-joystick_status joystick_get_status(void)
+void joystick_get_status(joystick_status * status)
 {
-    volatile uint8_t * ADC = (volatile uint8_t *)0x1400;
+    volatile uint8_t * ADC_address = (volatile uint8_t *)ADC;
 
 	/* Read and offset 0*/
-	uint8_t pressed = !READ_BIT(PINB, PB2);
-	uint8_t x = read_channel(CHANNEL_1, ADC);
-	uint8_t y = read_channel(CHANNEL_2, ADC);
+	status->pressed = !READ_BIT(PINB, PB2);
+	status->x = read_channel(CHANNEL_1, ADC_address);
+	status->y = read_channel(CHANNEL_2, ADC_address);
+	status->dir = coordinates_to_direction(status->x, status->y);
 
 	/* Convert to percentages */
 	//x = (float)x/JOYSTICK_PERCENTAGE_FACTOR;
@@ -87,20 +88,13 @@ joystick_status joystick_get_status(void)
 	//y = abs(y) < DEADZONE ? 0 : y;
 
 	/* Populate struct */
-	joystick_status status = {
-		pressed,
-		x,
-		y,
-		coordinates_to_direction(x, y)
-	};
-	return status;
 }
 
 void joystick_calibrate_joystick(void)
 {
 	printf("--Calibrating joystick start--\n");
 	_delay_ms(50);
-	calibration_offset = joystick_get_status();
+	joystick_get_status(&calibration_offset);
 	printf("Result: X: %d, Y: %d\n",
 		calibration_offset.x,
 		calibration_offset.y);
@@ -109,13 +103,13 @@ void joystick_calibrate_joystick(void)
 
 void joystick_transmit_position(void)
 {
-	joystick_status status = joystick_get_status();
+	joystick_get_status(&current);
 
 	CAN_message * msg = CAN_message_constructor(1, 4);
-	msg->data[0] = status.pressed;
-	msg->data[1] = status.x;
-	msg->data[2] = status.y;
-	msg->data[3] = status.dir;
+	msg->data[0] = current.pressed;
+	msg->data[1] = current.x;
+	msg->data[2] = current.y;
+	msg->data[3] = current.dir;
 
 	CAN_send(msg);
 	CAN_message_destructor(msg);

@@ -9,7 +9,7 @@ typedef struct button_clicked
     bool right; 
 } buttons_status;
 
-buttons_status usb_multifunction_buttons_get_status(void);
+void usb_multifunction_buttons_get_status(buttons_status * status);
 void usb_multifunction_buttons_init(void);
 
 #endif
