@@ -72,7 +72,33 @@ TDI/9|ATmega[28]|
 GND/2|GND|
 GND/(1)0|GND|
 
+#### 1.2.4 Breadboard to IO-board: Node1 to Node 2 communication
+Breadboard[1-index]|IO-board
+-------------------|--------
+MCP2551[7]|CAN high
+MCP2551[6]|CAN low
+
 ## Node 2: Arduino: AVR ATmega 2560 - I/O Card - Motorbox - Servo - Solenoid
 ### 2.1 Communication
 #### 2.1.1 Listening to output from the microcontroller
 `picocom -b 9600 /dev/ttyACM0`
+
+## Game board
+Servo bus
+
+
+red|yellow|blue|gray|black
+---------|--------------|----------|----------|-----------
+2|4|6|8|10
+1|3|5|7|9
+brown|orange|green|purple|white
+
+IR-Emitter|Servo bus
+----------|---------
+Anode (high)(Red)|10(Black)
+Cathode (low)(Black)|9(White)
+
+IR-receiver|Servo bus
+-----------|---------
+Anode (high)(Red)|8(Gray)
+Cathode(low)(Orange)|7(Purple)

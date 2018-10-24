@@ -2,13 +2,8 @@ Change joystick to interrupt driven?
 Find delay for joystick rd to wr
 Offset with absolute value instead of percent (joystick)
 Fix full range for positive joystick values (now max is 99)
-Write our own driver for multifunction board? (Is there old software on it?)
-Button for joystick
-Handle overflow for input buffer
-Fix oled clear screen for cursorp
-Change from char to uint, because char can vary in size ¿
-Fix OLED interrupt optimalizatio
-Avoid copying structs where possible
+Fix oled clear screen for cursor
+Fix OLED interrupt optimalization
 Implement LOAD TX BUFFER and READ RX BUFFER (Save one SPI cycle pr msg)
 Const qualifier
 
@@ -19,15 +14,7 @@ Make frequency map. Make sure that all data sent is received, by not sending dat
 --> Add filter for message reception
 
 Make joystick and slider structs common, msg to status and status to msg functions
-
+Interrupt driven ADC conversion for IR diodes
 
 OPTIONALS:
-Create drawing functions ¿ [x]
 Extend menu select to select and display character e.g. Mario, DK, etc
-
-
-Tekniske spm:
-*Spør studass om riktig kondensator
-Hvordan programmere Arduino-chipen	[x]
-Implementere UART for kommunikasjon med PC? [x]
-Implemenetere SPI for kommunikasjon med node 1?	[x]
