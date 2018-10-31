@@ -13,19 +13,18 @@ void adc_init(void) {
 	/* Enable input */
 	/*SET_BIT(DDRK, DDK7);*/
 
-
 	/* Prescale clock */
 	SET_BIT(ADCSRA, ADPS0);
 	SET_BIT(ADCSRA, ADPS1);
 	SET_BIT(ADCSRA, ADPS2);
 
-	/* Select ADC 15 as single ended input */
-	SET_BIT(ADCSRB, MUX5);
+	/* Select ADC 0 as single ended input */
+	CLEAR_BIT(ADCSRB, MUX5);
 	CLEAR_BIT(ADMUX, MUX4);
 	CLEAR_BIT(ADMUX, MUX3);
-	SET_BIT(ADMUX, MUX2);
-	SET_BIT(ADMUX, MUX1);
-	SET_BIT(ADMUX, MUX0);
+	CLEAR_BIT(ADMUX, MUX2);
+	CLEAR_BIT(ADMUX, MUX1);
+	CLEAR_BIT(ADMUX, MUX0);
 
 	/* Set Vref to GND */
 	CLEAR_BIT(ADMUX, REFS0);
