@@ -83,6 +83,11 @@ MCP2551[6]|CAN low
 #### 2.1.1 Listening to output from the microcontroller
 `picocom -b 9600 /dev/ttyACM0`
 
+### 2.2 Shield to IO
+Shield|IO-board
+------|--------
+IO-bus|JP6
+
 ## Game board
 Servo bus
 
