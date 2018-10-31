@@ -10,7 +10,7 @@ typedef enum motor_direction_enum
 } motor_direction;
 
 void motor_box_init(void);
-uint16_t motor_box_read(void);
+int16_t motor_box_read(void);
 void motor_box_set_direction(motor_direction dir);
 void motor_box_set_speed(uint8_t speed);
 

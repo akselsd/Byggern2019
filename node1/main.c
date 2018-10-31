@@ -15,6 +15,7 @@
 #include "usb_multifunction_card/joystick.h"
 #include "usb_multifunction_card/usb_multifunction_card_io.h"
 #include "usb_multifunction_card/oled.h"
+#include "usb_multifunction_card/slider.h"
 #include "usb_multifunction_card/menu.h"
 
 void init_all(void)
@@ -48,5 +49,9 @@ int main()
 	while(1){
 		joystick_transmit_position();
 		_delay_ms(50);
+		slider_transmit_position();
+		_delay_ms(50);
+		printf("Transmitting\n");
+
 	};
 }

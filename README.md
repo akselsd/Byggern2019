@@ -88,6 +88,13 @@ Shield|IO-board
 ------|--------
 IO-bus|JP6
 
+### 2.3 IO to mini breadboard
+IO|comment
+--|-------
+JP12[3]|PWM-signal
+JP12[2]|VCC
+JP12[1]|GND 
+
 ## Game board
 Servo bus
 
@@ -107,3 +114,5 @@ IR-receiver|Servo bus
 -----------|---------
 Anode (high)(Red)|8(Gray)
 Cathode(low)(Orange)|7(Purple)
+
+### Servo

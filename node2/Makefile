@@ -9,7 +9,7 @@ INCLUDE_FOLDERS := constants ../utils
 INCLUDE_FLAGS = $(addprefix -I, $(INCLUDE_FOLDERS))
 
 # Set this flag to "yes" (no quotes) to use JTAG; otherwise ISP (SPI) is used
-PROGRAM_WITH_JTAG := yes 
+PROGRAM_WITH_JTAG := no 
 
 # Feel free to ignore anything below this line
 PROGRAMMER := atmelice_isp

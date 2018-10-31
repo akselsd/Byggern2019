@@ -41,11 +41,13 @@ void motor_box_init(void)
 
 	/* Direction default */
 	CLEAR_BIT(PORTH, DIR);
+
+	motor_box_set_speed(0);
 }
 
-uint16_t motor_box_read(void)
+int16_t motor_box_read(void)
 {
-	uint16_t encoder_output;
+	int16_t encoder_output;
 
 	/* Enable output */
 	CLEAR_BIT(PORTH, _OE);
@@ -73,7 +75,7 @@ uint16_t motor_box_read(void)
 
 void motor_box_set_direction(motor_direction dir)
 {
-	dir == MOTOR_LEFT ? SET_BIT(PORTH, DIR) : CLEAR_BIT(PORTH, DIR);
+	dir == MOTOR_LEFT ? CLEAR_BIT(PORTH, DIR) : SET_BIT(PORTH, DIR);
 }
 
 void motor_box_set_speed(uint8_t speed)

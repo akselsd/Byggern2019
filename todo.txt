@@ -6,9 +6,11 @@ Fix oled clear screen for cursor
 Fix OLED interrupt optimalization
 Implement LOAD TX BUFFER and READ RX BUFFER (Save one SPI cycle pr msg)
 Const qualifier
+Op amp for ir reciever? See assigment
 
 IMPORTANT:
 Make frequency map. Make sure that all data sent is received, by not sending data too frequently.
+Dont use IR_driver for scoring goals
 
 
 --> Add filter for message reception
@@ -18,3 +20,4 @@ Interrupt driven ADC conversion for IR diodes
 
 OPTIONALS:
 Extend menu select to select and display character e.g. Mario, DK, etc
+Change resistor on ir to obtain higher voltage signal.

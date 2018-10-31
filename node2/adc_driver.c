@@ -10,9 +10,6 @@
 #define MUX5 3*/
 
 void adc_init(void) {
-	/* Enable input */
-	/*SET_BIT(DDRK, DDK7);*/
-
 	/* Prescale clock */
 	SET_BIT(ADCSRA, ADPS0);
 	SET_BIT(ADCSRA, ADPS1);
