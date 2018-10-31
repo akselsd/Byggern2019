@@ -1,6 +1,6 @@
 #include "game_board_driver.h"
 #include "pwm_driver.h"
-#include "ir_driver.c"
+#include "ir_driver.h"
 
 static void update_pwm(CAN_message * msg)
 {

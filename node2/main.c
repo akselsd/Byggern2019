@@ -11,8 +11,9 @@
 #include "bit_macros.h"
 #include "can/CAN_driver.h"
 #include "game_board_driver.h"
-#include "pwn_driver.h"
+#include "pwm_driver.h"
 #include "uart/uart.h"
+#include "ir_driver.h"
 
 void init_all(void)
 {
@@ -21,6 +22,7 @@ void init_all(void)
 	CAN_init();
 	pwm_init();
 	adc_init();
+	//ir_enable();
 }
 
 int main()
@@ -31,11 +33,16 @@ int main()
 	printf("\n\n\nNode 2 Initialized\n\n\n");
 
 	while(1){
-		
+		/*
 		CAN_message * msg = CAN_receive();
 		printf("x: %d\n", msg->data[1]);
 		game_board_receive(msg);
 		CAN_message_destructor(msg);
+		_delay_ms(50);
+		*/
+
+		//printf("Goal scored: %u \n", ir_check_goal());
+		printf("ADC value: %u \n", adc_read());
 		_delay_ms(50);
 
 
