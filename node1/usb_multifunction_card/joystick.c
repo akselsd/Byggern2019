@@ -105,7 +105,7 @@ void joystick_transmit_position(void)
 {
 	joystick_get_status(&current);
 
-	CAN_message * msg = CAN_message_constructor(1, 4);
+	CAN_message * msg = CAN_message_constructor(ID_JOYSTICK, 4);
 	msg->data[0] = current.pressed;
 	msg->data[1] = current.x;
 	msg->data[2] = current.y;

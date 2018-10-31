@@ -2,9 +2,16 @@
 #define CAN_DRIVER_INCLUDED_H
 #include <stdint.h>
 
+typedef enum CAN_message_id_enum
+{
+	ID_JOYSTICK = 0,
+	ID_SLIDERS,
+	ID_BUTTONS,
+	ID_UPDATE_FSM
+} CAN_message_id;
+
 typedef struct CAN_message_struct
 {
-	//TODO change datatypes?
 	uint8_t id;
 	uint8_t * data;
 	uint8_t length;

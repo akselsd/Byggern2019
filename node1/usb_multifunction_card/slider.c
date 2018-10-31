@@ -21,9 +21,10 @@ void slider_get_status(slider_status * status)
 void slider_transmit_position(void)
 {
     slider_get_status(&current);
-	CAN_message * msg = CAN_message_constructor(1, 2);
+	CAN_message * msg = CAN_message_constructor(ID_SLIDERS, 2);
 	msg->data[0] = current.left;
 	msg->data[1] = current.right;
+	printf("Transmitting LEFT %d, RIGHT %d\n", current.left, current.right);
 	CAN_send(msg);
 	CAN_message_destructor(msg);
 }

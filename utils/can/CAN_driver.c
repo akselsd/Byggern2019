@@ -94,7 +94,6 @@ CAN_message * CAN_receive(void)
 
 	uint8_t id = (MCP_read(MCP_RXB0CTRL + SIDL_OFFSET)) >> SID0;
 	uint8_t length = (MCP_read(MCP_RXB0CTRL + DLC_OFFSET)) & DLC_MASK;
-
 	CAN_message * msg = CAN_message_constructor(id, length);
 	
 	MCP_read_n(MCP_RXB0CTRL + D_OFFSET, msg->data, msg->length);
