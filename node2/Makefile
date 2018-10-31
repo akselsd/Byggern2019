@@ -3,13 +3,13 @@ VPATH = ../utils
 SOURCE_FILES := main.c
 SOURCE_FILES += uart/uart.c
 SOURCE_FILES += can/SPI_driver.c can/MCP_driver.c can/CAN_driver.c
-SOURCE_FILES += pwm_driver.c game_board_driver.c adc_driver.c ir_driver.c
+SOURCE_FILES += pwm_driver.c game_board_driver.c adc_driver.c ir_driver.c dac_driver.c TWI_Master.c motor_box_driver.c
 
 INCLUDE_FOLDERS := constants ../utils
 INCLUDE_FLAGS = $(addprefix -I, $(INCLUDE_FOLDERS))
 
 # Set this flag to "yes" (no quotes) to use JTAG; otherwise ISP (SPI) is used
-PROGRAM_WITH_JTAG := no 
+PROGRAM_WITH_JTAG := yes 
 
 # Feel free to ignore anything below this line
 PROGRAMMER := atmelice_isp
