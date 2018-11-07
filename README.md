@@ -96,7 +96,8 @@ JP12[2]|VCC
 JP12[1]|GND 
 
 ## Game board
-Servo bus
+
+### Servo bus
 
 
 red|yellow|blue|gray|black
@@ -105,14 +106,39 @@ red|yellow|blue|gray|black
 1|3|5|7|9
 brown|orange|green|purple|white
 
-IR-Emitter|Servo bus
-----------|---------
-Anode (high)(Red)|10(Black)
-Cathode (low)(Black)|9(White)
 
-IR-receiver|Servo bus
------------|---------
-Anode (high)(Red)|8(Gray)
-Cathode(low)(Orange)|7(Purple)
+IR-Emitter|Servo bus|comment
+----------|---------|-------
+Anode (high)(Red)|10(Black)|5V through resistance
+Cathode (low)(Black)|9(White)|GND
 
-### Servo
+IR-receiver|Servo bus|further|comment
+-----------|---------|-------|-------
+Anode (high)(Red)|8(Gray)|Shield[A15]|signal (currently yellow)
+Cathode(low)(Orange)|7(Purple)|GND|
+
+Servo/joystick motor|Servo bus|IO-board|comment
+--------------------|---------|--------|-------
+Signal (orange)|6 (blue)|JP12[3]| currently yellow
+VCC (red)| 4(yellow)|JP12[2]|currently red (switched from direct connection)
+GND (brown)| 2(red(ish))|JP12[1]|currently green (switched from direct connection)
+
+Shooting motor|Servo bus|further|comment
+Red wire|1 (brown)|12V| no diff between wires
+Red wire|3 (orange)|GND| no diff between wires
+
+### 2.4 Motorbox
+
+Motorbox 1-index|Shield|IO-board|comment
+----------------|------|--------|-------
+MJ1|MJ1| | |commands from arduino to motor
+MJ2|MJ2| | |data from motor to arduino
+MJEX[1]| |Analog Out[1]|V-signal
+MJEX[2]| |Analog Out[2]|GND
+NaN|I2C|JP1/I2C|SCL and SDA
+
+Motorbox|Motor|comment
+--------|-----|-------
+Encoder (in)|Encoder (out)|white mark matching on cable
+M+|+|
+M-|-|
