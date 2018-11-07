@@ -39,9 +39,8 @@ int main()
 
 	while(1){
 		CAN_message * msg = CAN_receive();
-		game_board_receive(msg);
+		game_board_handle_msg(msg);
 		CAN_message_destructor(msg);
-		//printf("Motor encoder value: %d\n", motor_box_read());
 		_delay_ms(50);
 
 		/*printf("Goal scored: %u, ", ir_check_goal());

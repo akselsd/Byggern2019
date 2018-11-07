@@ -51,7 +51,5 @@ int main()
 		_delay_ms(50);
 		slider_transmit_position();
 		_delay_ms(50);
-		printf("Transmitting\n");
-
 	};
 }

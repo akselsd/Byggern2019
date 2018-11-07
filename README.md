@@ -97,7 +97,7 @@ JP12[1]|GND
 
 ## Game board
 
-### Servo bus
+### 3.1 Servo bus
 
 
 red|yellow|blue|gray|black
@@ -127,7 +127,7 @@ Shooting motor|Servo bus|further|comment
 Red wire|1 (brown)|12V| no diff between wires
 Red wire|3 (orange)|GND| no diff between wires
 
-### 2.4 Motorbox
+## Motorbox
 
 Motorbox 1-index|Shield|IO-board|comment
 ----------------|------|--------|-------
