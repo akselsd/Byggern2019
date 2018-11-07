@@ -3,5 +3,6 @@
 #include "can/CAN_driver.h"
 
 void game_board_handle_msg(CAN_message * msg);
+void game_board_init(void);
 
 #endif

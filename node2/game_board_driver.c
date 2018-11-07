@@ -1,14 +1,37 @@
+#include "system_constants.h"
+#include <stdio.h>
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <util/delay.h>
 #include "game_board_driver.h"
 #include "pwm_driver.h"
 #include "ir_driver.h"
 #include "motor_box_driver.h"
-#include <stdio.h>
+#include "bit_macros.h"
 
 #define ENCODER_RANGE 8380
 #define SCALING_FACTOR 32.8627
-#define KP 1
-#define KI 1
-#define KD 1
+#define INTERRUPT_PERIOD 0.0326568
+
+typedef struct motor_input_struct
+{
+	uint8_t speed;
+	motor_direction dir;
+} motor_input;
+
+typedef struct controller_values_struct
+{
+	uint8_t reference;
+	float error_sum;
+	float old_error;
+	motor_input output;
+	
+	float kp;
+	float ki;
+	float kd;
+} controller_values;
+
+static volatile controller_values controller;
 
 static void update_pwm(CAN_message * msg)
 {
@@ -30,46 +53,6 @@ static float saturate_input(float input)
 	return input;
 }
 
-typedef struct motor_input_struct
-{
-	uint8_t speed;
-	motor_direction dir;
-} motor_input;
-
-static float old_error = 0;
-static float error_sum = 0;
-static motor_input current_input;
-
-/* PID controller */
-static void set_motor_input(uint8_t target)
-{
-	float reference = target;
-	/* Map motor position [0,-8700] to [0,255] */
-	float current_position = -motor_box_read() / SCALING_FACTOR;
-	
-	float error = reference - current_position;
-
-	//error_sum += error;
-
-	float input = KP * error; // + KI*error_sum + KD*(error - old_error);
-
-	//old_error = error;
-	input = saturate_input(input);
-
-	printf("Current position: %d. Target position: %d\n", (int16_t)current_position, (int16_t)reference);
-	
-	if (input > 0)
-	{
-		current_input.speed = (uint8_t)input;
-		current_input.dir = MOTOR_RIGHT;
-	}
-	else
-	{
-		current_input.speed = (uint8_t)(-1*input);
-		current_input.dir = MOTOR_LEFT;
-	}
-}
-
 static void update_motor_box(CAN_message * msg)
 {
 	//printf("Slider values: Left %u, Right %u -- ", msg->data[0], msg->data[1]);
@@ -81,14 +64,46 @@ static void update_motor_box(CAN_message * msg)
 		return;
 	}
 
-	set_motor_input(msg->data[1]);
-	
-	/*printf("Dir %s Speed %u\n",
-		current_input.dir == MOTOR_LEFT ? "LEFT" : "RIGHT",
-		current_input.speed);*/
+	cli();
+	controller.reference = msg->data[1];
+	sei();
+}
 
-	motor_box_set_speed(current_input.speed);
-	motor_box_set_direction(current_input.dir);	
+void game_board_init(void)
+{
+	printf("Calibrating motor encoder\n");
+	motor_box_set_direction(MOTOR_LEFT);
+	motor_box_set_speed(100);
+	_delay_ms(1000);
+	motor_box_reset_encoder();
+	motor_box_set_speed(0);
+
+
+
+	/* Set up timer 3 in CTC mode with compare pin OCR3A*/
+	CLEAR_BIT(TCCR3B, WGM33);
+	CLEAR_BIT(TCCR3B, WGM32);
+	CLEAR_BIT(TCCR3A, WGM31);
+	CLEAR_BIT(TCCR3A, WGM30);
+
+	/* Set prescaler to 8 */
+	CLEAR_BIT(TCCR3B, CS32);
+	SET_BIT(TCCR3B, CS31);
+	CLEAR_BIT(TCCR3B, CS30);
+
+	/* Enable overflow interrupts */
+	SET_BIT(TIMSK3, TOIE3);
+
+	/* Set controller values */
+	controller.reference = 0;
+	controller.error_sum = 0;
+	controller.old_error = 0;
+
+	/* Set controller parameters */
+	controller.kp = 1;
+	controller.ki = 1;
+	controller.kd = 1;
+
 }
 
 void game_board_handle_msg(CAN_message * msg)
@@ -101,6 +116,7 @@ void game_board_handle_msg(CAN_message * msg)
 			update_motor_box(msg);
 			break;
 		case ID_BUTTONS:
+			game_board_shoot(msg);
 			break;
 		default:
 			printf("Unknown CAN message ID: %u\n", msg->id);
@@ -113,4 +129,37 @@ void game_board_shoot(void)
 	// TODO: Shoot here
 	ir_enable();
 
+}
+
+/* Calculate controller values */
+ISR(TIMER3_OVF_vect) {
+	/* Map motor position [0,-8700] to [0,255] */
+	float current_position = -motor_box_read() / SCALING_FACTOR;
+	float error = controller.reference - current_position;
+
+	/* I term */
+	controller.error_sum += error*INTERRUPT_PERIOD;
+
+
+	float input = controller.kp * error + controller.ki * controller.error_sum; //+
+				  //controller.kd * (error - old_error) / INTERRUPT_PERIOD;
+	input = saturate_input(input);
+
+	controller.old_error = error;
+	printf("%d %d %d\n", (int16_t)input, (int16_t)controller.reference, (int16_t)current_position);
+	//printf("Current position: %d. Target position: %d\n", (int16_t)current_position, (int16_t)controller.reference);
+	
+	if (input > 0)
+	{
+		controller.output.speed = (uint8_t)input;
+		controller.output.dir = MOTOR_RIGHT;
+	}
+	else
+	{
+		controller.output.speed = (uint8_t)(-1*input);
+		controller.output.dir = MOTOR_LEFT;
+	}
+
+	motor_box_set_speed(controller.output.speed);
+	motor_box_set_direction(controller.output.dir);	
 }
