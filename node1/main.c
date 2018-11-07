@@ -49,7 +49,11 @@ int main()
 	while(1){
 		joystick_transmit_position();
 		_delay_ms(50);
+		printf("Test\n");
 		slider_transmit_position();
+		_delay_ms(50);
+		printf("Test\n");
+		usb_multifunction_buttons_transmit_status();
 		_delay_ms(50);
 	};
 }

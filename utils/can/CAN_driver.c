@@ -76,7 +76,12 @@ void CAN_message_destructor(CAN_message * msg)
 void CAN_send(CAN_message * message)
 {
 	/* Check if buffer is ready */
-	while(READ_BIT(MCP_read(MCP_TXB0CTRL), TXREQ));
+	while(READ_BIT(MCP_read(MCP_TXB0CTRL), TXREQ)){
+		printf("MCP: %d\n", MCP_read(MCP_TXB0CTRL));
+		printf("MCP IS TRYING TO SEND\n");
+		printf("MSG ID: %d\n", message->id);
+		_delay_ms(50);
+	}
 
 	/* TODO: Assign priority? */
 
@@ -90,7 +95,11 @@ void CAN_send(CAN_message * message)
 CAN_message * CAN_receive(void)
 {
 	// Wait for RX0 interrupt flag
-	while(!READ_BIT(MCP_read(MCP_CANINTF), RX0IF));
+	while(!READ_BIT(MCP_read(MCP_CANINTF), RX0IF)){
+		printf("MCP: %d\n", MCP_read(MCP_CANINTF));
+		printf("MCP IS TRYING TO READ\n");
+		_delay_ms(50);
+	}
 
 	uint8_t id = (MCP_read(MCP_RXB0CTRL + SIDL_OFFSET)) >> SID0;
 	uint8_t length = (MCP_read(MCP_RXB0CTRL + DLC_OFFSET)) & DLC_MASK;

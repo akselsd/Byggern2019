@@ -27,11 +27,14 @@ void init_all(void)
 	adc_init();
 	ir_enable();
 	motor_box_init();
+	_delay_ms(200);
+	game_board_init();
 }
 
 int main()
 {
 	/* Initialize system */
+	cli();
 	init_all();
 	_delay_ms(1000);
 	sei();

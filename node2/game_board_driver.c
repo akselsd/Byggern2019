@@ -12,6 +12,7 @@
 #define ENCODER_RANGE 8380
 #define SCALING_FACTOR 32.8627
 #define INTERRUPT_PERIOD 0.0326568
+#define SOLENOID PC6
 
 typedef struct motor_input_struct
 {
@@ -71,6 +72,7 @@ static void update_motor_box(CAN_message * msg)
 
 void game_board_init(void)
 {
+	/* Calibrate servo */
 	printf("Calibrating motor encoder\n");
 	motor_box_set_direction(MOTOR_LEFT);
 	motor_box_set_speed(100);
@@ -78,6 +80,9 @@ void game_board_init(void)
 	motor_box_reset_encoder();
 	motor_box_set_speed(0);
 
+	/* Enable solenoid */
+	SET_BIT(DDRC, SOLENOID);
+	CLEAR_BIT(PORTC, SOLENOID);
 
 
 	/* Set up timer 3 in CTC mode with compare pin OCR3A*/
@@ -108,6 +113,7 @@ void game_board_init(void)
 
 void game_board_handle_msg(CAN_message * msg)
 {
+	printf("ID: %d\n", msg->id);
 	switch (msg->id){
 		case ID_JOYSTICK:
 			update_pwm(msg);
@@ -124,11 +130,15 @@ void game_board_handle_msg(CAN_message * msg)
 	}
 }
 
-void game_board_shoot(void)
+void game_board_shoot(CAN_message * msg)
 {
-	// TODO: Shoot here
-	ir_enable();
-
+	/* Right button */
+	if (msg->data[1]){
+		ir_enable();
+		SET_BIT(PORTC, SOLENOID);
+	}
+	else
+		CLEAR_BIT(PORTC, SOLENOID);
 }
 
 /* Calculate controller values */
@@ -146,7 +156,7 @@ ISR(TIMER3_OVF_vect) {
 	input = saturate_input(input);
 
 	controller.old_error = error;
-	printf("%d %d %d\n", (int16_t)input, (int16_t)controller.reference, (int16_t)current_position);
+	//printf("%d %d %d\n", (int16_t)input, (int16_t)controller.reference, (int16_t)current_position);
 	//printf("Current position: %d. Target position: %d\n", (int16_t)current_position, (int16_t)controller.reference);
 	
 	if (input > 0)
