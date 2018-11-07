@@ -45,6 +45,13 @@ void motor_box_init(void)
 	motor_box_set_speed(0);
 }
 
+void motor_box_reset_encoder(void)
+{
+	CLEAR_BIT(PORTH, _RST);
+	_delay_us(20);
+	SET_BIT(PORTH, _RST);	
+}
+
 int16_t motor_box_read(void)
 {
 	int16_t encoder_output;
@@ -57,15 +64,11 @@ int16_t motor_box_read(void)
 	_delay_us(200);
 	encoder_output = PINK << 8;
 
-	/* Read MSB */
+	/* Read LSB */
 	SET_BIT(PORTH, SEL);
 	_delay_us(200);
 	encoder_output += PINK;
 
-	/* Toggle reset */
-	//CLEAR_BIT(PORTH, _RST);
-	//_delay_us(20);
-	//SET_BIT(PORTH, _RST);
 	
 	/* Disable output */
 	SET_BIT(PORTH, _OE);

@@ -13,5 +13,6 @@ void motor_box_init(void);
 int16_t motor_box_read(void);
 void motor_box_set_direction(motor_direction dir);
 void motor_box_set_speed(uint8_t speed);
+void motor_box_reset_encoder(void);
 
 #endif
