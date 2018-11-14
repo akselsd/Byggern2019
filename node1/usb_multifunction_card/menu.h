@@ -1,7 +1,7 @@
 #ifndef MENU_H
 #define MENU_H
 
-void menu_init(void);
-void menu_select(int * current_menu_choice);
-
+void menu_draw_options(const char ** options, uint8_t n_options);
+int menu_select_option(uint8_t n_options);
+void menu_display_score(uint8_t score);
 #endif

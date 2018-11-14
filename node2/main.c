@@ -24,11 +24,12 @@ void init_all(void)
 	printf("Uart init\n");
 	CAN_init();
 	pwm_init();
-	adc_init();
-	ir_enable();
 	motor_box_init();
 	_delay_ms(200);
 	game_board_init();
+	
+	_delay_ms(200);
+	ir_init();
 }
 
 int main()

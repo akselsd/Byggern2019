@@ -6,6 +6,7 @@
 
 void test_usb_multifunction_board(void)
 {
+    /*
     buttons_status bstatus = usb_multifunction_buttons_get_status();
    	slider_status sstatus = slider_get_status();
     joystick_status jstatus = joystick_get_status();
@@ -17,5 +18,5 @@ void test_usb_multifunction_board(void)
     	bstatus.left,
     	bstatus.right,
     	sstatus.left,
-    	sstatus.right);
+    	sstatus.right);*/
 }

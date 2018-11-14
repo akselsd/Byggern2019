@@ -40,6 +40,7 @@ static void update_pwm(CAN_message * msg)
 	/* Map [0, 255] linearly to [-100, 100] */
 	x = x/1.275;
 	x = x - 100;
+	//printf("Attempting to set PWM signal to %d\n", (uint8_t)x);
 	pwm_set_duty_cycle(x);
 }
 
