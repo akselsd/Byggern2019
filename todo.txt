@@ -12,6 +12,7 @@ Diode snubber for relay, in serial or parallell to GND?
 IMPORTANT:
 Make frequency map. Make sure that all data sent is received, by not sending data too frequently.
 Dont use IR_driver for scoring goals
+Make CAN interrupt driven.
 
 
 --> Add filter for message reception

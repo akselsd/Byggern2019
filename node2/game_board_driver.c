@@ -110,7 +110,6 @@ void game_board_init(void)
 	controller.kp = 1.4;
 	controller.ki = 0.8;
 	controller.kd = 0.1;
-
 }
 
 void game_board_handle_msg(CAN_message * msg)

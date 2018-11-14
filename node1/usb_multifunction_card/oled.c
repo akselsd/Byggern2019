@@ -204,8 +204,12 @@ void oled_init(void) {
 ISR(TIMER1_COMPA_vect)
 {
     /* Check if flush is needed */
-    if (!oled_data.changed)
+    if (!oled_data.changed){
+        TCNT1L = 0;
+        TCNT1H = 0;
         return;
+    }
+
     /* Move to (0, 0) of oled */
     write_command(0x21);
     write_command(0);
@@ -219,9 +223,9 @@ ISR(TIMER1_COMPA_vect)
     {
         *OLED_DATA = OLED_BUFFER[i];
     }
-    //oled_data.changed = 0;
+    oled_data.changed = 0;
     /* Is it neccecary to clear high register? */
-    TCNT1H = 0;
     TCNT1L = 0;
+    TCNT1H = 0;
 }
 

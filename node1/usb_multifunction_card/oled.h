@@ -1,5 +1,6 @@
 #ifndef USB_MULTIFUNCTION_OLED_H
 #define USB_MULTIFUNCTION_OLED_H
+#include <stdint.h>
 
 void oled_init(void);
 void oled_test(void);
