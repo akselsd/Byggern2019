@@ -44,16 +44,15 @@ int main()
 	_delay_ms(1000);
 	printf("\n\n\nInitialized\n");
 
-	int current_menu_choice = 0;
-	//oled_display_image("mario64", 64, 0, 0);
-	while(1){
+	oled_clear_screen();
+	while(1)
+	{
 		joystick_transmit_position();
-		_delay_ms(50);
-		printf("Test\n");
-		slider_transmit_position();
-		_delay_ms(50);
-		printf("Test\n");
+		_delay_ms(20);
 		usb_multifunction_buttons_transmit_status();
-		_delay_ms(50);
-	};
+		_delay_ms(20);
+		slider_transmit_position();
+		_delay_ms(20);
+	}
+	//main_action_loop();
 }

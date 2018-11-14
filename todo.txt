@@ -7,6 +7,7 @@ Fix OLED interrupt optimalization
 Implement LOAD TX BUFFER and READ RX BUFFER (Save one SPI cycle pr msg)
 Const qualifier
 Op amp for ir reciever? See assigment
+Diode snubber for relay, in serial or parallell to GND?
 
 IMPORTANT:
 Make frequency map. Make sure that all data sent is received, by not sending data too frequently.

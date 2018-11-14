@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <util/delay.h>
 
+
 /* Bits in TXBnCTRL */
 #define TXREQ 3
 
@@ -31,6 +32,38 @@
 
 /* Bits in TXBnSIDL / RXBnSIDL*/
 #define SID0 5
+
+void CAN_init_test_loopback_mode(void)
+{
+	MCP_init();
+	_delay_ms(200);
+	MCP_reset();
+	_delay_ms(200);
+	MCP_write(MCP_CANCTRL, MODE_LOOPBACK);
+	printf("## INITING CAN TO TESTING MODE\n ##");
+
+	while(1)
+	{
+		CAN_message * msg = CAN_message_constructor(2, 3);
+		msg->data[0] = 2;
+		msg->data[1] = 9;
+		msg->data[2] = 254;
+		CAN_send(msg);
+		CAN_message_destructor(msg);
+		_delay_ms(500);
+		CAN_message * rec = CAN_receive();
+		printf("%d %d\n",
+			rec->id,
+			rec->length);
+		for (int i = 0; i < rec->length; ++i)
+		{
+			printf("Data %d\n", rec->data[i]);
+			
+		}
+		CAN_message_destructor(rec);
+	}
+
+}
 
 void CAN_init(void)
 {
@@ -76,12 +109,7 @@ void CAN_message_destructor(CAN_message * msg)
 void CAN_send(CAN_message * message)
 {
 	/* Check if buffer is ready */
-	while(READ_BIT(MCP_read(MCP_TXB0CTRL), TXREQ)){
-		printf("MCP: %d\n", MCP_read(MCP_TXB0CTRL));
-		printf("MCP IS TRYING TO SEND\n");
-		printf("MSG ID: %d\n", message->id);
-		_delay_ms(50);
-	}
+	while(READ_BIT(MCP_read(MCP_TXB0CTRL), TXREQ));
 
 	/* TODO: Assign priority? */
 
@@ -95,11 +123,7 @@ void CAN_send(CAN_message * message)
 CAN_message * CAN_receive(void)
 {
 	// Wait for RX0 interrupt flag
-	while(!READ_BIT(MCP_read(MCP_CANINTF), RX0IF)){
-		printf("MCP: %d\n", MCP_read(MCP_CANINTF));
-		printf("MCP IS TRYING TO READ\n");
-		_delay_ms(50);
-	}
+	while(!READ_BIT(MCP_read(MCP_CANINTF), RX0IF));
 
 	uint8_t id = (MCP_read(MCP_RXB0CTRL + SIDL_OFFSET)) >> SID0;
 	uint8_t length = (MCP_read(MCP_RXB0CTRL + DLC_OFFSET)) & DLC_MASK;

@@ -18,6 +18,7 @@ typedef struct CAN_message_struct
 
 } CAN_message;
 
+void CAN_init_test_loopback_mode(void);
 void CAN_init(void);
 CAN_message * CAN_message_constructor(uint8_t id, uint8_t length);
 void CAN_message_destructor(CAN_message * msg);

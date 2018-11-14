@@ -67,6 +67,7 @@ static void update_motor_box(CAN_message * msg)
 
 	cli();
 	controller.reference = msg->data[1];
+	//printf("Setting controller refference to %d\n", msg->data[1]);
 	sei();
 }
 
@@ -82,7 +83,7 @@ void game_board_init(void)
 
 	/* Enable solenoid */
 	SET_BIT(DDRC, SOLENOID);
-	CLEAR_BIT(PORTC, SOLENOID);
+	SET_BIT(PORTC, SOLENOID);
 
 
 	/* Set up timer 3 in CTC mode with compare pin OCR3A*/
@@ -105,15 +106,15 @@ void game_board_init(void)
 	controller.old_error = 0;
 
 	/* Set controller parameters */
-	controller.kp = 1;
-	controller.ki = 1;
-	controller.kd = 1;
+	controller.kp = 1.4;
+	controller.ki = 0.8;
+	controller.kd = 0.1;
 
 }
 
 void game_board_handle_msg(CAN_message * msg)
 {
-	printf("ID: %d\n", msg->id);
+	//printf("ID: %d --", msg->id);
 	switch (msg->id){
 		case ID_JOYSTICK:
 			update_pwm(msg);
@@ -135,10 +136,12 @@ void game_board_shoot(CAN_message * msg)
 	/* Right button */
 	if (msg->data[1]){
 		ir_enable();
+		CLEAR_BIT(PORTC, SOLENOID);
+		_delay_ms(200);
 		SET_BIT(PORTC, SOLENOID);
 	}
 	else
-		CLEAR_BIT(PORTC, SOLENOID);
+		SET_BIT(PORTC, SOLENOID);
 }
 
 /* Calculate controller values */
@@ -146,6 +149,8 @@ ISR(TIMER3_OVF_vect) {
 	/* Map motor position [0,-8700] to [0,255] */
 	float current_position = -motor_box_read() / SCALING_FACTOR;
 	float error = controller.reference - current_position;
+
+	//printf("ref %d, cur %d\n", controller.reference, (uint8_t)current_position);
 
 	/* I term */
 	controller.error_sum += error*INTERRUPT_PERIOD;

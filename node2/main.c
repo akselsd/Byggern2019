@@ -45,6 +45,11 @@ int main()
 		game_board_handle_msg(msg);
 		CAN_message_destructor(msg);
 		_delay_ms(50);
+		if (ir_check_goal())
+		{
+			printf("GOAL\n");
+			_delay_ms(50);
+		}
 
 		/*printf("Goal scored: %u, ", ir_check_goal());
 		printf("ADC value: %u \n", adc_read());*/

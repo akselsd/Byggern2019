@@ -1,7 +1,7 @@
 #include "ir_driver.h"
 #include "adc_driver.h"
 
-#define THRESHOLD 300
+#define THRESHOLD 70
 
 static uint8_t n_goals = 0;
 static uint8_t scoring_enabled = 0;
@@ -19,10 +19,12 @@ void ir_disable(void)
 uint8_t ir_check_goal(void)
 {
 	if (!scoring_enabled)
-		return;
+		return 0;
 	
 	uint8_t scored = adc_read() < THRESHOLD;
+	//printf("%d\n", adc_read());
 	if (scored)
+		ir_disable();
 		++n_goals;
 	return scored;
 }
