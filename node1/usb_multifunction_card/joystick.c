@@ -37,13 +37,15 @@ void usb_multifunction_joystick_init(void)
 
 static joystick_direction coordinates_to_direction(uint8_t x, uint8_t y)
 {
-	if (x == 0 && y == 0)
+	int _x = x - 127;
+	int _y = y - 127;
+	if (_x == 0 && _y == 0)
     	return NO_DIRECTION;
-	if (abs(x) < abs(y))
-    	return y > 0 ? UP : DOWN;
+	if (abs(_x) < abs(_y))
+    	return _y > 0 ? UP : DOWN;
 
-    else if (abs(y) <= abs(x))
-    	return x > 0 ? RIGHT : LEFT;
+    else if (abs(_y) <= abs(_x))
+    	return _x > 0 ? RIGHT : LEFT;
 
 }
 
@@ -71,8 +73,15 @@ void joystick_get_status(joystick_status * status)
 
 	/* Read and offset 0*/
 	status->pressed = !READ_BIT(PINB, PB2);
-	status->x = read_channel(CHANNEL_1, ADC_address);
-	status->y = read_channel(CHANNEL_2, ADC_address);
+	uint8_t x = read_channel(CHANNEL_1, ADC_address);
+	uint8_t y = read_channel(CHANNEL_2, ADC_address);
+	/* Check region for 0 output */
+	x = ((x < DEADZONE + 128) &&  (x > 128 - DEADZONE)) ? 127 : x;
+	y = ((y < DEADZONE + 128) &&  (y > 128 - DEADZONE)) ? 127 : y;
+	
+	
+	status->x = x;
+	status->y = y;
 	status->dir = coordinates_to_direction(status->x, status->y);
 
 	/* Convert to percentages */
@@ -83,9 +92,6 @@ void joystick_get_status(joystick_status * status)
 	// x = x - calibration_offset.x;
 	// y = y - calibration_offset.y;
 
-	/* Check region for 0 output */
-	//x = abs(x) < DEADZONE ? 0 : x;
-	//y = abs(y) < DEADZONE ? 0 : y;
 
 	/* Populate struct */
 }
