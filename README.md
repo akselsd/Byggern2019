@@ -111,15 +111,15 @@ brown|orange|green|purple|white
 
 IR-Emitter|Servo bus|comment
 ----------|---------|-------
-Anode (high)(Red)|10(Black)|5V through resistance
-Cathode (low)(Black)|9(White)|GND
+Anode (high)(Red)|9(White)|5V through resistance
+Cathode (low)(Black)|10(Black)|GND
 
 #### IR - receiver
 
 IR-receiver|Servo bus|further|comment
 -----------|---------|-------|-------
-Anode (high)(Red)|8(Gray)|Shield[A0]|signal (currently yellow)
-Cathode(low)(Orange)|7(Purple)|GND|
+Anode (high)(Red)|7(Purple)|Shield[A0]|signal (currently yellow)
+Cathode(low)(Orange)|8(Gray)|GND|
 
 #### Joystick motor
 
