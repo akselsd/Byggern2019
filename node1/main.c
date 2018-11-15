@@ -57,8 +57,9 @@ void init_all(void)
 	usb_multifunction_buttons_init();
 	usb_multifunction_joystick_init();
 
-	oled_init();
+	menu_init();
 
+	oled_init();
 	CAN_init();
 	//CAN_init_test_loopback_mode();
 }
@@ -117,6 +118,8 @@ void main_action_loop(void)
 	        }
 	        case PLAY:
 				control_game_board();
+				menu_display_score(score);
+				//++score;
 	        	break;
 	        default:
 	            printf("Unknown state\n");

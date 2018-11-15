@@ -224,8 +224,8 @@ ISR(TIMER1_COMPA_vect)
         *OLED_DATA = OLED_BUFFER[i];
     }
     oled_data.changed = 0;
-    /* Is it neccecary to clear high register? */
-    TCNT1L = 0;
-    TCNT1H = 0;
+
+    // 16 bit registers are handled automagically
+    TCNT1 = 0;
 }
 

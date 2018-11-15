@@ -3,12 +3,18 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include <avr/io.h>
 #include "menu.h"
 #include "oled.h"
 #include "joystick.h"
 
 #define CURSOR "->"
 #define CURSOR_SPACE 16
+// 4800 ticks per sec
+#define MENU_DELAY 2400
+
+static joystick_status prev;
+static joystick_status curr;
 
 
 static void display_character(const char * imgname)
@@ -35,43 +41,83 @@ void menu_draw_options(const char ** options, uint8_t n_options)
     }
 }
 
+void menu_timer_restart(void)
+{
+    /* Reset timer register */
+    TCNT3 = 0;
+}
+
+static void timer_init(void)
+{
+    /* Normal operation */
+    TCCR3A = 0;
+
+    /* 1024 prescalar */
+    TCCR3B = (1 << CS10 | (1 << CS12));
+
+    menu_timer_restart();
+}
+
+void menu_init(void)
+{
+    timer_init();
+    joystick_get_status(&curr);
+    joystick_get_status(&prev);
+}
+
+uint8_t menu_timer_check(void)
+{
+    return TCNT3 > MENU_DELAY;
+}
+
 int menu_select_option(uint8_t n_options)
 {
     int current_menu_choice = 0;
+    move_cursor(current_menu_choice);
+
+
     while (true)
     {
-        static joystick_status status;
-        joystick_get_status(&status);
+        joystick_get_status(&curr);
 
-        if (status.pressed)
-            return current_menu_choice;
-
-        switch(status.dir)
+        if ((curr.dir != prev.dir) ||
+            (curr.pressed != prev.pressed) ||
+            (menu_timer_check()))
         {
-            case UP:
-                --current_menu_choice;
-                break;
-            case DOWN:
-                ++current_menu_choice;
-                break;
-            default:
-                break;
-        }
 
-        if (current_menu_choice > n_options - 1) {
-           current_menu_choice = 0;
-        }
+            prev = curr;
+            menu_timer_restart();
 
-        else if (current_menu_choice < 0) {
-           current_menu_choice = n_options - 1;
-        }
+            if (curr.pressed)
+                return current_menu_choice;
 
-        move_cursor(current_menu_choice);
-        _delay_ms(300);
+            switch(curr.dir)
+            {
+                case UP:
+                    --current_menu_choice;
+                    break;
+                case DOWN:
+                    ++current_menu_choice;
+                    break;
+                default:
+                    break;
+            }
+
+            if (current_menu_choice > n_options - 1) {
+               current_menu_choice = 0;
+            }
+
+            else if (current_menu_choice < 0) {
+               current_menu_choice = n_options - 1;
+            }
+
+            move_cursor(current_menu_choice);
+        }
+        
     }
 }
 
-void menu_display_score(uint8_t score)
+void menu_display_score(uint16_t score)
 {
     char sc[]="SCORE ";
     char str[10];
