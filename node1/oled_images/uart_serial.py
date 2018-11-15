@@ -3,7 +3,7 @@ import sys
 import math
 
 SIZE = 64
-THRESHOLD = 100
+THRESHOLD = 40
 
 # Data is a square image represented by a flat list
 def convert_to_page_mode(data):

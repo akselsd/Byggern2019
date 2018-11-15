@@ -18,13 +18,13 @@ class dummy_serial():
 
 def read_line(ser):
 	line = ""
-	ch = str(ser.read().decode("utf-8"))
+	ch = str(ser.read().decode("utf-8", errors="ignore"))
 	if ch == '':
 		return None
 
 	while(ch != '\n'):
 		line +=ch
-		ch = str(ser.read().decode("utf-8"))
+		ch = str(ser.read().decode("utf-8", errors="ignore"))
 	return line.strip()
 
 def write_line(line, ser):
@@ -34,11 +34,17 @@ def write_line(line, ser):
 def do_command(cmd, ser):
 	if cmd.startswith("i"):
 		with open(cmd[1:].strip() + ".txt", 'rb') as f:
-			s = f.readline()[:512]
-			if len(s) % 8 != 0:
+			s = f.readlines()
+			total = 0
+			for i in s:
+				total+=len(i)
+			print("Total: ",total)
+			if total % 8 != 0:
 				print("Error reading image")
+				print(cmd[1:].strip() + ".txt")
 				exit()
-			write_line(s, ser)
+			for i in s:
+				write_line(i, ser)
 			print("Sending image")
 
 
@@ -60,5 +66,3 @@ def main():
 
 if __name__ == "__main__":
 	main()
-
-
