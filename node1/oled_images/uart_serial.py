@@ -10,6 +10,7 @@ def convert_to_page_mode(data):
 	BYTE_LENGTH = 8
 	PAGE_WIDTH = 8
 	n = math.sqrt(len(data))
+	print("Length of data: ", n)
 	if n != int(n):
 		print("Image not square")
 		exit()
@@ -26,7 +27,6 @@ def convert_to_page_mode(data):
 			for pixel in range(BYTE_LENGTH):
 				column_list.append(
 					data[page*n*PAGE_WIDTH + column + pixel*n])
-			print(column_list)
 			byte_list.append(list(reversed(column_list)))
 	return byte_list
 
@@ -44,9 +44,12 @@ def convert_image(filename):
 	bytelist = convert_to_page_mode(data) # [["1", "0", "1" ...], ["1", "0"...]]
 	bytelist = ["".join([str(bit) for bit in i]) for i in bytelist] # ["101...", "10..."]
 	bytelist = [int(i, 2) for i in bytelist] #[64, 89, 18]
-	bytelist = [chr(i) for i in bytelist] # ["a", "x", "?"]
-	f = open(filename[0:filename.find('.')] + str(SIZE) + str(".txt"), 'w')
-	f.write("".join(bytelist))
+	print(len(bytelist), "len")
+	print(bytelist)
+	#bytelist = [chr(i) for i in bytelist] # ["a", "x", "?"]
+	print(len(bytelist))
+	f = open(filename[0:filename.find('.')] + str(SIZE) + str(".txt"), 'wb')
+	f.write(bytearray(bytelist))
 	f.close()
 
 def main():
