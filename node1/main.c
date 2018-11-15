@@ -66,8 +66,11 @@ void init_all(void)
 void main_action_loop(void)
 {
 	game_state state = MENU_GAMES;
+	uint16_t score = 0;
+
 	while(1)
 	{
+
 		printf("State: %d\n", state);
 		switch(state)
 	    {
@@ -96,20 +99,42 @@ void main_action_loop(void)
 	            switch(result)
 	            {
 	            	case 0:
+		            	state = PLAY;
+		            	break;
 	            	case 1:
+	            		state = PLAY;
+		            	break;
 	            	case 2:
+	            		state = PLAY;
+		            	break;
 	            	case 3:
+	            		state = PLAY;
+		            	break;
 	            	default:
 	            		printf("Selecting character\n");
 	            }
 	            break;
 	        }
+	        case PLAY:
+				control_game_board();
+	        	break;
 	        default:
 	            printf("Unknown state\n");
 	            break;
+
 	    }
 	    _delay_ms(10);
     }
+}
+
+void control_game_board(void)
+{
+	joystick_transmit_position();
+	//_delay_ms(20);
+	slider_transmit_position();
+	//_delay_ms(20);
+	usb_multifunction_buttons_transmit_status();
+	//_delay_ms(20);
 }
 
 int main()
@@ -121,9 +146,6 @@ int main()
 	joystick_status s;
 	oled_clear_screen();
 	uint8_t oldscore;
-	while(1)
-	{
-		main_action_loop();
-	}
-	//main_action_loop();
+
+	main_action_loop();
 }

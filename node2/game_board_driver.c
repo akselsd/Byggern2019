@@ -137,8 +137,7 @@ void game_board_shoot(CAN_message * msg)
 	if (msg->data[1]){
 		ir_enable();
 		CLEAR_BIT(PORTC, SOLENOID);
-		_delay_ms(200);
-		SET_BIT(PORTC, SOLENOID);
+		_delay_ms(5);
 	}
 	else
 		SET_BIT(PORTC, SOLENOID);
@@ -156,8 +155,8 @@ ISR(TIMER3_OVF_vect) {
 	controller.error_sum += error*INTERRUPT_PERIOD;
 
 
-	float input = controller.kp * error + controller.ki * controller.error_sum; //+
-				  //controller.kd * (error - old_error) / INTERRUPT_PERIOD;
+	float input = controller.kp * error + controller.ki * controller.error_sum + controller.kd * (error - controller.old_error) / INTERRUPT_PERIOD;
+	// TODO fix pd
 	input = saturate_input(input);
 
 	controller.old_error = error;
