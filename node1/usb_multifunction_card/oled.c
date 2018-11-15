@@ -153,7 +153,7 @@ void oled_display_image(
 
 void oled_init(void) {
     // INIT function from the data sheet
-    write_command(0xAE); // display off
+    write_command(0xAE); //display off
     write_command(0xA1); //segment remap
     write_command(0xDA); //common pads hardware: alternative
     write_command(0x12);

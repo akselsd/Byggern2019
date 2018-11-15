@@ -41,7 +41,7 @@ void menu_draw_options(const char ** options, uint8_t n_options)
     }
 }
 
-void menu_timer_restart(void)
+static void menu_timer_restart(void)
 {
     /* Reset timer register */
     TCNT3 = 0;
@@ -65,14 +65,14 @@ void menu_init(void)
     joystick_get_status(&prev);
 }
 
-uint8_t menu_timer_check(void)
+static uint8_t menu_timer_check(void)
 {
     return TCNT3 > MENU_DELAY;
 }
 
-int menu_select_option(uint8_t n_options)
+uint8_t menu_select_option(uint8_t n_options)
 {
-    int current_menu_choice = 0;
+    uint8_t current_menu_choice = 0;
     move_cursor(current_menu_choice);
 
 
@@ -113,7 +113,7 @@ int menu_select_option(uint8_t n_options)
 
             move_cursor(current_menu_choice);
         }
-        
+
     }
 }
 

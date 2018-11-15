@@ -21,6 +21,8 @@
 #define N_GAMES 4
 #define N_CHARS 4
 
+#define N_PROG_TICKS 200
+
 typedef enum game_state_enum
 {
     MENU_GAMES,
@@ -40,13 +42,32 @@ static const char * menu_games[N_GAMES] = {
 static const char * menu_chars[N_CHARS] = {
     "Mario",
     "Darth Vader",
-    "Legolas",
-    "Kin Yong-Un",
+    "Kim Kardashian",
+    "Kim Young-Un",
 };
+
+void program_timer_restart(void)
+{
+    TCNT0 = 0;
+}
+
+void program_timer_init(void)
+{
+    TCCR0 = 0;
+
+    TCCR0 = (1 << CS10 | (1 << CS12));
+    program_timer_restart();
+}
+
+
+uint8_t program_timer_check(uint8_t value)
+{
+	return TCNT0 >= value;
+}
+
 
 void init_all(void)
 {
-	/* Initialize external memory adressing */
 	SET_BIT(MCUCR, SRE);
 
 	uart_init(UBRR);
@@ -61,7 +82,39 @@ void init_all(void)
 
 	oled_init();
 	CAN_init();
+	program_timer_init();
 	//CAN_init_test_loopback_mode();
+}
+
+
+
+void control_game_board(void)
+{
+	uint8_t score = 0;
+	uint8_t ticks = 0;
+	while(true)
+	{
+
+		if (program_timer_check(N_PROG_TICKS))
+		{
+			program_timer_restart();
+
+				
+
+			joystick_transmit_position();
+			//_delay_ms(20);
+			slider_transmit_position();
+			//_delay_ms(20);
+			usb_multifunction_buttons_transmit_status();
+			//printf("%d\n", TCNT0);
+			//_delay_ms(100);
+			if (++ticks == 30){
+				ticks = 0;
+				menu_display_score(++score);
+			}
+		}
+		//_delay_ms(10);
+	}
 }
 
 void main_action_loop(void)
@@ -71,7 +124,6 @@ void main_action_loop(void)
 
 	while(1)
 	{
-
 		printf("State: %d\n", state);
 		switch(state)
 	    {
@@ -79,7 +131,7 @@ void main_action_loop(void)
 	        {
 	            menu_draw_options(menu_games, 4);
 	            uint8_t result = menu_select_option(4);
-	            printf("Reulst %d\n", result);
+	            printf("Result %d\n", result);
 	            switch(result)
 	            {
 	            	case 0:
@@ -101,43 +153,33 @@ void main_action_loop(void)
 	            {
 	            	case 0:
 		            	state = PLAY;
+		            	oled_display_image("mario64", 64, 0, 0);
 		            	break;
 	            	case 1:
 	            		state = PLAY;
+	            		oled_display_image("dv64", 64, 0, 0);
 		            	break;
 	            	case 2:
 	            		state = PLAY;
+	            		oled_display_image("kimk64", 64, 0, 0);
 		            	break;
 	            	case 3:
+	            		oled_display_image("kimy64", 64, 0, 0);
 	            		state = PLAY;
 		            	break;
-	            	default:
-	            		printf("Selecting character\n");
 	            }
+		        _delay_ms(1000);
 	            break;
 	        }
 	        case PLAY:
+		        menu_display_score(0);
 				control_game_board();
-				menu_display_score(score);
+				//_delay_ms(50);
 				//++score;
 	        	break;
-	        default:
-	            printf("Unknown state\n");
-	            break;
-
 	    }
-	    _delay_ms(10);
+	    //_delay_ms(20);
     }
-}
-
-void control_game_board(void)
-{
-	joystick_transmit_position();
-	//_delay_ms(20);
-	slider_transmit_position();
-	//_delay_ms(20);
-	usb_multifunction_buttons_transmit_status();
-	//_delay_ms(20);
 }
 
 int main()

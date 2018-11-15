@@ -6,8 +6,8 @@ Fix oled clear screen for cursor
 Fix OLED interrupt optimalization
 Implement LOAD TX BUFFER and READ RX BUFFER (Save one SPI cycle pr msg)
 Const qualifier
-Op amp for ir reciever? See assigment
-Diode snubber for relay, in serial or parallell to GND?
+Op amp for ir reciever? See assigment DONE
+Diode snubber for relay, in serial or parallell to GND? PRETTY MUCH DONE
 
 IMPORTANT:
 Make frequency map. Make sure that all data sent is received, by not sending data too frequently.
@@ -21,5 +21,5 @@ Make joystick and slider structs common, msg to status and status to msg functio
 Interrupt driven ADC conversion for IR diodes
 
 OPTIONALS:
-Extend menu select to select and display character e.g. Mario, DK, etc
-Change resistor on ir to obtain higher voltage signal.
+Extend menu select to select quit in game.
+Update score logic: e.g. seconds played - goals conceded
