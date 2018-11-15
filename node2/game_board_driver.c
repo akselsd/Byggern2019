@@ -4,9 +4,9 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include "game_board_driver.h"
-#include "pwm_driver.h"
-#include "ir_driver.h"
-#include "motor_box_driver.h"
+#include "servo_motor/pwm_driver.h"
+#include "ir_sensors/ir_driver.h"
+#include "dc_motor/motor_box_driver.h"
 #include "bit_macros.h"
 
 #define ENCODER_RANGE 8380

@@ -8,14 +8,14 @@
 #include <util/delay.h>
 #include <avr/interrupt.h>
 
-#include "adc_driver.h"
+#include "ir_sensors/adc_driver.h"
 #include "bit_macros.h"
 #include "can/CAN_driver.h"
-#include "motor_box_driver.h"
+#include "dc_motor/motor_box_driver.h"
 #include "game_board_driver.h"
-#include "pwm_driver.h"
+#include "servo_motor/pwm_driver.h"
 #include "uart/uart.h"
-#include "ir_driver.h"
+#include "ir_sensors/ir_driver.h"
 
 
 void init_all(void)

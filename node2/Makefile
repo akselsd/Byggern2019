@@ -3,7 +3,7 @@ VPATH = ../utils
 SOURCE_FILES := main.c
 SOURCE_FILES += uart/uart.c
 SOURCE_FILES += can/SPI_driver.c can/MCP_driver.c can/CAN_driver.c
-SOURCE_FILES += pwm_driver.c game_board_driver.c adc_driver.c ir_driver.c dac_driver.c TWI_Master.c motor_box_driver.c
+SOURCE_FILES += servo_motor/pwm_driver.c game_board_driver.c ir_sensors/adc_driver.c ir_sensors/ir_driver.c dc_motor/dac_driver.c dc_motor/TWI_Master.c dc_motor/motor_box_driver.c
 
 INCLUDE_FOLDERS := constants ../utils
 INCLUDE_FLAGS = $(addprefix -I, $(INCLUDE_FOLDERS))
