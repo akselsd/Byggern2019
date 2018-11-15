@@ -6,7 +6,7 @@
 #include "adc_driver.h"
 
 #define N_SAMPLES 5
-#define TRESHOLD_RATE 0.70
+#define TRESHOLD_RATE 0.10
 
 static uint16_t treshold;
 static uint8_t n_goals = 0;
@@ -46,7 +46,6 @@ void ir_disable(void)
 
 uint8_t ir_check_goal(void)
 {
-	printf("%d\n", adc_read());
 	if (!scoring_enabled)
 		return 0;
 	

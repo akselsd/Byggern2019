@@ -45,11 +45,10 @@ int main()
 		CAN_message * msg = CAN_receive();
 		game_board_handle_msg(msg);
 		CAN_message_destructor(msg);
-		_delay_ms(50);
+		_delay_ms(10);
 		if (ir_check_goal())
 		{
 			printf("GOAL\n");
-			_delay_ms(50);
 		}
 
 		/*printf("Goal scored: %u, ", ir_check_goal());

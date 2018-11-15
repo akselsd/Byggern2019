@@ -24,7 +24,7 @@ void adc_init(void) {
 	CLEAR_BIT(ADMUX, MUX0);
 
 	/* Set Vref to GND */
-	CLEAR_BIT(ADMUX, REFS0);
+	SET_BIT(ADMUX, REFS0);
 	SET_BIT(ADMUX, REFS1);
 
 	/* Disable auto trigger */
