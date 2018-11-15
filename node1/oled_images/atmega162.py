@@ -35,7 +35,6 @@ def do_command(cmd, ser):
 	if cmd.startswith("i"):
 		with open(cmd[1:].strip() + ".txt", 'rb') as f:
 			s = f.readline()[:512]
-			print(len(s))
 			if len(s) % 8 != 0:
 				print("Error reading image")
 				exit()
