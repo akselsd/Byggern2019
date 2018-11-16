@@ -30,8 +30,13 @@ Implement music
 Update score logic: e.g. seconds played - goals conceded
 
 TODO TODAY
-Set treshold for encoder value
+Set treshold for encoder value //ISH
 Shoot with 'up'
 Shoot sound
 
-Tune controller
+TODO TODAY FOR TOMORROW
+Send confirmation of goal received back to node 2, so not to miss out on goals.
+Implement GAME OVER state
+Implement HIGH SCORE
+Implement difficulties
+EXTRA WORK: BLuetooth, UART web page

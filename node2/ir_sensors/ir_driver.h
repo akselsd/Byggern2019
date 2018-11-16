@@ -4,7 +4,5 @@
 
 void ir_init(void);
 uint8_t ir_check_block(void);
-void ir_enable(void);
-void ir_disable(void);
 
 #endif

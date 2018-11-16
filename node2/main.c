@@ -45,21 +45,12 @@ int main()
 		CAN_message * msg = CAN_receive();
 		game_board_handle_msg(msg);
 		CAN_message_destructor(msg);
+
+		game_board_transmit_goal();
+
 		_delay_ms(10);
-		if (game_board_check_goal())
-		{
-			//game_board_transmit_goal();
-			_delay_ms(20);
-		}
+		// TODO replace with timer
+	}
 
-		/*printf("Goal scored: %u, ", ir_check_goal());
-		printf("ADC value: %u \n", adc_read());*/
-
-
-
-		//printf("Joystick_status: x: %3d, y: %3d, pressed: %d, dir: %1d \n",
-			//status.x, status.y, status.pressed, status.dir);
-	};
-    
 }
 

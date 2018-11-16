@@ -88,6 +88,15 @@ void init_all(void)
 	program_timer_init();
 }
 
+void receive_goal(uint8_t * n_lives)
+{
+	CAN_message * msg = CAN_receive();
+	if((msg->id == ID_GOAL) && (msg->data[0]))
+	{	
+		--*n_lives;
+	}
+	CAN_message_destructor(msg);	
+}
 
 
 void play_game(uint8_t player_diff)
@@ -98,7 +107,7 @@ void play_game(uint8_t player_diff)
 
 	buttons_status buttons;
 
-	while(true)
+	while(1)
 	{
 		usb_multifunction_buttons_get_status(&buttons);
 
@@ -112,10 +121,13 @@ void play_game(uint8_t player_diff)
 			joystick_transmit_position();
 			slider_transmit_position();
 			usb_multifunction_buttons_transmit_status();
+			receive_goal(&n_lives);
+
+			menu_display_game_state(score, n_lives, menu_diffs[player_diff]);
 
 			if (++ticks == 30) {
 				ticks = 0;
-				menu_display_game_state(++score, n_lives, menu_diffs[player_diff]);
+				++score;
 			}
 		}
 	}
@@ -132,20 +144,16 @@ void main_action_loop(void)
 
 	while(1)
 	{
-		//printf("State: %d\n", state);
 		switch(state)
 	    {
 	        case MENU_GAMES:
 	        {
 	            menu_draw_options(menu_games, N_GAMES);
 	            uint8_t result = menu_select_option(4);
-	            //printf("Result %d\n", result);
 	            switch(result)
 	            {
 	            	case 0:
 	            		state = PLAY;
-	            		//TODO: implenet selected char variable.
-	            		//oled_display_image("mario64", 64, 0, 0);
 	            		break;
 	            	case 1:
 	            		state = HIGHSCORE;
@@ -202,19 +210,19 @@ void main_action_loop(void)
 	        	{
 	        		case 0:
 	        			player_diff = 0;
-	        			state = MENU_GAMES; //change to MENU_GAMES
+	        			state = MENU_GAMES;
 	        			break;
 	        		case 1:
 	        			player_diff = 1;
-	        			state = MENU_GAMES; //change to MENU_GAMES
+	        			state = MENU_GAMES;
 	        			break;
 	        		case 2:
 	        			player_diff = 2;
-	        			state = MENU_GAMES; //change to MENU_GAMES
+	        			state = MENU_GAMES;
 	        			break;
 	        		case 3:
 	        			player_diff = 3;
-	        			state = MENU_GAMES; //change to MENU_GAMES
+	        			state = MENU_GAMES;
 	        			break;
 	        		case 99:
 	            		state = MENU_GAMES;
@@ -232,7 +240,6 @@ void main_action_loop(void)
 	        	oled_display_image(player_img, 64, 0, 0);
 	        	//playsong(player_song)
 	        	_delay_ms(500);
-		        //menu_display_score(0);
 				play_game(player_diff);
 				state = MENU_GAMES;
 	        	break;

@@ -7,10 +7,11 @@
 #include "servo_motor/pwm_driver.h"
 #include "ir_sensors/ir_driver.h"
 #include "bit_macros.h"
+#include "dc_motor/controller.h"
 
 #define SOLENOID PC6
 
-static uint8_t n_goals = 0;
+static uint8_t scoring_enabled;
 
 static void update_pwm(CAN_message * msg)
 {
@@ -28,7 +29,7 @@ void game_board_reset(void)
 
 	controller_clear();
 
-	/* Calibrate servo */
+	/* Calibrate dc_motor */
 	motor_box_set_direction(MOTOR_LEFT);
 	motor_box_set_speed(100);
 	_delay_ms(1000);
@@ -36,6 +37,7 @@ void game_board_reset(void)
 	_delay_ms(400);
 	motor_box_reset_encoder();
 
+	scoring_enabled = 1;
 
 	controller_init();
 }
@@ -79,8 +81,11 @@ void game_board_handle_msg(CAN_message * msg)
 void game_board_shoot(CAN_message * msg)
 {
 	/* Right button */
-	if (msg->data[1]){
-		ir_enable();
+	if (msg->data[1])
+	{
+		if (!scoring_enabled)
+			scoring_enabled = 1;
+
 		CLEAR_BIT(PORTC, SOLENOID);
 		_delay_ms(5);
 	}
@@ -90,10 +95,28 @@ void game_board_shoot(CAN_message * msg)
 
 uint8_t game_board_check_goal(void)
 {
-	return ir_check_block();
+	if (!scoring_enabled)
+		return 0;
+
+	uint8_t goal = ir_check_block();
+
+	if (goal)
+	{
+		scoring_enabled = 0;
+	}
+
+	return goal;
 }
 
-uint8_t game_board_get_goal_count(void)
+void game_board_transmit_goal()
 {
-	return n_goals;
+	CAN_message * msg = CAN_message_constructor(ID_GOAL, 1);
+	msg->data[0] = game_board_check_goal();
+	CAN_send(msg);
+	if(msg->data[0])
+	{
+		printf("GOAL!!!\n\n");
+	}
+	CAN_message_destructor(msg);
+	
 }

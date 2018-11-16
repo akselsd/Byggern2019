@@ -9,6 +9,7 @@ typedef enum CAN_message_id_enum
 	ID_BUTTONS,
 	ID_UPDATE_FSM,
 	ID_RESET,
+	ID_GOAL,
 } CAN_message_id;
 
 typedef struct CAN_message_struct

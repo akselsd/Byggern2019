@@ -27,7 +27,6 @@
 static joystick_status calibration_offset = {0, 0, 0, 0};
 static joystick_status current;
 
-
 void usb_multifunction_joystick_init(void)
 {
 	/* Set as input and enable pull-up */
@@ -83,17 +82,6 @@ void joystick_get_status(joystick_status * status)
 	status->x = x;
 	status->y = y;
 	status->dir = coordinates_to_direction(status->x, status->y);
-
-	/* Convert to percentages */
-	//x = (float)x/JOYSTICK_PERCENTAGE_FACTOR;
-	//y = (float)y/JOYSTICK_PERCENTAGE_FACTOR;
-	
-	/* Offset from calibration */
-	// x = x - calibration_offset.x;
-	// y = y - calibration_offset.y;
-
-
-	/* Populate struct */
 }
 
 void joystick_calibrate_joystick(void)

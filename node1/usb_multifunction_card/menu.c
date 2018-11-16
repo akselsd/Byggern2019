@@ -119,7 +119,6 @@ uint8_t menu_select_option(uint8_t n_options)
             else if (current_menu_choice < 0) {
                current_menu_choice = n_options - 1;
             }
-            printf("%d\n", current_menu_choice);
             move_cursor(current_menu_choice);
         }
 

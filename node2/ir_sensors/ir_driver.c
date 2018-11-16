@@ -9,8 +9,6 @@
 #define TRESHOLD_RATE 0.10
 
 static uint16_t treshold;
-static uint8_t n_goals = 0;
-static uint8_t scoring_enabled = 0;
 
 void ir_init(void)
 {
@@ -30,34 +28,10 @@ void ir_init(void)
 	treshold = avg_samples * TRESHOLD_RATE;
 
 	printf("Treshold calculated: %d\n", treshold);
-	
-	ir_enable();
-}
-
-void ir_enable(void)
-{
-	scoring_enabled = 1;
-}
-
-void ir_disable(void)
-{
-	scoring_enabled = 0;
 }
 
 uint8_t ir_check_block(void)
 {
-	if (!scoring_enabled)
-		return 0;
-	
-	uint8_t scored = adc_read() < treshold;
-	//printf("%d\n", adc_read());
-	if (scored)
-		ir_disable();
-		++n_goals;
-	return scored;
-}
-
-uint8_t ir_get_goal_count(void)
-{
-	return n_goals;
+	printf("ir: %d\n", adc_read());
+	return adc_read() < treshold;
 }
