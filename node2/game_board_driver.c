@@ -32,8 +32,11 @@ void game_board_reset(void)
 	motor_box_set_direction(MOTOR_LEFT);
 	motor_box_set_speed(100);
 	_delay_ms(1000);
-	motor_box_reset_encoder();
 	motor_box_set_speed(0);
+	_delay_ms(400);
+	motor_box_reset_encoder();
+
+
 	controller_init();
 }
 

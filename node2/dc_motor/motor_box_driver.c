@@ -13,6 +13,9 @@
 #define _RST PH6 // Active low
 
 #define DO0 PK0
+#define ENCODER_MAX 8380
+#define ENCODER_MIN 0
+#define DEADZONE 200
 
 void motor_box_init(void)
 {
@@ -52,6 +55,18 @@ void motor_box_reset_encoder(void)
 	SET_BIT(PORTH, _RST);	
 }
 
+static void saturate_output(int16_t * encoder_output)
+{
+	if (*encoder_output > ENCODER_MAX)
+	{
+		*encoder_output = ENCODER_MAX;
+	}
+	else if (*encoder_output < ENCODER_MIN)
+	{
+		*encoder_output = ENCODER_MIN;
+	}
+}
+
 int16_t motor_box_read(void)
 {
 	int16_t encoder_output;
@@ -68,10 +83,16 @@ int16_t motor_box_read(void)
 	SET_BIT(PORTH, SEL);
 	_delay_us(200);
 	encoder_output += PINK;
-
 	
 	/* Disable output */
 	SET_BIT(PORTH, _OE);
+
+	encoder_output *= -1;
+
+	//printf("encoder: %d, ", encoder_output);
+	saturate_output(&encoder_output);
+
+	//printf("saturated: %d\n", encoder_output);
 
 	return encoder_output;
 }
