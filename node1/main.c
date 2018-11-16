@@ -20,14 +20,16 @@
 
 #define N_GAMES 4
 #define N_CHARS 4
+#define N_DIFFS 4
 
 #define N_PROG_TICKS 200
 
 typedef enum game_state_enum
 {
     MENU_GAMES,
-    MENU_CHARACHTERS,
+    MENU_CHARACTERS,
     HIGHSCORE,
+    MENU_DIFFICULTY,
     PLAY,
     GAME_OVER
 } game_state;
@@ -35,8 +37,8 @@ typedef enum game_state_enum
 static const char * menu_games[N_GAMES] = {
     "Play",
     "Highscore",
-    "Game 3",
-    "Game 4",
+    "Character",
+    "Difficulty",
 };
 
 static const char * menu_chars[N_CHARS] = {
@@ -44,6 +46,13 @@ static const char * menu_chars[N_CHARS] = {
     "Darth Vader",
     "Kim Kardashian",
     "Kim Young-Un",
+};
+
+static const char * menu_diffs[N_DIFFS] = {
+	"Beginner",
+	"Amateur",
+	"Professional",
+	"World class",
 };
 
 void program_timer_restart(void)
@@ -124,35 +133,43 @@ void main_action_loop(void)
 
 	while(1)
 	{
-		printf("State: %d\n", state);
+		//printf("State: %d\n", state);
 		switch(state)
 	    {
 	        case MENU_GAMES:
 	        {
 	            menu_draw_options(menu_games, 4);
 	            uint8_t result = menu_select_option(4);
-	            printf("Result %d\n", result);
+	            //printf("Result %d\n", result);
 	            switch(result)
 	            {
 	            	case 0:
-	            		state = MENU_CHARACHTERS;
+	            		state = MENU_CHARACTERS;
+	            		//TODO: implenet selected char variable.
+	            		//oled_display_image("mario64", 64, 0, 0);
 	            		break;
 	            	case 1:
 	            		state = HIGHSCORE;
+	            		break;
+	            	case 2:
+	            		state = MENU_CHARACTERS;
+	            		break;
+	            	case 3:
+	            		state = MENU_DIFFICULTY;
 	            		break;
 	            	default:
 	            		return;
 	            }
 	            break;
 	        }
-	        case MENU_CHARACHTERS:
+	        case MENU_CHARACTERS:
 	        {
 	            menu_draw_options(menu_chars, 4);
 	            uint8_t result = menu_select_option(4);
 	            switch(result)
 	            {
 	            	case 0:
-		            	state = PLAY;
+		            	state = PLAY; //change to MENU_GAMES
 		            	oled_display_image("mario64", 64, 0, 0);
 		            	break;
 	            	case 1:
@@ -167,9 +184,39 @@ void main_action_loop(void)
 	            		oled_display_image("kimy64", 64, 0, 0);
 	            		state = PLAY;
 		            	break;
+		            //implement default (?)
+		            default:
+		            	return;
 	            }
 		        _delay_ms(1000);
 	            break;
+	        }
+	        case MENU_DIFFICULTY:
+	        {
+	        	menu_draw_options(menu_diffs, 4);
+	        	uint8_t result = menu_select_option(4);
+	        	switch(result)
+	        	{
+	        		case 0:
+	        			//difficulty=easy
+	        			state = MENU_GAMES; //change to MENU_GAMES
+	        			break;
+	        		case 1:
+	        			//difficulty=amateur
+	        			state = MENU_GAMES; //change to MENU_GAMES
+	        			break;
+	        		case 2:
+	        			//difficulty=professional
+	        			state = MENU_GAMES; //change to MENU_GAMES
+	        			break;
+	        		case 3:
+	        			//difficulty=world class
+	        			state = MENU_GAMES; //change to MENU_GAMES
+	        			break;
+	        		default:
+	        			return;
+	        	}
+	        	break;
 	        }
 	        case PLAY:
 		        menu_display_score(0);
@@ -177,6 +224,9 @@ void main_action_loop(void)
 				//_delay_ms(50);
 				//++score;
 	        	break;
+	        //implement default (?)
+	        default:
+	        	return;
 	    }
 	    //_delay_ms(20);
     }

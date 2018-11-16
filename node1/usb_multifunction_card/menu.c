@@ -35,7 +35,9 @@ void menu_draw_options(const char ** options, uint8_t n_options)
     oled_clear_screen();
     for (int i = 0; i < n_options; i++)
     {
-        oled_set_column(CURSOR_SPACE);
+        //Tight between cursor and text. Trying CURSOR_SPACE +1 -Helped!
+        oled_set_column(CURSOR_SPACE+1);
+        //top of letters appear on bottom. Trying i+1 - did not help! Went too far.
         oled_set_page(i);
         oled_printf(options[i]);
     }
