@@ -8,20 +8,16 @@
 void MCP_init(void)
 {
 	SPI_master_init();
-	printf("SPI Init Complete\n");
+	//printf("SPI Init Complete\n");
 	MCP_reset(); // Does not set mode to config
-	printf("MCP Reset\n");
-	/* Wait for reset */
-	_delay_ms(100);
+	//printf("MCP Reset\n");
 
 	MCP_write(MCP_CANCTRL, MODE_LOOPBACK);
-	_delay_ms(100);
-	printf("Reading status\n");
-	printf("Status: %d\n", MCP_read_status());
+	//printf("Reading status\n");
+	//printf("Status: %d\n", MCP_read_status());
 
 	MCP_write(MCP_CANCTRL, MODE_NORMAL);
-	_delay_ms(100);
-	printf("Status: %d\n", MCP_read_status());
+	//printf("Status: %d\n", MCP_read_status());
 
 }
 

@@ -122,7 +122,7 @@ ISR(RX_VECTOR)
 	}
 	
 	if (recieve_buffer.size == BUFFER_SIZE){
-		printf("Recieve buffer overflow\n");
+		//printf("Recieve buffer overflow\n");
 		return;
 	}
 	/* Write recieved char to buffer */
