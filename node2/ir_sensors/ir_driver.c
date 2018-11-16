@@ -44,7 +44,7 @@ void ir_disable(void)
 	scoring_enabled = 0;
 }
 
-uint8_t ir_check_goal(void)
+uint8_t ir_check_block(void)
 {
 	if (!scoring_enabled)
 		return 0;

@@ -28,3 +28,7 @@ Implement lives-- when goal conceded
 Implement different difficulties
 Implement music
 Update score logic: e.g. seconds played - goals conceded
+
+TODO TODAY
+Set treshold for encoder value
+Shoot with 'up'
