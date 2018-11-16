@@ -20,9 +20,10 @@
 
 #define N_GAMES 4
 #define N_CHARS 4
-#define N_DIFFS 4
+#define N_DIFFS 3
 
 #define N_PROG_TICKS 200
+#define N_LIVES 5
 
 typedef enum game_state_enum
 {
@@ -49,10 +50,9 @@ static const char * menu_chars[N_CHARS] = {
 };
 
 static const char * menu_diffs[N_DIFFS] = {
-	"Beginner",
-	"Amateur",
-	"Professional",
-	"World class",
+	"Easy",
+	"Medium",
+	"Hard",
 };
 
 void program_timer_restart(void)
@@ -80,49 +80,44 @@ void init_all(void)
 	SET_BIT(MCUCR, SRE);
 
 	uart_init(UBRR);
-
-	// Currently does nothing
-	//joystick_calibrate_joystick();
-
 	usb_multifunction_buttons_init();
 	usb_multifunction_joystick_init();
-
 	menu_init();
-
 	oled_init();
 	CAN_init();
 	program_timer_init();
-	//CAN_init_test_loopback_mode();
 }
 
 
 
-void control_game_board(void)
+void play_game(uint8_t player_diff)
 {
-	uint8_t score = 0;
 	uint8_t ticks = 0;
+	uint8_t score = 0;
+	uint8_t n_lives = N_LIVES;
+
+	buttons_status buttons;
+
 	while(true)
 	{
+		usb_multifunction_buttons_get_status(&buttons);
+
+		if (buttons.left)
+			return;
 
 		if (program_timer_check(N_PROG_TICKS))
 		{
 			program_timer_restart();
 
-				
-
 			joystick_transmit_position();
-			//_delay_ms(20);
 			slider_transmit_position();
-			//_delay_ms(20);
 			usb_multifunction_buttons_transmit_status();
-			//printf("%d\n", TCNT0);
-			//_delay_ms(100);
-			if (++ticks == 30){
+
+			if (++ticks == 30) {
 				ticks = 0;
-				menu_display_score(++score);
+				menu_display_game_state(++score, n_lives, menu_diffs[player_diff]);
 			}
 		}
-		//_delay_ms(10);
 	}
 }
 
@@ -130,6 +125,10 @@ void main_action_loop(void)
 {
 	game_state state = MENU_GAMES;
 	uint16_t score = 0;
+	char * player_img = "mario64";
+	CAN_message * reset_msg;
+	uint8_t player_diff = 0;
+
 
 	while(1)
 	{
@@ -138,13 +137,13 @@ void main_action_loop(void)
 	    {
 	        case MENU_GAMES:
 	        {
-	            menu_draw_options(menu_games, 4);
+	            menu_draw_options(menu_games, N_GAMES);
 	            uint8_t result = menu_select_option(4);
 	            //printf("Result %d\n", result);
 	            switch(result)
 	            {
 	            	case 0:
-	            		state = MENU_CHARACTERS;
+	            		state = PLAY;
 	            		//TODO: implenet selected char variable.
 	            		//oled_display_image("mario64", 64, 0, 0);
 	            		break;
@@ -157,6 +156,9 @@ void main_action_loop(void)
 	            	case 3:
 	            		state = MENU_DIFFICULTY;
 	            		break;
+	            	case 99:
+	            		state = MENU_GAMES;
+	            		break;
 	            	default:
 	            		return;
 	            }
@@ -164,71 +166,79 @@ void main_action_loop(void)
 	        }
 	        case MENU_CHARACTERS:
 	        {
-	            menu_draw_options(menu_chars, 4);
+	            menu_draw_options(menu_chars, N_CHARS);
 	            uint8_t result = menu_select_option(4);
 	            switch(result)
 	            {
 	            	case 0:
-		            	state = PLAY; //change to MENU_GAMES
-		            	oled_display_image("mario64", 64, 0, 0);
+		            	state = MENU_GAMES;
+		            	player_img = "mario64";
 		            	break;
 	            	case 1:
-	            		state = PLAY;
-	            		oled_display_image("dv64", 64, 0, 0);
+	            		state = MENU_GAMES;
+	            		player_img = "dv64";
 		            	break;
 	            	case 2:
-	            		state = PLAY;
-	            		oled_display_image("kimk64", 64, 0, 0);
+	            		state = MENU_GAMES;
+	            		player_img = "kimk64";
 		            	break;
 	            	case 3:
-	            		oled_display_image("kimy64", 64, 0, 0);
-	            		state = PLAY;
+	            		state = MENU_GAMES;
+	            		player_img = "kimy64";
 		            	break;
-		            //implement default (?)
+		            case 99:
+	            		state = MENU_GAMES;
+	            		break;
 		            default:
 		            	return;
 	            }
-		        _delay_ms(1000);
 	            break;
 	        }
 	        case MENU_DIFFICULTY:
 	        {
-	        	menu_draw_options(menu_diffs, 4);
+	        	menu_draw_options(menu_diffs, N_DIFFS);
 	        	uint8_t result = menu_select_option(4);
 	        	switch(result)
 	        	{
 	        		case 0:
-	        			//difficulty=easy
+	        			player_diff = 0;
 	        			state = MENU_GAMES; //change to MENU_GAMES
 	        			break;
 	        		case 1:
-	        			//difficulty=amateur
+	        			player_diff = 1;
 	        			state = MENU_GAMES; //change to MENU_GAMES
 	        			break;
 	        		case 2:
-	        			//difficulty=professional
+	        			player_diff = 2;
 	        			state = MENU_GAMES; //change to MENU_GAMES
 	        			break;
 	        		case 3:
-	        			//difficulty=world class
+	        			player_diff = 3;
 	        			state = MENU_GAMES; //change to MENU_GAMES
 	        			break;
+	        		case 99:
+	            		state = MENU_GAMES;
+	            		break;
 	        		default:
 	        			return;
 	        	}
 	        	break;
 	        }
 	        case PLAY:
-		        menu_display_score(0);
-				control_game_board();
-				//_delay_ms(50);
-				//++score;
+	        	reset_msg = CAN_message_constructor(ID_RESET, 0);
+	        	CAN_send(reset_msg);
+				CAN_message_destructor(reset_msg);
+
+	        	oled_display_image(player_img, 64, 0, 0);
+	        	//playsong(player_song)
+	        	_delay_ms(500);
+		        //menu_display_score(0);
+				play_game(player_diff);
+				state = MENU_GAMES;
 	        	break;
-	        //implement default (?)
 	        default:
 	        	return;
 	    }
-	    //_delay_ms(20);
     }
 }
 

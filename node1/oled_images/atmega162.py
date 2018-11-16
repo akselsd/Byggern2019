@@ -60,8 +60,8 @@ def main():
 		line = read_line(node_one)
 		if line:
 			print("Node 1$ " + line)
-			if line.startswith('@'):
-				do_command(line[1:], node_one)
+			if '@' in line:
+				do_command(line.split('@')[1], node_one)
 
 
 if __name__ == "__main__":

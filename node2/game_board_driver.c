@@ -72,20 +72,69 @@ static void update_motor_box(CAN_message * msg)
 	sei();
 }
 
-void game_board_init(void)
+static void controller_clear(void)
 {
+
+	//clear controller values
+	controller.kp = 0;
+	controller.ki = 0;
+	controller.kd = 0;
+
+	/* Set controller values */
+	controller.reference = 0;
+	controller.error_sum = 0;
+	controller.old_error = 0;
+
+	/* Disable overflow interrupts */
+	CLEAR_BIT(TIMSK3, TOIE3);
+
+	printf("Controller off\n");
+}
+
+static void controller_init(void)
+{
+	/* Set controller values */
+	controller.reference = 0;
+	controller.error_sum = 0;
+	controller.old_error = 0;
+
+	/* Set controller parameters */
+	controller.kp = 1.4;
+	controller.ki = 0.8;
+	controller.kd = 0.1;
+
+	/* Enable overflow interrupts */
+	SET_BIT(TIMSK3, TOIE3);
+	
+	printf("Controller on\n");
+}
+
+void game_board_reset(void)
+{
+	printf("Reset game board\n");
+
+	controller_clear();
+
 	/* Calibrate servo */
-	printf("Calibrating motor encoder\n");
 	motor_box_set_direction(MOTOR_LEFT);
 	motor_box_set_speed(100);
 	_delay_ms(1000);
 	motor_box_reset_encoder();
 	motor_box_set_speed(0);
 
+	controller_init();
+}
+
+void game_board_init(void)
+{
+	cli();
+
+	printf("Initialize game board\n");
+	game_board_reset();
+
 	/* Enable solenoid */
 	SET_BIT(DDRC, SOLENOID);
 	SET_BIT(PORTC, SOLENOID);
-
 
 	/* Set up timer 3 in CTC mode with compare pin OCR3A*/
 	CLEAR_BIT(TCCR3B, WGM33);
@@ -98,19 +147,9 @@ void game_board_init(void)
 	SET_BIT(TCCR3B, CS31);
 	CLEAR_BIT(TCCR3B, CS30);
 
-	/* Enable overflow interrupts */
-	SET_BIT(TIMSK3, TOIE3);
-
-	/* Set controller values */
-	controller.reference = 0;
-	controller.error_sum = 0;
-	controller.old_error = 0;
-
-	/* Set controller parameters */
-	controller.kp = 1.4;
-	controller.ki = 0.8;
-	controller.kd = 0.1;
+	sei();
 }
+
 
 void game_board_handle_msg(CAN_message * msg)
 {
@@ -124,6 +163,9 @@ void game_board_handle_msg(CAN_message * msg)
 			break;
 		case ID_BUTTONS:
 			game_board_shoot(msg);
+			break;
+		case ID_RESET:
+			game_board_reset();
 			break;
 		default:
 			printf("Unknown CAN message ID: %u\n", msg->id);
@@ -149,19 +191,14 @@ ISR(TIMER3_OVF_vect) {
 	float current_position = -motor_box_read() / SCALING_FACTOR;
 	float error = controller.reference - current_position;
 
-	//printf("ref %d, cur %d\n", controller.reference, (uint8_t)current_position);
+	printf("-");
 
-	/* I term */
 	controller.error_sum += error*INTERRUPT_PERIOD;
 
-
 	float input = controller.kp * error + controller.ki * controller.error_sum + controller.kd * (error - controller.old_error) / INTERRUPT_PERIOD;
-	// TODO fix pd
 	input = saturate_input(input);
 
 	controller.old_error = error;
-	//printf("%d %d %d\n", (int16_t)input, (int16_t)controller.reference, (int16_t)current_position);
-	//printf("Current position: %d. Target position: %d\n", (int16_t)current_position, (int16_t)controller.reference);
 	
 	if (input > 0)
 	{

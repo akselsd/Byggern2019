@@ -22,6 +22,9 @@ Interrupt driven ADC conversion for IR diodes
 
 OPTIONALS:
 Extend menu select to select quit in game.
-Extend menu with difficulty and select characters
 Extend to speakers
+Fix regulator bias
+Implement lives-- when goal conceded
+Implement different difficulties
+Implement music
 Update score logic: e.g. seconds played - goals conceded

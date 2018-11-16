@@ -19,7 +19,7 @@
 /* Y-axis */
 #define CHANNEL_2 5
 
-#define DEADZONE 10
+#define DEADZONE 20
 
 #define ADC 0x1400
 

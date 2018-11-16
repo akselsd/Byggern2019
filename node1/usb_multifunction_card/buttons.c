@@ -26,7 +26,6 @@ void usb_multifunction_buttons_transmit_status(void)
 	CAN_message * msg = CAN_message_constructor(ID_BUTTONS, 2);
 	msg->data[0] = current.left;
 	msg->data[1] = current.right;
-	printf("Button: %d -- ", current.right);
 	CAN_send(msg);
 	CAN_message_destructor(msg);
 }
