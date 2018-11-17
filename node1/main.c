@@ -65,8 +65,8 @@ void program_timer_init(void)
 {
     TCCR0 = 0;
 
-    /* Set prescaler to 256 */
-    TCCR0 = (1 << CS02);
+    /* Set prescaler to 1024 */
+    TCCR0 = (1 << CS02) | (1 << CS00);
 }
 
 typedef enum transmit_step_enum
@@ -80,6 +80,7 @@ typedef enum transmit_step_enum
 
 void init_all(void)
 {
+	//check further SRAM
 	SET_BIT(MCUCR, SRE);
 
 	uart_init(UBRR);
@@ -97,13 +98,12 @@ void req_and_receive_goal(uint8_t * n_lives)
 	CAN_message_destructor(msg_req_goal);
 
 
-	CAN_message * msg_check_goal = CAN_receive();
+	/*CAN_message * msg_check_goal = CAN_receive();
 	if((msg_check_goal->id == ID_GOAL) && (msg_check_goal->data[0]))
 	{	
 		--*n_lives;
 	}
-	CAN_message_destructor(msg_check_goal);
-
+	CAN_message_destructor(msg_check_goal);*/
 }
 
 static uint8_t ticks = 0;
@@ -113,6 +113,9 @@ static uint8_t curr_transmit_step = TRANSMIT_JOYSTICK;
 
 void play_game(uint8_t player_diff)
 {
+	score = 0;
+	n_lives = N_LIVES;
+
 	program_timer_init();
 	buttons_status buttons;
 
@@ -167,7 +170,6 @@ ISR(TIMER0_OVF_vect)
 void main_action_loop(void)
 {
 	game_state state = MENU_GAMES;
-	uint16_t score = 0;
 	char * player_img = "mario64";
 	CAN_message * msg_reset;
 	uint8_t player_diff = 0;
@@ -286,9 +288,11 @@ int main()
 	init_all();
 	_delay_ms(1000);
 	printf("\n\n\nInitialized\n");
-	joystick_status s;
 	oled_clear_screen();
-	uint8_t oldscore;
-
 	main_action_loop();
+}
+
+ISR(INT0_vect)
+{
+	printf("Received interrupt.\n");
 }

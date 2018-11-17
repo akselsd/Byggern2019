@@ -17,9 +17,11 @@
 #include "uart/uart.h"
 #include "ir_sensors/ir_driver.h"
 
+static CAN_message * msg;
 
 void init_all(void)
 {
+	// BE CAREFUL WHEN CHANGING ORDER!!
 	uart_init(UBRR);
 	printf("Uart init\n");
 	CAN_init();
@@ -27,7 +29,6 @@ void init_all(void)
 	motor_box_init();
 	_delay_ms(200);
 	game_board_init();
-	
 	_delay_ms(200);
 	ir_init();
 }
@@ -41,15 +42,19 @@ int main()
 	sei();
 	printf("\n\n\nNode 2 Initialized\n\n\n");
 
-	while(1){
-		CAN_message * msg = CAN_receive();
-		game_board_handle_msg(msg);
-		CAN_message_destructor(msg);
-
-
-		_delay_ms(10);
-		// TODO replace with timer
+	while(1)
+	{
+		_delay_ms(50);
+		
 	}
 
 }
 
+
+/* Receive message interrupt */
+ISR(INT4_vect)
+{
+ 	msg = CAN_receive();
+	game_board_handle_msg(msg);
+	CAN_message_destructor(msg);
+}

@@ -40,3 +40,4 @@ Implement GAME OVER state
 Implement HIGH SCORE
 Implement difficulties
 EXTRA WORK: BLuetooth, UART web page
+RESET score

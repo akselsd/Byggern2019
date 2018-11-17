@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <util/delay.h>
+#include <avr/io.h>
 
 
 /* Bits in TXBnCTRL */
@@ -62,20 +63,33 @@ void CAN_init_test_loopback_mode(void)
 		}
 		CAN_message_destructor(rec);
 	}
-
 }
 
 void CAN_init(void)
 {
-	//TODO will later be expanded to work with multiple modes
 	MCP_init();
+	// Turn mask filters off, receive any message
 	MCP_write(MCP_RXB0CTRL, (3 << RXM0));
+	// Enable rollover
 	MCP_write(MCP_RXB0CTRL, (1 << BUKT));
+
+	/* Disable rollover */
+	//MCP_bit_modify(MCP_RXB0CTRL, (1 << BUKT), 0);
 
 	// Enable interrupt for received message
 	MCP_bit_modify(MCP_CANINTE, (1 << RX0IE), 1);
 
+	/* Set receive flag to zero */
 	MCP_bit_modify(MCP_CANINTF, (1 << RX0IF), 0);
+
+	/* Enable interrupt on interrupt pin (defined in system constants)
+	   with interrupt on falling edge.
+	   (defaults to input pin) */
+	SET_BIT(RECEIVE_ISC_REG, RECEIVE_ISC1);
+	CLEAR_BIT(RECEIVE_ISC_REG, RECEIVE_ISC0);
+
+	/* Enable interrupt pin as interrupt */
+	SET_BIT(RECEIVE_CONTROL_REG, RECEIVE_INTERRUPT);
 }
 
 CAN_message * CAN_message_constructor(uint8_t id, uint8_t length)
@@ -120,10 +134,11 @@ void CAN_send(CAN_message * message)
 	MCP_request_to_send();
 }
 
+
 CAN_message * CAN_receive(void)
 {
-	// Wait for RX0 interrupt flag
-	while(!READ_BIT(MCP_read(MCP_CANINTF), RX0IF));
+	if(!READ_BIT(MCP_read(MCP_CANINTF), RX0IF))
+		printf("can n ready!\n");
 
 	uint8_t id = (MCP_read(MCP_RXB0CTRL + SIDL_OFFSET)) >> SID0;
 	uint8_t length = (MCP_read(MCP_RXB0CTRL + DLC_OFFSET)) & DLC_MASK;
@@ -131,7 +146,7 @@ CAN_message * CAN_receive(void)
 	
 	MCP_read_n(MCP_RXB0CTRL + D_OFFSET, msg->data, msg->length);
 
-	// Clear flag bit
+	// Clear flag bit to clear interrupt
 	MCP_bit_modify(MCP_CANINTF, (1 << RX0IF), 0);
 	return msg;
 }

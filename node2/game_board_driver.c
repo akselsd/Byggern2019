@@ -8,14 +8,17 @@
 #include "ir_sensors/ir_driver.h"
 #include "bit_macros.h"
 #include "dc_motor/controller.h"
+#include "can/CAN_driver.h"
 
 #define SOLENOID PC6
 
 static uint8_t scoring_enabled;
+static uint8_t communication_enabled;
 
 static void update_pwm(CAN_message * msg)
 {
 	float x = msg->data[1];
+	printf("%u\n", (uint8_t)msg->data[1]);
 	/* Map [0, 255] linearly to [-100, 100] */
 	x = x/1.275;
 	x = x - 100;
@@ -25,6 +28,7 @@ static void update_pwm(CAN_message * msg)
 
 void game_board_reset(void)
 {
+	communication_enabled = 0;
 	printf("Reset game board\n");
 
 	controller_clear();
@@ -41,6 +45,7 @@ void game_board_reset(void)
 	scoring_enabled = 0;
 
 	controller_init();
+	communication_enabled = 1;
 }
 
 void game_board_init(void)
@@ -54,32 +59,39 @@ void game_board_init(void)
 	SET_BIT(DDRC, SOLENOID);
 	SET_BIT(PORTC, SOLENOID);
 
+	communication_enabled = 1;
+
+
 	sei();
 }
 
 void game_board_handle_msg(CAN_message * msg)
 {
-	printf("ID: %d\n", msg->id);
-	switch (msg->id)
+	if (communication_enabled)
 	{
-		case ID_JOYSTICK:
-			update_pwm(msg);
-			break;
-		case ID_SLIDERS:
-			controller_set_reference(msg);
-			break;
-		case ID_BUTTONS:
-			game_board_shoot(msg);
-			break;
-		case ID_RESET_GB:
-			game_board_reset();
-			break;
-		case ID_REQ_GOAL:
-			game_board_transmit_goal();
-			break;
-		default:
-			printf("Unknown CAN message ID: %u\n", msg->id);
-			break;
+		//printf("%d\n", msg->id);
+		switch (msg->id)
+		{
+			case ID_JOYSTICK:
+				update_pwm(msg);
+				break;
+			case ID_SLIDERS:
+				controller_set_reference(msg);
+				break;
+			case ID_BUTTONS:
+				game_board_shoot(msg);
+				break;
+			case ID_RESET_GB:
+				game_board_reset();
+				break;
+			case ID_REQ_GOAL:
+				printf("Transmit goal\n");
+				game_board_transmit_goal();
+				break;
+			default:
+				printf("Unknown CAN message ID: %u\n", msg->id);
+				break;
+		}
 	}
 }
 
@@ -123,5 +135,4 @@ void game_board_transmit_goal()
 		printf("GOAL!!!\n\n");
 	}
 	CAN_message_destructor(msg);
-	
 }
