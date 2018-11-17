@@ -44,10 +44,9 @@ int main()
 
 	while(1)
 	{
-		_delay_ms(50);
-		
+		if(game_board_check_goal())
+			game_board_transmit_goal();
 	}
-
 }
 
 

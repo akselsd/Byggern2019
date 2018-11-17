@@ -6,6 +6,7 @@ typedef enum CAN_message_id_enum
 {
 	ID_RESET_GB = 0,
 	ID_IO,
+	ID_GOAL,
 } CAN_message_id;
 
 typedef struct CAN_message_struct

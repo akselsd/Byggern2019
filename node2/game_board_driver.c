@@ -69,7 +69,6 @@ void game_board_handle_msg(CAN_message * msg)
 {
 	if (communication_enabled)
 	{
-		printf("%d\n", msg->id);
 		switch (msg->id)
 		{
 			case ID_RESET_GB:
@@ -118,13 +117,7 @@ uint8_t game_board_check_goal(void)
 
 void game_board_transmit_goal()
 {
-	_delay_ms(20);
-	/*CAN_message * msg = CAN_message_constructor(ID_GOAL, 1);
-	msg->data[0] = game_board_check_goal();
+	CAN_message * msg = CAN_message_constructor(ID_GOAL, 0);
 	CAN_send(msg);
-	if(msg->data[0])
-	{
-		printf("GOAL!!!\n\n");
-	}
-	CAN_message_destructor(msg);*/
+	CAN_message_destructor(msg);
 }

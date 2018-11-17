@@ -283,5 +283,7 @@ int main()
 
 ISR(INT0_vect)
 {
-	printf("Received interrupt.\n");
+	CAN_message * receive_msg = CAN_receive();
+	if (receive_msg->id == ID_GOAL)
+		--n_lives;
 }
