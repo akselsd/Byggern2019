@@ -47,7 +47,7 @@ int main()
 		CAN_message_destructor(msg);
 
 
-		_delay_ms(1);
+		_delay_ms(10);
 		// TODO replace with timer
 	}
 

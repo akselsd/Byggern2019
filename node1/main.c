@@ -5,6 +5,7 @@
 #include <avr/io.h>
 #include <stdio.h>
 #include <util/delay.h>
+#include <avr/interrupt.h>
 
 #include "bit_macros.h"
 #include "can/CAN_driver.h"
@@ -21,8 +22,8 @@
 #define N_GAMES 4
 #define N_CHARS 4
 #define N_DIFFS 3
+#define N_TRANSMIT_STEPS 4
 
-#define N_PROG_TICKS 200
 #define N_LIVES 5
 
 typedef enum game_state_enum
@@ -64,15 +65,17 @@ void program_timer_init(void)
 {
     TCCR0 = 0;
 
-    TCCR0 = (1 << CS10 | (1 << CS12));
-    program_timer_restart();
+    /* Set prescaler to 256 */
+    TCCR0 = (1 << CS02);
 }
 
-
-uint8_t program_timer_check(uint8_t value)
+typedef enum transmit_step_enum
 {
-	return TCNT0 >= value;
-}
+	TRANSMIT_JOYSTICK = 0,
+	TRANSMIT_SLIDER,
+	TRANSMIT_BUTTONS,
+	TRANSMIT_REQ_GOAL,
+} transmit_step;
 
 
 void init_all(void)
@@ -85,10 +88,9 @@ void init_all(void)
 	menu_init();
 	oled_init();
 	CAN_init();
-	program_timer_init();
 }
 
-void receive_goal(uint8_t * n_lives)
+void req_and_receive_goal(uint8_t * n_lives)
 {
 	CAN_message * msg_req_goal = CAN_message_constructor(ID_REQ_GOAL, 0);
 	CAN_send(msg_req_goal);
@@ -100,41 +102,65 @@ void receive_goal(uint8_t * n_lives)
 	{	
 		--*n_lives;
 	}
-	CAN_message_destructor(msg_check_goal);	
+	CAN_message_destructor(msg_check_goal);
+
 }
 
+static uint8_t ticks = 0;
+static uint8_t score = 0;
+static uint8_t n_lives = N_LIVES;
+static uint8_t curr_transmit_step = TRANSMIT_JOYSTICK;
 
 void play_game(uint8_t player_diff)
 {
-	uint8_t ticks = 0;
-	uint8_t score = 0;
-	uint8_t n_lives = N_LIVES;
-
+	program_timer_init();
 	buttons_status buttons;
 
+	/* Enable overflow interrupt */
+	SET_BIT(TIMSK, TOIE0);
+
+	//INTERRUPT ROUTINE
 	while(1)
 	{
 		usb_multifunction_buttons_get_status(&buttons);
 
 		if (buttons.left)
-			return;
+			break;
 
-		if (program_timer_check(N_PROG_TICKS))
-		{
-			program_timer_restart();
+		menu_display_game_state(score, n_lives, menu_diffs[player_diff]);
 
+		_delay_ms(10);
+	}
+
+	/* Disable interrupt */
+	CLEAR_BIT(TIMSK, TOIE0);
+}
+
+ISR(TIMER0_OVF_vect)
+{
+	switch(curr_transmit_step)
+	{
+		case TRANSMIT_JOYSTICK:
 			joystick_transmit_position();
+			break;
+		case TRANSMIT_SLIDER:
 			slider_transmit_position();
-			receive_goal(&n_lives);
+			break;
+		case TRANSMIT_BUTTONS:
 			usb_multifunction_buttons_transmit_status();
+			break;
+		case TRANSMIT_REQ_GOAL:
+			//req_and_receive_goal(&n_lives);
+			break;
+	}
 
-			menu_display_game_state(score, n_lives, menu_diffs[player_diff]);
+	if (++curr_transmit_step > N_TRANSMIT_STEPS)
+		curr_transmit_step = TRANSMIT_JOYSTICK;
 
-			if (++ticks == 30) {
-				ticks = 0;
-				++score;
-			}
-		}
+
+	if (++ticks == 30) {
+		ticks = 0;
+		++score;
 	}
 }
 
@@ -244,7 +270,7 @@ void main_action_loop(void)
 
 	        	oled_display_image(player_img, 64, 0, 0);
 	        	//playsong(player_song)
-	        	_delay_ms(500);
+	        	_delay_ms(2000);
 				play_game(player_diff);
 				state = MENU_GAMES;
 	        	break;

@@ -59,7 +59,7 @@ void game_board_init(void)
 
 void game_board_handle_msg(CAN_message * msg)
 {
-	//printf("ID: %d\n", msg->id);
+	printf("ID: %d\n", msg->id);
 	switch (msg->id)
 	{
 		case ID_JOYSTICK:
