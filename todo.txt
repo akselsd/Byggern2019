@@ -24,4 +24,6 @@ Implement difficulties
 EXTRA WORK: BLuetooth, UART web page
 Shoot sound
 
+Implement hearts for lives?
+
 Remove communication_enabled?
