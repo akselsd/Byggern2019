@@ -22,7 +22,7 @@
 #define N_GAMES 4
 #define N_CHARS 4
 #define N_DIFFS 3
-#define N_LIVES 5
+#define N_LIVES 2
 
 #define N_IO_DATA_LENGTH 8
 
@@ -34,7 +34,7 @@ typedef enum game_state_enum
     HIGHSCORE,
     MENU_DIFFICULTY,
     PLAY,
-    GAME_OVER
+    GAME_OVER,
 } game_state;
 
 static const char * menu_games[N_GAMES] = {
@@ -98,10 +98,11 @@ static uint8_t n_lives = N_LIVES;
 static uint8_t curr_transmit_step = TRANSMIT_JOYSTICK;
 static CAN_message * io_msg;
 
-void play_game(uint8_t player_diff)
+uint8_t play_game(uint8_t player_diff)
 {
 	score = 0;
 	n_lives = N_LIVES;
+	uint8_t game_over = 0;
 
 	program_timer_init();
 
@@ -139,11 +140,19 @@ void play_game(uint8_t player_diff)
 		menu_display_game_state(score, n_lives, menu_diffs[player_diff]);
 
 		_delay_ms(100);
+
+		if (!n_lives)
+		{	
+			game_over = 1;
+			break;
+		}
 	}
 
 	/* Disable interrupt */
 	CLEAR_BIT(TIMSK, TOIE0);
 	CAN_message_destructor(io_msg);
+
+	return game_over;
 }
 
 ISR(TIMER0_OVF_vect)
@@ -255,6 +264,7 @@ void main_action_loop(void)
 	        	break;
 	        }
 	        case PLAY:
+	        {
 	        	msg_reset = CAN_message_constructor(ID_RESET_GB, 0);
 	        	CAN_send(msg_reset);
 				CAN_message_destructor(msg_reset);
@@ -262,9 +272,28 @@ void main_action_loop(void)
 	        	oled_display_image(player_img, 64, 0, 0);
 	        	//playsong(player_song)
 	        	_delay_ms(2000);
-				play_game(player_diff);
+				if (play_game(player_diff))
+				{	
+					state = GAME_OVER;
+    				oled_clear_screen();
+					break;
+				}
 				state = MENU_GAMES;
 	        	break;
+	        }
+	        case GAME_OVER:
+	        {
+	        	// TODO SAVE SCORE!
+	        	menu_game_over(score);
+
+				buttons_status buttons;
+				usb_multifunction_buttons_get_status(&buttons);
+
+	        	if (buttons.left)
+	        		state = MENU_GAMES;
+
+	        	break;
+	        }
 	        default:
 	        	return;
 	    }

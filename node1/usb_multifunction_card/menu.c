@@ -18,6 +18,8 @@
 #define LIVES_POS_PAGE 1
 #define SCORE_POS_PAGE 4
 #define QUIT_POS_PAGE 7
+#define GAME_OVER_PAGE 2
+#define GAME_OVER_COL 25
 
 static joystick_status prev;
 static joystick_status curr;
@@ -156,3 +158,23 @@ void menu_display_game_state(const uint16_t score, const uint8_t n_lives, const 
     oled_printf("QUIT: L");
 }
 
+void menu_game_over(uint8_t score)
+{    
+    oled_set_column(GAME_OVER_COL);
+    oled_set_page(GAME_OVER_PAGE);
+    oled_printf("GAME OVER!");
+
+    oled_set_column(GAME_OVER_COL);
+    oled_set_page(GAME_OVER_PAGE + 2);
+    oled_printf("SCORE:");
+
+    oled_set_column(GAME_OVER_COL);
+    oled_set_page(GAME_OVER_PAGE + 3);
+    char str_score[10];
+    sprintf(&str_score[0], "%u", score);
+    oled_printf(str_score);
+
+    oled_set_column(GAME_OVER_COL);
+    oled_set_page(QUIT_POS_PAGE);
+    oled_printf("QUIT: L");
+}

@@ -61,7 +61,6 @@ void game_board_init(void)
 
 	communication_enabled = 1;
 
-
 	sei();
 }
 

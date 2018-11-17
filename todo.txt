@@ -6,38 +6,22 @@ Fix oled clear screen for cursor
 Fix OLED interrupt optimalization
 Implement LOAD TX BUFFER and READ RX BUFFER (Save one SPI cycle pr msg)
 Const qualifier
-Op amp for ir reciever? See assigment DONE
-Diode snubber for relay, in serial or parallell to GND? PRETTY MUCH DONE
 
 IMPORTANT:
 Make frequency map. Make sure that all data sent is received, by not sending data too frequently.
-Dont use IR_driver for scoring goals
-Make CAN interrupt driven.
-
-
---> Add filter for message reception
 
 Make joystick and slider structs common, msg to status and status to msg functions
 Interrupt driven ADC conversion for IR diodes
 
 OPTIONALS:
-Extend menu select to select quit in game.
-Extend to speakers
 Fix regulator bias
-Implement lives-- when goal conceded
-Implement different difficulties
-Implement music
-Update score logic: e.g. seconds played - goals conceded
 
-TODO TODAY
-Set treshold for encoder value //ISH
-Shoot with 'up'
-Shoot sound
 
 TODO TODAY FOR TOMORROW
-Send confirmation of goal received back to node 2, so not to miss out on goals.
-Implement GAME OVER state
 Implement HIGH SCORE
 Implement difficulties
+
 EXTRA WORK: BLuetooth, UART web page
-RESET score
+Shoot sound
+
+Remove communication_enabled?
