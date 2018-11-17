@@ -46,9 +46,8 @@ int main()
 		game_board_handle_msg(msg);
 		CAN_message_destructor(msg);
 
-		game_board_transmit_goal();
 
-		_delay_ms(10);
+		_delay_ms(1);
 		// TODO replace with timer
 	}
 

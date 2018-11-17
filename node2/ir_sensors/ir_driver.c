@@ -32,6 +32,5 @@ void ir_init(void)
 
 uint8_t ir_check_block(void)
 {
-	printf("ir: %d\n", adc_read());
 	return adc_read() < treshold;
 }

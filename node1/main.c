@@ -90,12 +90,17 @@ void init_all(void)
 
 void receive_goal(uint8_t * n_lives)
 {
-	CAN_message * msg = CAN_receive();
-	if((msg->id == ID_GOAL) && (msg->data[0]))
+	CAN_message * msg_req_goal = CAN_message_constructor(ID_REQ_GOAL, 0);
+	CAN_send(msg_req_goal);
+	CAN_message_destructor(msg_req_goal);
+
+
+	CAN_message * msg_check_goal = CAN_receive();
+	if((msg_check_goal->id == ID_GOAL) && (msg_check_goal->data[0]))
 	{	
 		--*n_lives;
 	}
-	CAN_message_destructor(msg);	
+	CAN_message_destructor(msg_check_goal);	
 }
 
 
@@ -120,8 +125,8 @@ void play_game(uint8_t player_diff)
 
 			joystick_transmit_position();
 			slider_transmit_position();
-			usb_multifunction_buttons_transmit_status();
 			receive_goal(&n_lives);
+			usb_multifunction_buttons_transmit_status();
 
 			menu_display_game_state(score, n_lives, menu_diffs[player_diff]);
 
@@ -138,7 +143,7 @@ void main_action_loop(void)
 	game_state state = MENU_GAMES;
 	uint16_t score = 0;
 	char * player_img = "mario64";
-	CAN_message * reset_msg;
+	CAN_message * msg_reset;
 	uint8_t player_diff = 0;
 
 
@@ -233,9 +238,9 @@ void main_action_loop(void)
 	        	break;
 	        }
 	        case PLAY:
-	        	reset_msg = CAN_message_constructor(ID_RESET, 0);
-	        	CAN_send(reset_msg);
-				CAN_message_destructor(reset_msg);
+	        	msg_reset = CAN_message_constructor(ID_RESET_GB, 0);
+	        	CAN_send(msg_reset);
+				CAN_message_destructor(msg_reset);
 
 	        	oled_display_image(player_img, 64, 0, 0);
 	        	//playsong(player_song)

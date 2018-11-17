@@ -37,7 +37,8 @@ void game_board_reset(void)
 	_delay_ms(400);
 	motor_box_reset_encoder();
 
-	scoring_enabled = 1;
+	//scoring enabled=0 /why was set to 1?
+	scoring_enabled = 0;
 
 	controller_init();
 }
@@ -58,8 +59,9 @@ void game_board_init(void)
 
 void game_board_handle_msg(CAN_message * msg)
 {
-	//printf("ID: %d --", msg->id);
-	switch (msg->id){
+	//printf("ID: %d\n", msg->id);
+	switch (msg->id)
+	{
 		case ID_JOYSTICK:
 			update_pwm(msg);
 			break;
@@ -69,8 +71,11 @@ void game_board_handle_msg(CAN_message * msg)
 		case ID_BUTTONS:
 			game_board_shoot(msg);
 			break;
-		case ID_RESET:
+		case ID_RESET_GB:
 			game_board_reset();
+			break;
+		case ID_REQ_GOAL:
+			game_board_transmit_goal();
 			break;
 		default:
 			printf("Unknown CAN message ID: %u\n", msg->id);
