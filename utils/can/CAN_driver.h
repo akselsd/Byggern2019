@@ -4,13 +4,8 @@
 
 typedef enum CAN_message_id_enum
 {
-	ID_JOYSTICK = 0,
-	ID_SLIDERS,
-	ID_BUTTONS,
-	ID_UPDATE_FSM,
-	ID_RESET_GB,
-	ID_GOAL,
-	ID_REQ_GOAL,
+	ID_RESET_GB = 0,
+	ID_IO,
 } CAN_message_id;
 
 typedef struct CAN_message_struct

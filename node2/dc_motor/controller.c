@@ -67,7 +67,7 @@ void controller_clear(void)
 	CLEAR_BIT(TIMSK3, TOIE3);
 }
 
-void controller_set_reference(CAN_message * msg)
+void controller_set_reference(uint8_t ref)
 {
 	/* Enable or disable motor with left slider */
 	/*if (msg->data[0] < 20)
@@ -77,7 +77,7 @@ void controller_set_reference(CAN_message * msg)
 	}*/
 
 	cli();
-	controller.reference = msg->data[1];
+	controller.reference = ref;
 	sei();
 }
 

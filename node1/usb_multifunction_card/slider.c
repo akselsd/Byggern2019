@@ -25,6 +25,7 @@ void slider_transmit_position(void)
 	msg->data[0] = current.left;
 	msg->data[1] = current.right;
 	CAN_send(msg);
+	//printf("L:%d, R:, %d\n", msg->data[0], msg->data[1]);
 	CAN_message_destructor(msg);
 
 }

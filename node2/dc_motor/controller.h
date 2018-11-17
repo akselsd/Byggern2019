@@ -20,6 +20,6 @@ typedef struct controller_values_struct
 
 void controller_init(void);
 void controller_clear(void);
-void controller_set_reference(CAN_message * msg);
+void controller_set_reference(uint8_t ref);
 
 #endif

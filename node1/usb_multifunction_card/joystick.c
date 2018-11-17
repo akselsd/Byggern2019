@@ -104,6 +104,7 @@ void joystick_transmit_position(void)
 	msg->data[1] = current.x;
 	msg->data[2] = current.y;
 	msg->data[3] = current.dir;
+	//printf("ID:%d, X:, %d\n", msg->id, msg->data[1]);
 
 	CAN_send(msg);
 	CAN_message_destructor(msg);

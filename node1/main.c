@@ -22,9 +22,10 @@
 #define N_GAMES 4
 #define N_CHARS 4
 #define N_DIFFS 3
-#define N_TRANSMIT_STEPS 4
-
 #define N_LIVES 5
+
+#define N_IO_DATA_LENGTH 8
+
 
 typedef enum game_state_enum
 {
@@ -91,25 +92,11 @@ void init_all(void)
 	CAN_init();
 }
 
-void req_and_receive_goal(uint8_t * n_lives)
-{
-	CAN_message * msg_req_goal = CAN_message_constructor(ID_REQ_GOAL, 0);
-	CAN_send(msg_req_goal);
-	CAN_message_destructor(msg_req_goal);
-
-
-	/*CAN_message * msg_check_goal = CAN_receive();
-	if((msg_check_goal->id == ID_GOAL) && (msg_check_goal->data[0]))
-	{	
-		--*n_lives;
-	}
-	CAN_message_destructor(msg_check_goal);*/
-}
-
 static uint8_t ticks = 0;
 static uint8_t score = 0;
 static uint8_t n_lives = N_LIVES;
 static uint8_t curr_transmit_step = TRANSMIT_JOYSTICK;
+static CAN_message * io_msg;
 
 void play_game(uint8_t player_diff)
 {
@@ -117,49 +104,51 @@ void play_game(uint8_t player_diff)
 	n_lives = N_LIVES;
 
 	program_timer_init();
-	buttons_status buttons;
 
 	/* Enable overflow interrupt */
 	SET_BIT(TIMSK, TOIE0);
 
-	//INTERRUPT ROUTINE
+	joystick_status joystick;
+	slider_status slider;
+	buttons_status buttons; 
+
+	io_msg = CAN_message_constructor(ID_IO, N_IO_DATA_LENGTH);
+
 	while(1)
 	{
 		usb_multifunction_buttons_get_status(&buttons);
+		joystick_get_status(&joystick);
+		slider_get_status(&slider);
 
 		if (buttons.left)
 			break;
 
+		io_msg->data[0] = joystick.x;
+		io_msg->data[1] = joystick.y;
+		io_msg->data[2] = joystick.pressed;
+		io_msg->data[3] = joystick.dir;
+
+		io_msg->data[4] = buttons.left;
+		io_msg->data[5] = buttons.right;
+
+		io_msg->data[6] = slider.left;
+		io_msg->data[7] = slider.right;
+
+		CAN_send(io_msg);
+
 		menu_display_game_state(score, n_lives, menu_diffs[player_diff]);
 
-		_delay_ms(10);
+		_delay_ms(100);
 	}
 
 	/* Disable interrupt */
 	CLEAR_BIT(TIMSK, TOIE0);
+	CAN_message_destructor(io_msg);
 }
 
 ISR(TIMER0_OVF_vect)
 {
-	switch(curr_transmit_step)
-	{
-		case TRANSMIT_JOYSTICK:
-			joystick_transmit_position();
-			break;
-		case TRANSMIT_SLIDER:
-			slider_transmit_position();
-			break;
-		case TRANSMIT_BUTTONS:
-			usb_multifunction_buttons_transmit_status();
-			break;
-		case TRANSMIT_REQ_GOAL:
-			//req_and_receive_goal(&n_lives);
-			break;
-	}
-
-	if (++curr_transmit_step > N_TRANSMIT_STEPS)
-		curr_transmit_step = TRANSMIT_JOYSTICK;
-
+	//CAN_send(io_msg);
 
 	if (++ticks == 30) {
 		ticks = 0;

@@ -26,6 +26,7 @@
 
 /* Bits in CANINTE*/
 #define RX0IE 0
+#define TX0IE 2
 
 /* Bits in CANINTF */
 #define RX0IF 0
@@ -78,6 +79,9 @@ void CAN_init(void)
 
 	// Enable interrupt for received message
 	MCP_bit_modify(MCP_CANINTE, (1 << RX0IE), 1);
+
+	// Disable interrupt for transmit
+	MCP_bit_modify(MCP_CANINTE, (1 << TX0IE), 0);
 
 	/* Set receive flag to zero */
 	MCP_bit_modify(MCP_CANINTF, (1 << RX0IF), 0);

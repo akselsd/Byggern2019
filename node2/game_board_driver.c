@@ -9,16 +9,16 @@
 #include "bit_macros.h"
 #include "dc_motor/controller.h"
 #include "can/CAN_driver.h"
+#include "../node1/usb_multifunction_card/joystick.h"
 
 #define SOLENOID PC6
 
 static uint8_t scoring_enabled;
 static uint8_t communication_enabled;
 
-static void update_pwm(CAN_message * msg)
+static void update_pwm(uint8_t x_int)
 {
-	float x = msg->data[1];
-	printf("%u\n", (uint8_t)msg->data[1]);
+	float x = x_int;
 	/* Map [0, 255] linearly to [-100, 100] */
 	x = x/1.275;
 	x = x - 100;
@@ -69,24 +69,16 @@ void game_board_handle_msg(CAN_message * msg)
 {
 	if (communication_enabled)
 	{
-		//printf("%d\n", msg->id);
+		printf("%d\n", msg->id);
 		switch (msg->id)
 		{
-			case ID_JOYSTICK:
-				update_pwm(msg);
-				break;
-			case ID_SLIDERS:
-				controller_set_reference(msg);
-				break;
-			case ID_BUTTONS:
-				game_board_shoot(msg);
-				break;
 			case ID_RESET_GB:
 				game_board_reset();
 				break;
-			case ID_REQ_GOAL:
-				printf("Transmit goal\n");
-				game_board_transmit_goal();
+			case ID_IO:
+				update_pwm(msg->data[0]);
+				controller_set_reference(msg->data[7]);
+				game_board_shoot(msg->data[5], msg->data[3]);
 				break;
 			default:
 				printf("Unknown CAN message ID: %u\n", msg->id);
@@ -95,10 +87,9 @@ void game_board_handle_msg(CAN_message * msg)
 	}
 }
 
-void game_board_shoot(CAN_message * msg)
+void game_board_shoot(uint8_t r_pressed, uint8_t joystick_dir)
 {
-	/* Right button */
-	if (msg->data[1])
+	if (r_pressed || (joystick_dir == UP))
 	{
 		if (!scoring_enabled)
 			scoring_enabled = 1;
@@ -127,12 +118,13 @@ uint8_t game_board_check_goal(void)
 
 void game_board_transmit_goal()
 {
-	CAN_message * msg = CAN_message_constructor(ID_GOAL, 1);
+	_delay_ms(20);
+	/*CAN_message * msg = CAN_message_constructor(ID_GOAL, 1);
 	msg->data[0] = game_board_check_goal();
 	CAN_send(msg);
 	if(msg->data[0])
 	{
 		printf("GOAL!!!\n\n");
 	}
-	CAN_message_destructor(msg);
+	CAN_message_destructor(msg);*/
 }
