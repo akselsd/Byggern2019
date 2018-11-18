@@ -45,7 +45,7 @@ static const char * menu_diffs[N_DIFFS] = {
 };
 
 static uint8_t ticks;
-static uint8_t score;
+static uint16_t score;
 static uint8_t n_lives;
 
 static CAN_message * io_msg;
@@ -200,7 +200,7 @@ void fsm_main_loop(void)
 	        }
 	        case GAME_OVER:
 	        {
-	        	// TODO SAVE SCORE!
+	        	menu_save_score(score);
 	        	menu_game_over(score);
 
 				buttons_status buttons;

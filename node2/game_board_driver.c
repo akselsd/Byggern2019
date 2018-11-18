@@ -82,6 +82,7 @@ void game_board_handle_msg(CAN_message * msg)
 				game_board_shoot(msg->data[5], msg->data[3]);
 				break;
 			case ID_NOT_READY:
+				//printf("CAN receive not ready.\n");
 				break;
 			default:
 				//printf("Unknown CAN message ID: %u\n", msg->id);

@@ -219,3 +219,9 @@ void menu_leaderboard(void)
         ++line_no;
     }
 }
+
+void menu_save_score(uint16_t score)
+{
+    // Send score
+    printf("@lsave %u", score);
+}
