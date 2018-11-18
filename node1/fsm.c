@@ -107,14 +107,16 @@ uint8_t fsm_play_game(const uint8_t player_diff)
 	// Enable game timer overflow interrupt
 	SET_BIT(TIMSK, TOIE0);
 
-	io_msg = CAN_message_constructor(ID_IO, N_IO_DATA_LENGTH);
-
 	// Game loop
 	while(1)
 	{
+		io_msg = CAN_message_constructor(ID_IO, N_IO_DATA_LENGTH);
 		fetch_io_values();
 		populate_io_msg();
+		//printf("%u\n", io_msg->id);
 		CAN_send(io_msg);
+		CAN_message_destructor(io_msg);
+
 
 		if (buttons.left)
 			break;
@@ -159,7 +161,6 @@ void fsm_main_loop(void)
 	            {
 	            	case 0:
 	            		state = PLAY;
-	            		oled_clear_screen();
 	            		break;
 	            	case 1:
 	            		state = LEADERBOARD;
@@ -168,15 +169,12 @@ void fsm_main_loop(void)
 	            		break;
 	            	case 2:
 	            		state = MENU_CHARACTERS;
-	            		oled_clear_screen();
 	            		break;
 	            	case 3:
 	            		state = MENU_DIFFICULTY;
-	            		oled_clear_screen();
 	            		break;
 	            	case 99:
 	            		state = MENU_GAMES;
-	            		oled_clear_screen();
 	            		break;
 	            	default:
 	            		return;

@@ -131,7 +131,7 @@ void CAN_send(CAN_message * message)
 	while(READ_BIT(MCP_read(MCP_TXB0CTRL), TXREQ));
 
 	MCP_write(MCP_TXB0CTRL + SIDH_OFFSET, 0);
-	MCP_write(MCP_TXB0CTRL + SIDL_OFFSET, message->id << SID0);
+	MCP_write(MCP_TXB0CTRL + SIDL_OFFSET, message->id << SID0); // Allows for a maximum of 8 IDs (3 bits!)
 	MCP_write(MCP_TXB0CTRL + DLC_OFFSET, message->length);
 	MCP_write_n(MCP_TXB0CTRL + D_OFFSET, message->data, message->length);
 	MCP_request_to_send();
@@ -143,7 +143,7 @@ CAN_message * CAN_receive(void)
 	if(!READ_BIT(MCP_read(MCP_CANINTF), RX0IF))
 	{
 		// Clear flag bit to clear interrupt
-		//MCP_bit_modify(MCP_CANINTF, (1 << RX0IF), 0);
+		MCP_bit_modify(MCP_CANINTF, (1 << RX0IF), 0);
 
 		return CAN_message_constructor(ID_NOT_READY, 0);
 	}

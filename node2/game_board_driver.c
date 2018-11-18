@@ -69,6 +69,7 @@ void game_board_handle_msg(CAN_message * msg)
 {
 	if (communication_enabled)
 	{
+		//printf("id: %u\n", msg->id);
 		switch (msg->id)
 		{
 			case ID_RESET_GB:
@@ -79,13 +80,11 @@ void game_board_handle_msg(CAN_message * msg)
 				update_pwm(msg->data[0]);
 				controller_set_reference(msg->data[7]);
 				game_board_shoot(msg->data[5], msg->data[3]);
-				printf("L: %d - R: %d\n", msg->data[6], msg->data[7]);
 				break;
 			case ID_NOT_READY:
-				printf("CAN receive not ready.\n");
 				break;
 			default:
-				printf("Unknown CAN message ID: %u\n", msg->id);
+				//printf("Unknown CAN message ID: %u\n", msg->id);
 				break;
 		}
 	}

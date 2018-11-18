@@ -24,4 +24,5 @@ CAN_message * CAN_message_constructor(uint8_t id, uint8_t length);
 void CAN_message_destructor(CAN_message * msg);
 void CAN_send(CAN_message * message);
 CAN_message * CAN_receive(void);
+void CAN_interrupt_enable(void);
 #endif

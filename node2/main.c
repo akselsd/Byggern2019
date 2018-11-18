@@ -39,8 +39,8 @@ int main()
 	cli();
 	init_all();
 	_delay_ms(1000);
-	sei();
 	printf("\n\n\nNode 2 Initialized\n\n\n");
+	sei();
 
 	while(1)
 	{

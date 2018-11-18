@@ -194,8 +194,9 @@ void oled_init(void) {
     TCCR1B = (1 << CS10 | (1 << CS12));
 
     /* Load Compare registers */
-    OCR1AH = 0;
-    OCR1AL = 160;
+    //OCR1AH = 0;
+    //OCR1AL = 160;
+    OCR1A = 320;
 
     /* Enable interrupt */
     TIMSK |= (1 << OCIE1A);
