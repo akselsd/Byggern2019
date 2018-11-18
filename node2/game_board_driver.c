@@ -10,6 +10,7 @@
 #include "dc_motor/controller.h"
 #include "can/CAN_driver.h"
 #include "../node1/usb_multifunction_card/joystick.h"
+#include "../node1/fsm.h"
 
 #define SOLENOID PC6
 
@@ -26,7 +27,7 @@ static void update_pwm(uint8_t x_int)
 	pwm_set_duty_cycle(x);
 }
 
-void game_board_reset(void)
+void game_board_reset(uint8_t player_diff)
 {
 	communication_enabled = 0;
 	printf("Reset game board\n");
@@ -53,7 +54,7 @@ void game_board_init(void)
 	cli();
 
 	printf("Initialize game board\n");
-	game_board_reset();
+	game_board_reset(DIFF_EASY);
 
 	/* Enable solenoid */
 	SET_BIT(DDRC, SOLENOID);
@@ -71,12 +72,17 @@ void game_board_handle_msg(CAN_message * msg)
 		switch (msg->id)
 		{
 			case ID_RESET_GB:
-				game_board_reset();
+				if ((msg->data[0]) && (msg->length == 2))
+					game_board_reset(msg->data[1]); // msg->data[1] - diff
 				break;
 			case ID_IO:
 				update_pwm(msg->data[0]);
 				controller_set_reference(msg->data[7]);
 				game_board_shoot(msg->data[5], msg->data[3]);
+				printf("L: %d - R: %d\n", msg->data[6], msg->data[7]);
+				break;
+			case ID_NOT_READY:
+				printf("CAN receive not ready.\n");
 				break;
 			default:
 				printf("Unknown CAN message ID: %u\n", msg->id);

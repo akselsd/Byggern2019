@@ -27,3 +27,4 @@ Shoot sound
 Implement hearts for lives?
 
 Remove communication_enabled?
+Check length of CAN messages to verify they are not corrupted

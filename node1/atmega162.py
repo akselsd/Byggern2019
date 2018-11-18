@@ -33,12 +33,11 @@ def write_line(line, ser):
 
 def do_command(cmd, ser):
 	if cmd.startswith("i"):
-		with open(cmd[1:].strip() + ".txt", 'rb') as f:
+		with open("oled_images/" + cmd[1:].strip() + ".txt", 'rb') as f:
 			s = f.readlines()
 			total = 0
 			for i in s:
 				total+=len(i)
-			print("Total: ",total)
 			if total % 8 != 0:
 				print("Error reading image")
 				print(cmd[1:].strip() + ".txt")

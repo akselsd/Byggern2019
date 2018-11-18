@@ -45,7 +45,10 @@ int main()
 	while(1)
 	{
 		if(game_board_check_goal())
+		{	
 			game_board_transmit_goal();
+			printf("Send goal.\n");
+		}
 	}
 }
 

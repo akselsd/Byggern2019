@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <util/delay.h>
+#include <avr/interrupt.h>
 #include <avr/io.h>
 
 
@@ -126,10 +127,8 @@ void CAN_message_destructor(CAN_message * msg)
 
 void CAN_send(CAN_message * message)
 {
-	/* Check if buffer is ready */
+	// Wait for transmit buffer to finish AND receive buffer to finish
 	while(READ_BIT(MCP_read(MCP_TXB0CTRL), TXREQ));
-
-	/* TODO: Assign priority? */
 
 	MCP_write(MCP_TXB0CTRL + SIDH_OFFSET, 0);
 	MCP_write(MCP_TXB0CTRL + SIDL_OFFSET, message->id << SID0);
@@ -142,7 +141,9 @@ void CAN_send(CAN_message * message)
 CAN_message * CAN_receive(void)
 {
 	if(!READ_BIT(MCP_read(MCP_CANINTF), RX0IF))
-		printf("can n ready!\n");
+	{
+		return CAN_message_constructor(ID_NOT_READY, 0);
+	}
 
 	uint8_t id = (MCP_read(MCP_RXB0CTRL + SIDL_OFFSET)) >> SID0;
 	uint8_t length = (MCP_read(MCP_RXB0CTRL + DLC_OFFSET)) & DLC_MASK;
@@ -152,5 +153,7 @@ CAN_message * CAN_receive(void)
 
 	// Clear flag bit to clear interrupt
 	MCP_bit_modify(MCP_CANINTF, (1 << RX0IF), 0);
+
 	return msg;
+	
 }
