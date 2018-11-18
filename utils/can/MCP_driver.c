@@ -18,7 +18,6 @@ void MCP_init(void)
 
 	MCP_write(MCP_CANCTRL, MODE_NORMAL);
 	//printf("Status: %d\n", MCP_read_status());
-
 }
 
 void MCP_reset(void)
@@ -85,7 +84,7 @@ void MCP_request_to_send(void)
 {
 	SPI_start_transmit();
 
-	SPI_write(MCP_RTS_TX0);
+	SPI_write(MCP_RTS_TX0); // Will set the TxB0CTRL.TXREQ bit
 
 	SPI_end_transmit();
 }

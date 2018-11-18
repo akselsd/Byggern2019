@@ -29,6 +29,5 @@ typedef struct joystick_status_struct
 void joystick_get_status(joystick_status * status);
 const char * joystick_direction_to_string(joystick_direction dir);
 void joystick_calibrate_joystick(void);
-void joystick_transmit_position(void);
 
 #endif

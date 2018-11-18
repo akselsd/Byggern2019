@@ -6,8 +6,6 @@
 
 void SPI_master_init(void)
 {
-
-
     /* Set MOSI, SS and SCK output, all others input 
     *  SS needs to be output to avoid others pulling it low
     */

@@ -59,11 +59,17 @@ def do_command(cmd, ser):
 				write_line(s[n].encode("utf-8"), ser)
 	if cmd.startswith("lsave"):
 		# Save to leaderboard
-		with open("game_data/leaderboard.txt") as f:
+		score = cmd.split()[1]
+
+		with open("game_data/leaderboard.txt", 'a') as f:
 			name = input("Enter name:")
-			while (len(name) > 3):
-				print("Name can only be three characters!")
-				 name = input("Enter name:")
+			#while len(name) != 3:
+			#	print("Name can only be three characters!")
+			#	 name = input("Enter name:")
+
+			line = name + " " + score.zfill(3) + "\n"
+			f.write(line)
+
 
 def main():
 

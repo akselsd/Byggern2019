@@ -16,16 +16,3 @@ void slider_get_status(slider_status * status)
     status->right = read_channel(7, ADC_address);
 
 }
-
-
-void slider_transmit_position(void)
-{
-    slider_get_status(&current);
-	CAN_message * msg = CAN_message_constructor(ID_SLIDERS, 2);
-	msg->data[0] = current.left;
-	msg->data[1] = current.right;
-	CAN_send(msg);
-	//printf("L:%d, R:, %d\n", msg->data[0], msg->data[1]);
-	CAN_message_destructor(msg);
-
-}

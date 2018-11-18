@@ -48,20 +48,17 @@ static uint8_t ticks;
 static uint16_t score;
 static uint8_t n_lives;
 
-static CAN_message * io_msg;
-
 static joystick_status joystick;
 static slider_status slider;
 static buttons_status buttons; 
 
 static void send_reset_msg(uint8_t player_diff)
 {
-	CAN_message * msg_reset;
-	msg_reset = CAN_message_constructor(ID_RESET_GB, 2);
-	msg_reset->data[0] = 1; // Reset (true/false)
-	msg_reset->data[1] = player_diff;
-	CAN_send(msg_reset);
-	CAN_message_destructor(msg_reset);
+	CAN_message msg_reset;
+	msg_reset.id = ID_RESET_GB;
+	msg_reset.data[0] = 1;
+	msg_reset.data[1] = player_diff;
+	CAN_send(&msg_reset);
 }
 
 static void fetch_io_values(void)
@@ -71,7 +68,7 @@ static void fetch_io_values(void)
 	slider_get_status(&slider);
 }
 
-static void populate_io_msg(void)
+static void populate_io_msg(CAN_message * io_msg)
 {
 	io_msg->data[0] = joystick.x;
 	io_msg->data[1] = joystick.y;
@@ -87,8 +84,8 @@ static void populate_io_msg(void)
 
 static void game_timer_init(void)
 {
-	/*// Clear timer register
-    TCNT0 = 0;*/
+	// Clear timer register
+    TCNT0 = 0;
 
     // Set prescaler to 1024
     TCCR0 = 0;
@@ -100,6 +97,10 @@ uint8_t fsm_play_game(const uint8_t player_diff)
 	score = 0;
 	n_lives = N_LIVES;
 	uint8_t game_over = 0;
+
+	CAN_message io_msg;
+	io_msg.id = ID_IO;
+
 	fetch_io_values();
 
 	game_timer_init();
@@ -110,13 +111,9 @@ uint8_t fsm_play_game(const uint8_t player_diff)
 	// Game loop
 	while(1)
 	{
-		io_msg = CAN_message_constructor(ID_IO, N_IO_DATA_LENGTH);
 		fetch_io_values();
-		populate_io_msg();
-		//printf("%u\n", io_msg->id);
-		CAN_send(io_msg);
-		CAN_message_destructor(io_msg);
-
+		populate_io_msg(&io_msg);
+		CAN_send(&io_msg);
 
 		if (buttons.left)
 			break;
@@ -130,9 +127,9 @@ uint8_t fsm_play_game(const uint8_t player_diff)
 			game_over = 1;
 			break;
 		}
-	}
 
-	CAN_message_destructor(io_msg);
+		//printf("s: %u l: %u\n", score, n_lives);
+	}
 
 	// Disable game timer interrupt when game is done
 	CLEAR_BIT(TIMSK, TOIE0);
@@ -164,10 +161,10 @@ void fsm_main_loop(void)
 	            		break;
 	            	case 1:
 	            		state = LEADERBOARD;
-    					oled_clear_screen();
 	        			menu_leaderboard();
 	            		break;
 	            	case 2:
+	            		oled_clear_screen();
 	            		state = MENU_CHARACTERS;
 	            		break;
 	            	case 3:
@@ -190,25 +187,32 @@ void fsm_main_loop(void)
 	        	_delay_ms(2000); // Wait for image to load
 
 				if (fsm_play_game(player_diff))
-				{	
+				{
+					// GAME OVER
+	        		menu_game_over(score);
 					state = GAME_OVER;
-    				oled_clear_screen();
 					break;
 				}
+				// PLAYER QUIT
 				state = MENU_GAMES;
 	        	break;
 	        }
 	        case GAME_OVER:
 	        {
-	        	menu_save_score(score);
-	        	menu_game_over(score);
 
 				buttons_status buttons;
 				usb_multifunction_buttons_get_status(&buttons);
 
 	        	if (buttons.left)
+	        	{	
 	        		state = MENU_GAMES;
-
+	        	}
+	        	if (buttons.right)
+	        	{
+	        		menu_save_score(score);
+    				_delay_ms(4000);
+	        		state = MENU_GAMES;
+	        	}
 	        	break;
 	        }
 	        case LEADERBOARD:
@@ -293,9 +297,10 @@ ISR(TIMER0_OVF_vect)
 // CAN receive interrupt
 ISR(CAN_REC_INT_VECT)
 {
-	CAN_message * receive_msg = CAN_receive();
-	if (receive_msg->id == ID_GOAL)
+	CAN_message receive_msg;
+	CAN_receive(&receive_msg);
+	if (receive_msg.id == ID_GOAL)
 		--n_lives;
 	else
-		printf("%d\n", receive_msg->id);
+		printf("%d\n", receive_msg.id);
 }

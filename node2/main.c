@@ -17,8 +17,6 @@
 #include "uart/uart.h"
 #include "ir_sensors/ir_driver.h"
 
-static CAN_message * msg;
-
 void init_all(void)
 {
 	// BE CAREFUL WHEN CHANGING ORDER!!
@@ -56,7 +54,7 @@ int main()
 /* Receive message interrupt */
 ISR(INT4_vect)
 {
- 	msg = CAN_receive();
-	game_board_handle_msg(msg);
-	CAN_message_destructor(msg);
+ 	CAN_message received_msg;
+ 	CAN_receive(&received_msg);
+	game_board_handle_msg(&received_msg);
 }

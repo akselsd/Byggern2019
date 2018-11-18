@@ -90,7 +90,7 @@ uint8_t uart_leaderboard_get_n_lines(void)
 // UART receive interrupt
 ISR(RX_VECTOR)
 {
-	/* Skip intermediate buffer */
+	// Skip intermediate buffer
 	if (img_buffer.buffer)
 	{
 		// Write received byte to buffer
@@ -98,11 +98,16 @@ ISR(RX_VECTOR)
 
 		if (--img_buffer.n_bytes == 0)
 		{
-			/* Image completed */
+			// Image completed
 			if (img_buffer.n_pages == 0)
-				img_buffer.buffer = NULL;
+			{
 
-			/* New page */
+				img_buffer.buffer = NULL;
+				//printf("Disable im buffer\n");
+			}
+
+
+			// New page
 			else
 			{
 				--img_buffer.n_pages;
@@ -124,7 +129,7 @@ ISR(RX_VECTOR)
 			return;
 		}
 
-		/* Load next character into buffer */
+		// Load next character into buffer
 		*(lb_buffer.buffer++) = UDR0;
 
 		// If end of line is reached
@@ -140,6 +145,7 @@ ISR(RX_VECTOR)
 			if (lb_buffer.lines_left == 0)
 			{
 				lb_buffer.buffer = NULL;
+				//printf("Disable LB buffer\n");
 			}
 		}
 		return;

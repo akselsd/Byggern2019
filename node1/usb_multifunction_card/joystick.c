@@ -95,17 +95,3 @@ void joystick_calibrate_joystick(void)
 	printf("--Calibrating joystick finish--\n");
 }
 
-void joystick_transmit_position(void)
-{
-	joystick_get_status(&current);
-
-	CAN_message * msg = CAN_message_constructor(ID_JOYSTICK, 4);
-	msg->data[0] = current.pressed;
-	msg->data[1] = current.x;
-	msg->data[2] = current.y;
-	msg->data[3] = current.dir;
-	//printf("ID:%d, X:, %d\n", msg->id, msg->data[1]);
-
-	CAN_send(msg);
-	CAN_message_destructor(msg);
-}

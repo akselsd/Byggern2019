@@ -11,6 +11,5 @@ typedef struct button_clicked
 
 void usb_multifunction_buttons_get_status(buttons_status * status);
 void usb_multifunction_buttons_init(void);
-void usb_multifunction_buttons_transmit_status(void);
 
 #endif

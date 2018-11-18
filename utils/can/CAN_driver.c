@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <util/delay.h>
-#include <avr/interrupt.h>
 #include <avr/io.h>
 
 
@@ -36,7 +35,7 @@
 /* Bits in TXBnSIDL / RXBnSIDL*/
 #define SID0 5
 
-void CAN_init_test_loopback_mode(void)
+/*void CAN_init_test_loopback_mode(void)
 {
 	MCP_init();
 	_delay_ms(200);
@@ -65,7 +64,7 @@ void CAN_init_test_loopback_mode(void)
 		}
 		CAN_message_destructor(rec);
 	}
-}
+}*/
 
 void CAN_init(void)
 {
@@ -75,8 +74,12 @@ void CAN_init(void)
 	// Enable rollover
 	MCP_write(MCP_RXB0CTRL, (1 << BUKT));
 
-	/* Disable rollover */
-	//MCP_bit_modify(MCP_RXB0CTRL, (1 << BUKT), 0);
+	// Dont use ID high reg bits
+	MCP_write(MCP_TXB0CTRL + SIDH_OFFSET, 0);
+	// Disable extended ID bits
+	MCP_write(MCP_TXB0CTRL + SIDL_OFFSET, 0);
+	// Send transmit message as Data Frame
+	MCP_write(MCP_TXB0CTRL + DLC_OFFSET, 0);
 
 	// Enable interrupt for received message
 	MCP_bit_modify(MCP_CANINTE, (1 << RX0IE), 1);
@@ -97,21 +100,33 @@ void CAN_init(void)
 	SET_BIT(RECEIVE_CONTROL_REG, RECEIVE_INTERRUPT);
 }
 
-CAN_message * CAN_message_constructor(uint8_t id, uint8_t length)
+/*CAN_message * CAN_message_constructor(uint8_t id, uint8_t length)
 {
 	CAN_message * msg = malloc(sizeof(CAN_message));
 	
 	if (msg == NULL)
-		return NULL;
-	
-	msg->id = id;
-	msg->data = malloc(sizeof(uint8_t) * length);
-	
-	if (msg->data == NULL){
-		free(msg);
+	{
+		//printf("MALLOC\n");
 		return NULL;
 	}
+	
+	msg->id = id;
 	msg->length = length;
+
+	if (msg->length)
+	{
+		msg->data = malloc(sizeof(uint8_t) * length);
+
+		if (msg->data == NULL)
+		{	
+			free(msg);
+			return NULL;
+		}
+	}
+	else
+	{
+		msg->data = NULL;
+	}
 	
 	return msg;
 }
@@ -123,40 +138,31 @@ void CAN_message_destructor(CAN_message * msg)
 			free(msg->data);
 		free(msg);
 	}
-}
+}*/
 
 void CAN_send(CAN_message * message)
 {
-	// Wait for transmit buffer to finish AND receive buffer to finish
+	/* Check if buffer is ready */
 	while(READ_BIT(MCP_read(MCP_TXB0CTRL), TXREQ));
 
+	// Dont use ID high reg bits
 	MCP_write(MCP_TXB0CTRL + SIDH_OFFSET, 0);
-	MCP_write(MCP_TXB0CTRL + SIDL_OFFSET, message->id << SID0); // Allows for a maximum of 8 IDs (3 bits!)
-	MCP_write(MCP_TXB0CTRL + DLC_OFFSET, message->length);
-	MCP_write_n(MCP_TXB0CTRL + D_OFFSET, message->data, message->length);
+	MCP_write(MCP_TXB0CTRL + SIDL_OFFSET, message->id << SID0); // Will only allow 3 bit IDs
+	MCP_write(MCP_TXB0CTRL + DLC_OFFSET, CAN_MSG_DATA_LENGTH);
+	MCP_write_n(MCP_TXB0CTRL + D_OFFSET, message->data, CAN_MSG_DATA_LENGTH);
 	MCP_request_to_send();
 }
 
 
-CAN_message * CAN_receive(void)
+void CAN_receive(CAN_message * message)
 {
 	if(!READ_BIT(MCP_read(MCP_CANINTF), RX0IF))
-	{
-		// Clear flag bit to clear interrupt
-		MCP_bit_modify(MCP_CANINTF, (1 << RX0IF), 0);
+		printf("CAN not ready!\n");
 
-		return CAN_message_constructor(ID_NOT_READY, 0);
-	}
-
-	uint8_t id = (MCP_read(MCP_RXB0CTRL + SIDL_OFFSET)) >> SID0;
-	uint8_t length = (MCP_read(MCP_RXB0CTRL + DLC_OFFSET)) & DLC_MASK;
-	CAN_message * msg = CAN_message_constructor(id, length);
-	
-	MCP_read_n(MCP_RXB0CTRL + D_OFFSET, msg->data, msg->length);
+	message->id = (MCP_read(MCP_RXB0CTRL + SIDL_OFFSET)) >> SID0;
+	message->length = (MCP_read(MCP_RXB0CTRL + DLC_OFFSET)) & DLC_MASK;
+	MCP_read_n(MCP_RXB0CTRL + D_OFFSET, message->data, CAN_MSG_DATA_LENGTH);
 
 	// Clear flag bit to clear interrupt
 	MCP_bit_modify(MCP_CANINTF, (1 << RX0IF), 0);
-
-	return msg;
-	
 }

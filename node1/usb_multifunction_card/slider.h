@@ -9,6 +9,5 @@ typedef struct slider_position
 } slider_status;
 
 void slider_get_status(slider_status * status);
-void slider_transmit_position(void);
 
 #endif
