@@ -26,7 +26,7 @@
 
 static const char * menu_games[N_GAMES] = {
     "Play",
-    "Highscore",
+    "Leaderboard",
     "Character",
     "Difficulty",
 };
@@ -159,23 +159,67 @@ void fsm_main_loop(void)
 	            {
 	            	case 0:
 	            		state = PLAY;
+	            		oled_clear_screen();
 	            		break;
 	            	case 1:
-	            		state = HIGHSCORE;
+	            		state = LEADERBOARD;
+    					oled_clear_screen();
+	        			menu_leaderboard();
 	            		break;
 	            	case 2:
 	            		state = MENU_CHARACTERS;
+	            		oled_clear_screen();
 	            		break;
 	            	case 3:
 	            		state = MENU_DIFFICULTY;
+	            		oled_clear_screen();
 	            		break;
 	            	case 99:
 	            		state = MENU_GAMES;
+	            		oled_clear_screen();
 	            		break;
 	            	default:
 	            		return;
 	            }
 	            break;
+	        }
+	        case PLAY:
+	        {
+				send_reset_msg(player_diff);
+
+	        	oled_display_image(player_img, 64, 0, 0);
+	        	//playsong(player_song)
+	        	_delay_ms(2000); // Wait for image to load
+
+				if (fsm_play_game(player_diff))
+				{	
+					state = GAME_OVER;
+    				oled_clear_screen();
+					break;
+				}
+				state = MENU_GAMES;
+	        	break;
+	        }
+	        case GAME_OVER:
+	        {
+	        	// TODO SAVE SCORE!
+	        	menu_game_over(score);
+
+				buttons_status buttons;
+				usb_multifunction_buttons_get_status(&buttons);
+
+	        	if (buttons.left)
+	        		state = MENU_GAMES;
+
+	        	break;
+	        }
+	        case LEADERBOARD:
+	        {	
+	        	_delay_ms(100);
+	        	fetch_io_values();
+	        	if (buttons.left || joystick.dir == LEFT)
+	        		state = MENU_GAMES;
+	        	break;
 	        }
 	        case MENU_CHARACTERS:
 	        {
@@ -231,36 +275,6 @@ void fsm_main_loop(void)
 	        		default:
 	        			return;
 	        	}
-	        	break;
-	        }
-	        case PLAY:
-	        {
-				send_reset_msg(player_diff);
-
-	        	oled_display_image(player_img, 64, 0, 0);
-	        	//playsong(player_song)
-	        	_delay_ms(2000); // Wait for image to load
-
-				if (fsm_play_game(player_diff))
-				{	
-					state = GAME_OVER;
-    				oled_clear_screen();
-					break;
-				}
-				state = MENU_GAMES;
-	        	break;
-	        }
-	        case GAME_OVER:
-	        {
-	        	// TODO SAVE SCORE!
-	        	menu_game_over(score);
-
-				buttons_status buttons;
-				usb_multifunction_buttons_get_status(&buttons);
-
-	        	if (buttons.left)
-	        		state = MENU_GAMES;
-
 	        	break;
 	        }
 	        default:

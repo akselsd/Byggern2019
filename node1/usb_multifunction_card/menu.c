@@ -20,9 +20,20 @@
 #define QUIT_POS_PAGE 7
 #define GAME_OVER_PAGE 2
 #define GAME_OVER_COL 25
+#define LEADERBOARD_TITLE_COL 22
+#define LEADERBOARD_TITLE_PAGE 1
+#define LEADERBOARD_SCORES_COL 34
+#define LEADERBOARD_SCORES_PAGE 3
+
+#define LEADERBOARD_N_LINES 4
+#define LEADERBOARD_LINE_LENGTH 8
+
 
 static joystick_status prev;
 static joystick_status curr;
+
+// Free space on the SRAM: from 0x1800 to 0x1C00 (NOT including) 
+static volatile uint8_t * leaderboard_buffer = (volatile uint8_t *) 0x1800;
 
 static void display_character(const char * imgname)
 {
@@ -177,4 +188,31 @@ void menu_game_over(uint8_t score)
     oled_set_column(GAME_OVER_COL);
     oled_set_page(QUIT_POS_PAGE);
     oled_printf("QUIT: L");
+}
+
+void menu_leaderboard(void)
+{
+    oled_set_column(LEADERBOARD_TITLE_COL);
+    oled_set_page(LEADERBOARD_TITLE_PAGE);
+    oled_printf("LEADERBOARD");
+
+    // Request leaderboard
+    printf("@lread\n");
+
+    // Read leaderboard from computer
+    uart_write_leaderboard_to_SRAM(leaderboard_buffer, LEADERBOARD_LINE_LENGTH, LEADERBOARD_N_LINES);
+   
+    uint8_t line_no = 0;
+
+    while (line_no < LEADERBOARD_N_LINES)
+    {   
+        oled_set_column(LEADERBOARD_SCORES_COL);
+        oled_set_page(LEADERBOARD_SCORES_PAGE + line_no);
+
+        // Print correct (name and score) string to oled
+        char * line_str = leaderboard_buffer + line_no * LEADERBOARD_LINE_LENGTH;
+        oled_printf(line_str);
+
+        line_no++;
+    }
 }

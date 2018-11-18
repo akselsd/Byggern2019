@@ -28,3 +28,7 @@ Implement hearts for lives?
 
 Remove communication_enabled?
 Check length of CAN messages to verify they are not corrupted
+
+Pause score count when shoot not enabled
+
+CAN bus: virker som node 1 mottar uten at den skal motta, node 2 sender uten at den skal sende (sender den?). Feil meldinger blir hvertfall sendt, unknown ids og oscilloskop på CAN bus tilsier hvertafll dette. 

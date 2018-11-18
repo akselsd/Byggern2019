@@ -25,6 +25,7 @@ Generate interrput every 16.6 ms (60Hz)
 #define CHAR_LENGTH 8
 #define FONT_NAME font8
 
+// SRAM adress allocation
 static volatile uint8_t * OLED_CMD = (volatile uint8_t *) 0x1000; // A9 0
 static volatile uint8_t * OLED_DATA = (volatile uint8_t *) 0x1200; // A9 1
 static volatile uint8_t * OLED_BUFFER = (volatile uint8_t *) 0x1C00;

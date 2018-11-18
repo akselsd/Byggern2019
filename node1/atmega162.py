@@ -33,6 +33,7 @@ def write_line(line, ser):
 
 def do_command(cmd, ser):
 	if cmd.startswith("i"):
+		# Image
 		with open("oled_images/" + cmd[1:].strip() + ".txt", 'rb') as f:
 			s = f.readlines()
 			total = 0
@@ -45,6 +46,12 @@ def do_command(cmd, ser):
 			for i in s:
 				write_line(i, ser)
 			print("Sending image")
+	if cmd.startswith("lread"):
+		# Score
+		with open("game_data/leaderboard.txt") as f:
+			s = f.readlines()
+			for line in s:
+				write_line(line.encode("utf-8"), ser)
 
 
 def main():

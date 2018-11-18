@@ -2,33 +2,16 @@
 #include <avr/io.h> //Trengs denne?
 #include <stdio.h>
 #include <stdlib.h> // Abort
+#include <stdio.h>
 #include <avr/interrupt.h>
 
 #include "bit_macros.h"
 #include "uart.h"
 
-#define BUFFER_SIZE 64
-#define PAGE_LENGTH 128
-
-struct ringbuffer
-{
-	volatile char buffer[BUFFER_SIZE];
-	volatile int next_out;
-	volatile int next_in;
-	volatile int size;
-};
-
-struct image_buffer
-{
-	volatile char * buffer;
-	volatile unsigned int n_bytes;
-	volatile unsigned int n_pages;
-	volatile unsigned int size;
-};
-
-struct ringbuffer send_buffer = {{0}, 0, 0, 0};
-struct ringbuffer recieve_buffer = {{0}, 0, 0, 0};
-struct image_buffer img_buffer = {NULL, 0, 0, 0};
+static ringbuffer send_buffer = {{0}, 0, 0, 0};
+static ringbuffer recieve_buffer = {{0}, 0, 0, 0};
+static image_buffer img_buffer = {NULL, 0, 0, 0};
+static leaderboard_buffer lb_buffer = {NULL, 0, 0};
 
 void uart_init(const unsigned int ubrr)
 {
@@ -99,20 +82,24 @@ int uart_recieve_char(FILE* dummy)
 	return c;
 }
 
+// UART receive interrupt
 ISR(RX_VECTOR)
 {
 	/* Skip intermediate buffer */
-	if (img_buffer.buffer){
+	if (img_buffer.buffer)
+	{
+		// Write received byte to buffer
 		*(img_buffer.buffer++) = UDR0;
 
-		if (--img_buffer.n_bytes == 0){
-
+		if (--img_buffer.n_bytes == 0)
+		{
 			/* Image completed */
 			if (img_buffer.n_pages == 0)
 				img_buffer.buffer = NULL;
 
 			/* New page */
-			else{
+			else
+			{
 				--img_buffer.n_pages;
 				img_buffer.n_bytes = img_buffer.size;
 				img_buffer.buffer+= PAGE_LENGTH - img_buffer.size;
@@ -121,6 +108,28 @@ ISR(RX_VECTOR)
 		return;
 	}
 	
+	if (lb_buffer.buffer)
+	{
+		/* Load next character into buffer */
+		*(lb_buffer.buffer++) = UDR0;
+
+		// If end of line is reached
+		if (--lb_buffer.n_bytes == 0)
+		{
+			// Replace '\n' with '\0'
+			*(lb_buffer.buffer - 1) = '\0';
+
+			// If no more lines to load
+			if (lb_buffer.n_lines == 0)
+				lb_buffer.buffer = NULL;
+			// If there are more lines to load
+			else
+				--lb_buffer.n_lines;
+				lb_buffer.n_bytes = lb_buffer.line_length;
+		}
+		return;
+	}
+
 	if (recieve_buffer.size == BUFFER_SIZE){
 		//printf("Recieve buffer overflow\n");
 		return;
@@ -176,5 +185,15 @@ void uart_write_image_to_SRAM(volatile char * buffer, unsigned int img_size)
 	img_buffer.n_bytes = img_size;
 	img_buffer.size = img_size;
 	img_buffer.n_pages = img_size/8;
+	sei();
+}
+
+void uart_write_leaderboard_to_SRAM(volatile char * buffer, uint8_t n_bytes, uint8_t n_lines)
+{
+	cli();
+	lb_buffer.buffer = buffer;
+	lb_buffer.n_bytes = n_bytes;
+	lb_buffer.n_lines = n_lines;
+	lb_buffer.line_length = n_bytes;
 	sei();
 }
