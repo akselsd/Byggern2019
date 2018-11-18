@@ -25,7 +25,6 @@
 #define LEADERBOARD_SCORES_COL 34
 #define LEADERBOARD_SCORES_PAGE 3
 
-#define LEADERBOARD_N_LINES 4
 #define LEADERBOARD_LINE_LENGTH 8
 
 
@@ -33,7 +32,7 @@ static joystick_status prev;
 static joystick_status curr;
 
 // Free space on the SRAM: from 0x1800 to 0x1C00 (NOT including) 
-static volatile uint8_t * leaderboard_buffer = (volatile uint8_t *) 0x1800;
+static volatile uint8_t * leaderboard_buffer_start_address = (volatile uint8_t *) 0x1800;
 
 static void display_character(const char * imgname)
 {
@@ -200,19 +199,23 @@ void menu_leaderboard(void)
     printf("@lread\n");
 
     // Read leaderboard from computer
-    uart_write_leaderboard_to_SRAM(leaderboard_buffer, LEADERBOARD_LINE_LENGTH, LEADERBOARD_N_LINES);
+    uart_write_leaderboard_to_SRAM(leaderboard_buffer_start_address, LEADERBOARD_LINE_LENGTH);
+    _delay_ms(50);
    
     uint8_t line_no = 0;
 
-    while (line_no < LEADERBOARD_N_LINES)
+    uint8_t n_display_lines = uart_leaderboard_get_n_lines();
+    while (line_no < n_display_lines)
     {   
+        printf("%u\n", n_display_lines);
         oled_set_column(LEADERBOARD_SCORES_COL);
         oled_set_page(LEADERBOARD_SCORES_PAGE + line_no);
 
         // Print correct (name and score) string to oled
-        char * line_str = leaderboard_buffer + line_no * LEADERBOARD_LINE_LENGTH;
+        char * line_str = leaderboard_buffer_start_address + line_no * LEADERBOARD_LINE_LENGTH;
+        printf("%d %s\n", line_no, line_str);
         oled_printf(line_str);
 
-        line_no++;
+        ++line_no;
     }
 }

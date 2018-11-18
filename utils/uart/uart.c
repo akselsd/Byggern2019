@@ -11,7 +11,7 @@
 static ringbuffer send_buffer = {{0}, 0, 0, 0};
 static ringbuffer recieve_buffer = {{0}, 0, 0, 0};
 static image_buffer img_buffer = {NULL, 0, 0, 0};
-static leaderboard_buffer lb_buffer = {NULL, 0, 0};
+static leaderboard_buffer lb_buffer = {NULL, 0, 0, 0, 0};
 
 void uart_init(const unsigned int ubrr)
 {
@@ -82,6 +82,11 @@ int uart_recieve_char(FILE* dummy)
 	return c;
 }
 
+uint8_t uart_leaderboard_get_n_lines(void)
+{
+	return lb_buffer.n_lines;
+}
+
 // UART receive interrupt
 ISR(RX_VECTOR)
 {
@@ -109,7 +114,16 @@ ISR(RX_VECTOR)
 	}
 	
 	if (lb_buffer.buffer)
-	{
+	{	
+		// If lines_left is not defined
+		if (lb_buffer.lines_left == 0)
+		{
+			// Read first byte as n_lines
+			lb_buffer.n_lines = UDR0;
+			lb_buffer.lines_left = lb_buffer.n_lines;
+			return;
+		}
+
 		/* Load next character into buffer */
 		*(lb_buffer.buffer++) = UDR0;
 
@@ -119,13 +133,14 @@ ISR(RX_VECTOR)
 			// Replace '\n' with '\0'
 			*(lb_buffer.buffer - 1) = '\0';
 
+			--lb_buffer.lines_left;
+			lb_buffer.n_bytes = lb_buffer.line_length;
+
 			// If no more lines to load
-			if (lb_buffer.n_lines == 0)
+			if (lb_buffer.lines_left == 0)
+			{
 				lb_buffer.buffer = NULL;
-			// If there are more lines to load
-			else
-				--lb_buffer.n_lines;
-				lb_buffer.n_bytes = lb_buffer.line_length;
+			}
 		}
 		return;
 	}
@@ -188,12 +203,11 @@ void uart_write_image_to_SRAM(volatile char * buffer, unsigned int img_size)
 	sei();
 }
 
-void uart_write_leaderboard_to_SRAM(volatile char * buffer, uint8_t n_bytes, uint8_t n_lines)
+void uart_write_leaderboard_to_SRAM(volatile char * buffer, uint8_t n_bytes)
 {
 	cli();
 	lb_buffer.buffer = buffer;
 	lb_buffer.n_bytes = n_bytes;
-	lb_buffer.n_lines = n_lines;
 	lb_buffer.line_length = n_bytes;
 	sei();
 }

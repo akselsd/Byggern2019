@@ -1,4 +1,3 @@
-Tor 893
-Ber 233
-Aks 888
-Ber 233
+TOR 999
+BER 998
+AKS 000

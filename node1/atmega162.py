@@ -1,4 +1,5 @@
 import serial
+import struct
 
 class dummy_serial():
 	output = ""
@@ -29,6 +30,7 @@ def read_line(ser):
 
 def write_line(line, ser):
 	data = bytearray(line)
+	print("Line: {0}, Data: {1}".format(line, data))
 	ser.write(data)
 
 def do_command(cmd, ser):
@@ -50,8 +52,14 @@ def do_command(cmd, ser):
 		# Score
 		with open("game_data/leaderboard.txt") as f:
 			s = f.readlines()
-			for line in s:
-				write_line(line.encode("utf-8"), ser)
+
+			n_lines = min(4, len(s))
+			print(struct.pack('>B', n_lines), end="")
+			ser.write(struct.pack('>B', n_lines))
+
+			for n in range(n_lines):
+				print(s[n], end="")
+				write_line(s[n].encode("utf-8"), ser)
 
 
 def main():
