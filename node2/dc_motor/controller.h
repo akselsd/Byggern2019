@@ -11,6 +11,7 @@ typedef struct controller_values_struct
 	float current_position;
 	float error_sum;
 	float old_error;
+	float input;
 	motor_input output;
 	
 	float kp;
@@ -21,5 +22,6 @@ typedef struct controller_values_struct
 void controller_init(void);
 void controller_clear(void);
 void controller_set_reference(uint8_t ref);
+void controller_set_input(float input);
 
 #endif

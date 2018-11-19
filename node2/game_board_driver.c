@@ -17,6 +17,8 @@
 static uint8_t scoring_enabled;
 static uint8_t communication_enabled;
 
+static uint8_t current_diff = DIFF_EASY; // Defaults to EASY
+
 static void update_pwm(uint8_t x_int)
 {
 	float x = x_int;
@@ -27,14 +29,38 @@ static void update_pwm(uint8_t x_int)
 	pwm_set_duty_cycle(x);
 }
 
+static void controll_game_board(CAN_message * msg)
+{
+    switch(current_diff)
+    {
+	case DIFF_EASY:
+	    game_board_shoot(msg->data[5], msg->data[3]); // Joystick UP, L button pressed
+	    // Controll controller input with joystick x
+	    controller_set_input(msg->data[0]); 
+	    break;
+	case DIFF_MEDIUM:
+	    update_pwm(msg->data[0]); // Joystick x
+	    controller_set_reference(msg->data[7]); // Slider right
+	    game_board_shoot(msg->data[5], msg->data[3]); // Joystick UP, L button pressed
+	    break;
+	case DIFF_HARD:
+	    update_pwm(msg->data[0]); // Joystick x
+	    controller_set_reference(255 - msg->data[7]); // Invert reference
+	    game_board_shoot(msg->data[5], msg->data[3]); // Joystick UP, L button pressed
+	    break;
+    }
+}
+
 void game_board_reset(uint8_t player_diff)
 {
 	communication_enabled = 0;
 	printf("Reset game board\n");
 
+	current_diff = player_diff;
+
 	controller_clear();
 
-	/* Calibrate dc_motor */
+	// Calibrate dc_motor
 	motor_box_set_direction(MOTOR_LEFT);
 	motor_box_set_speed(100);
 	_delay_ms(1000);
@@ -42,7 +68,6 @@ void game_board_reset(uint8_t player_diff)
 	_delay_ms(400);
 	motor_box_reset_encoder();
 
-	//scoring enabled=0 /why was set to 1?
 	scoring_enabled = 0;
 
 	controller_init();
@@ -76,9 +101,7 @@ void game_board_handle_msg(CAN_message * msg)
 					game_board_reset(msg->data[1]); // msg->data[1] - diff
 				break;
 			case ID_IO:
-				update_pwm(msg->data[0]);
-				controller_set_reference(msg->data[7]);
-				game_board_shoot(msg->data[5], msg->data[3]);
+				controll_game_board(msg);
 				break;
 			default:
 				printf("Unknown CAN message ID: %u\n", msg->id);
