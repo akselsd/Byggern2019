@@ -23,12 +23,12 @@ void speaker_pwm_init(void)
     SET_BIT(TCCR4B, WGM13);
 
     // Set prescaler of clock to be 8 for channel B
-    CLEAR_BIT(TCCR4B, CS10);
-    SET_BIT(TCCR4B, CS11);
-    CLEAR_BIT(TCCR4B, CS12);
+    CLEAR_BIT(TCCR4B, CS40);
+    SET_BIT(TCCR4B, CS41);
+    CLEAR_BIT(TCCR4B, CS42);
 
-    speaker_pwm_set_freq(440);
-    speaker_pwm_set_duty_cycle(100);
+    speaker_pwm_set_freq(0);
+    speaker_pwm_set_duty_cycle(80);
 
     // Set PWM output mode to be non-inverted for channel B
     SET_BIT(TCCR4A, COM4B1);
