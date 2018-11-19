@@ -19,7 +19,7 @@
 #define LIVES_POS_PAGE 1
 #define SCORE_POS_PAGE 4
 #define QUIT_POS_PAGE 7
-#define GAME_OVER_PAGE 0
+#define GAME_OVER_PAGE 1
 #define GAME_OVER_COL 25
 #define LEADERBOARD_TITLE_COL 22
 #define LEADERBOARD_TITLE_PAGE 1
@@ -33,7 +33,7 @@ static joystick_status prev;
 static joystick_status curr;
 
 // Free space on the SRAM: from 0x1800 to 0x1C00 (NOT including) 
-static uint8_t * leaderboard_buffer_start_address = (volatile uint8_t *) 0x1800;
+volatile static uint8_t * leaderboard_buffer_start_address = (volatile uint8_t *) 0x1800;
 
 static void display_character(const char * imgname)
 {
@@ -176,21 +176,19 @@ void menu_game_over(uint8_t score)
     oled_set_page(GAME_OVER_PAGE);
     oled_printf("GAME OVER!");
 
+    char str_score[10];
+    char score_text[] = "SCORE: ";
+    strcpy(str_score, score_text);
+    sprintf(&str_score[7], "%03u", score);
     oled_set_column(GAME_OVER_COL);
     oled_set_page(GAME_OVER_PAGE + 2);
-    oled_printf("SCORE: ");
-
-    oled_set_column(GAME_OVER_COL+7);
-    oled_set_page(GAME_OVER_PAGE + 2);
-    char str_score[10];
-    sprintf(&str_score[0], "%u", score);
     oled_printf(str_score);
 
-    oled_set_column(GAME_OVER_COL);
-    oled_set_page(GAME_OVER_PAGE + 4);
+    oled_set_column(GAME_OVER_COL - 15);
+    oled_set_page(GAME_OVER_PAGE + 5);
     oled_printf("SAVE SCORE: R");
 
-    oled_set_column(GAME_OVER_COL);
+    oled_set_column(GAME_OVER_COL + 17);
     oled_set_page(QUIT_POS_PAGE);
     oled_printf("QUIT: L");
 }
@@ -229,13 +227,15 @@ void menu_leaderboard(void)
 
 void menu_save_score(uint16_t score)
 {   
+    _delay_ms(50);
+
     oled_clear_screen();
     oled_set_column(LEADERBOARD_SCORES_COL);
     oled_set_page(LEADERBOARD_SCORES_PAGE);
-    oled_printf("WRITE NAME ON PC");
+    oled_printf("WRITE NAME");
     oled_set_column(LEADERBOARD_SCORES_COL);
     oled_set_page(LEADERBOARD_SCORES_PAGE+1);
-    oled_printf("WITH 3 CHARACTERS");
+    oled_printf("<--");
     // Request leaderboard
     printf("@lsave %u\n", score);
 }

@@ -85,7 +85,7 @@ static void populate_io_msg(CAN_message * io_msg)
 static void game_timer_init(void)
 {
 	// Clear timer register
-    TCNT0 = 0;
+    //TCNT0 = 0;
 
     // Set prescaler to 1024
     TCCR0 = 0;
@@ -161,7 +161,7 @@ void fsm_main_loop(void)
 	            		break;
 	            	case 1:
 	            		state = LEADERBOARD;
-	        			menu_leaderboard();
+	        			//menu_leaderboard();
 	            		break;
 	            	case 2:
 	            		oled_clear_screen();
