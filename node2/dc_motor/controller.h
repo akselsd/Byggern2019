@@ -12,6 +12,7 @@ typedef struct controller_values_struct
 	float error_sum;
 	float old_error;
 	float input;
+	uint8_t ext_input_ctrl;
 	motor_input output;
 	
 	float kp;
@@ -19,7 +20,7 @@ typedef struct controller_values_struct
 	float kd;
 } controller_values;
 
-void controller_init(void);
+void controller_init(uint8_t ext_input_ctrl);
 void controller_clear(void);
 void controller_set_reference(uint8_t ref);
 void controller_set_input(float input);

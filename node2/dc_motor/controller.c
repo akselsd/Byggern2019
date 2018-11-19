@@ -24,13 +24,14 @@ static float saturate_input(float input)
 	return input;
 }
 
-void controller_init(void)
+void controller_init(uint8_t ext_input_ctrl)
 {
 	/* Set controller values */
 	controller.reference = 0;
-	controller.input = 0;
 	controller.error_sum = 0;
 	controller.old_error = 0;
+	controller.input = 0;
+	controller.ext_input_ctrl = ext_input_ctr;
 
 	/* Set controller parameters */
 	controller.kp = KP;
@@ -63,6 +64,8 @@ void controller_clear(void)
 	controller.reference = 0;
 	controller.error_sum = 0;
 	controller.old_error = 0;
+	controller.input = 0;
+	controller.ext_input_ctrl = 0;
 
 	/* Disable overflow interrupts */
 	CLEAR_BIT(TIMSK3, TOIE3);
@@ -89,7 +92,7 @@ void controller_set_input(float input)
 }
 
 ISR(TIMER3_OVF_vect) {
-	if (!controller.input) // If controller input is not being controller externally
+	if (!controller.ext_input_ctrl)
 	{
 		/* Map motor position [0,-8700] to [0,255] */
 		controller.current_position = motor_box_read() / SCALING_FACTOR;
@@ -99,7 +102,7 @@ ISR(TIMER3_OVF_vect) {
 
 		controller.input = controller.kp * error + controller.ki * controller.error_sum
 			+ controller.kd * (error - controller.old_error) / INTERRUPT_PERIOD;
-		controller.input = saturate_input(input);
+		controller.input = saturate_input(controller.input);
 
 		controller.old_error = error;
 	}
@@ -107,17 +110,14 @@ ISR(TIMER3_OVF_vect) {
 	// Convert controller.input to correct output values for motor box
 	if (controller.input > 0)
 	{
-		controller.output.speed = (uint8_t)input;
+		controller.output.speed = (uint8_t)controller.input;
 		controller.output.dir = MOTOR_RIGHT;
 	}
 	else
 	{
-		controller.output.speed = (uint8_t)(-1*input);
+		controller.output.speed = (uint8_t)(-1*controller.input);
 		controller.output.dir = MOTOR_LEFT;
 	}
-
-	// Reset controller input in case it is being controlled externally
-	controller.input = 0;
 
 	motor_box_set_speed(controller.output.speed);
 	motor_box_set_direction(controller.output.dir);	

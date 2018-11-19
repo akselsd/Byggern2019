@@ -70,7 +70,7 @@ void game_board_reset(uint8_t player_diff)
 
 	scoring_enabled = 0;
 
-	controller_init();
+	controller_init(current_diff == DIFF_EASY);
 	communication_enabled = 1;
 }
 
