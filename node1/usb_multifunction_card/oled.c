@@ -62,7 +62,7 @@ static void write_data(uint8_t data)
 void oled_set_page(uint8_t page)
 {
     if (page >= N_PAGES){
-        printf("Illegal page access");
+        //printf("Illegal page access");
         while(1);
     }
 
@@ -73,7 +73,7 @@ void oled_set_page(uint8_t page)
 void oled_set_column(uint8_t column)
 {
     if (column >= N_COLUMNS){
-        printf("Illegal column access");
+        //printf("Illegal column access");
         while(1);
     }
 

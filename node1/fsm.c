@@ -151,7 +151,7 @@ void fsm_main_loop(void)
 		switch(state)
 	    {
 	        case MAIN_MENU:
-	        {	//oled_init();
+	        {	
 	            menu_draw_options(main_menu, N_GAMES);
 	            uint8_t result = menu_select_option(N_GAMES);
 	            switch(result)
@@ -160,8 +160,10 @@ void fsm_main_loop(void)
 	            		state = PLAY;
 	            		break;
 	            	case 1:
+    					oled_clear_screen();
+    					//To avoid constant refreshing?
+    					//menu_leaderboard(main_menu[LEADERBOARD])
 	            		state = LEADERBOARD;
-	        			menu_leaderboard();
 	            		break;
 	            	case 2:
 	            		oled_clear_screen();
@@ -174,7 +176,7 @@ void fsm_main_loop(void)
 	            		state = MAIN_MENU;
 	            		break;
 	            	default:
-	            		return;
+	            		break;
 	            }
 	            break;
 	        }
@@ -183,7 +185,6 @@ void fsm_main_loop(void)
 				send_reset_msg(player_diff);
 
 	        	oled_display_image(player_img, 64, 0, 0);
-	        	//playsong(player_song)
 	        	_delay_ms(2000); // Wait for image to load
 
 				if (fsm_play_game(player_diff))
@@ -201,9 +202,7 @@ void fsm_main_loop(void)
 	        {
 	        	fetch_io_values();
 	        	if (buttons.left)
-	        	{	
 	        		state = MAIN_MENU;
-	        	}
 	        	if (buttons.right)
 	        	{
 	        		menu_save_score(score);
@@ -214,7 +213,7 @@ void fsm_main_loop(void)
 	        }
 	        case LEADERBOARD:
 	        {	
-	        	_delay_ms(100);
+	        	menu_leaderboard(main_menu[LEADERBOARD]);
 	        	fetch_io_values();
 	        	if (buttons.left || joystick.dir == LEFT)
 	        		state = MAIN_MENU;
@@ -239,7 +238,7 @@ void fsm_main_loop(void)
 	            		player_img = "kimy64";
 		            	break;
 		            default:
-		            	return;
+		            	break;
 	            }
 	            state = MAIN_MENU;
 	            break;
@@ -260,13 +259,13 @@ void fsm_main_loop(void)
 	        			player_diff = DIFF_HARD;
 	        			break;
 	        		default:
-	        			return;
+	        			break;
 	        	}
            		state = MAIN_MENU;
 	        	break;
 	        }
 	        default:
-	        	return;
+	        	break; //changed from return
 	    }
     }
 }

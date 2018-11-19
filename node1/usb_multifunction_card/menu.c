@@ -33,6 +33,11 @@
 static joystick_status prev;
 static joystick_status curr;
 
+//static volatile char * leaderboard_array="TOR 033\nBER 210\nTHE 001\nAKS 999\n\0";
+//leaderboard_array=["TOR 033\nBER 210\nTHE 001\nAKS 999\n\0"];
+volatile static char * leaderboard_data;
+
+
 // Free space on the SRAM: from 0x1800 to 0x1C00 (NOT including) 
 volatile static uint8_t * leaderboard_buffer_start_address = (volatile uint8_t *) 0x1800;
 
@@ -50,7 +55,8 @@ static void move_cursor(const int8_t menu_row)
 }
 
 void menu_draw_options(const char ** options, uint8_t n_options)
-{
+{   
+    _delay_ms(100);
     oled_clear_screen();
     for (int8_t i = 0; i < n_options; i++)
     {
@@ -98,7 +104,7 @@ uint8_t menu_select_option(const uint8_t n_options)
 
 
     while (true)
-    {
+    {   
         joystick_get_status(&curr);
 
         if ((curr.dir != prev.dir) ||
@@ -194,31 +200,32 @@ void menu_game_over(uint8_t score)
     //oled_printf("QUIT: L");
 }
 
-void menu_leaderboard(void)
+void menu_leaderboard(const char * leaderboard)
 {
-    oled_clear_screen();
 
     oled_set_column(LEADERBOARD_TITLE_COL);
     oled_set_page(LEADERBOARD_TITLE_PAGE);
-    oled_printf("LEADERBOARD");
+    oled_printf(leaderboard);
 
-
-    // Read leaderboard from computer
-    volatile char * leaderboard_data = uart_write_leaderboard_RAM();
-
-    // Request leaderboard
-    printf("@lr\n");
     
-    _delay_ms(1000);
-   
-    printf("%s", leaderboard_data);
+    // Read leaderboard from computer
+    // Request leaderboard
+    
 
     oled_set_column(LEADERBOARD_SCORES_COL);
     oled_set_page(LEADERBOARD_SCORES_PAGE);
     oled_printf_lines(leaderboard_data, LEADERBOARD_SCORES_COL);
+    
+    /*
+    oled_set_column(LEADERBOARD_SCORES_COL);
+    oled_set_page(LEADERBOARD_SCORES_PAGE);
+    oled_printf_lines(leaderboard_array, LEADERBOARD_SCORES_COL);
+    */
     //printf("%s", leaderboard_data[1]);
     //printf("%s", leaderboard_data[2]);
     //printf("%s", leaderboard_data[3]);
+
+    //OUTDATED
 
     /*uint8_t line_no = 0;
     uint8_t n_display_lines = 4;
@@ -237,6 +244,16 @@ void menu_leaderboard(void)
         ++line_no;
     }*/
 }
+
+
+void load_leaderboard()
+{
+    leaderboard_data = uart_write_leaderboard_RAM();
+    printf("@lr\n");
+   _delay_ms(1000);
+    
+}
+    
 
 void menu_save_score(uint16_t score)
 {   

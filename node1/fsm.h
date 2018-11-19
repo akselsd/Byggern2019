@@ -4,8 +4,8 @@
 typedef enum game_state_enum
 {
     MAIN_MENU = 0,
-    MENU_CHARACTERS,
     LEADERBOARD,
+    MENU_CHARACTERS,
     MENU_DIFFICULTY,
     PLAY,
     GAME_OVER,

@@ -31,6 +31,7 @@ void init_all(void)
 	menu_init();
 	oled_init();
 	CAN_init();
+	load_leaderboard();
 }
 
 
