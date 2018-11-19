@@ -1,12 +1,12 @@
 #include "speaker_driver.h"
-#include "pwm_driver.h"
+#include "speaker_pwm_driver.h"
 
 void speaker_init(void)
 {
-    pwm_init();
+    speaker_pwm_init();
 }
 
 void speaker_play_song(void)
 {
-    pwm_set_freq();
+    speaker_pwm_set_freq(440);
 }
