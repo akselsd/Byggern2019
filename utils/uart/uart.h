@@ -2,9 +2,6 @@
 #define INCLUDE_UART_H
 #include <stdio.h> // FILE
 
-#define BUFFER_SIZE 64
-#define PAGE_LENGTH 128
-
 /**
  * Initialize uart communication and provide streams for stdout, stderr and stdin.
  * @param ubrr Baud Rate Register Value defined as CPU_FREQUENCY/(16*BAUDRATE) - 1.
