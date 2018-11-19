@@ -11,6 +11,7 @@
 #include "can/CAN_driver.h"
 #include "../node1/usb_multifunction_card/joystick.h"
 #include "../node1/fsm.h"
+#include "speaker/speaker_driver.h"
 
 #define SOLENOID PC6
 
@@ -72,6 +73,8 @@ void game_board_reset(uint8_t player_diff)
 
 	controller_init(current_diff == DIFF_EASY);
 	communication_enabled = 1;
+
+	speaker_init();
 }
 
 void game_board_init(void)
