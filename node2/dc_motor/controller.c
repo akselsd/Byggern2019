@@ -87,8 +87,8 @@ void controller_set_reference(uint8_t ref)
 
 void controller_set_input(float input)
 {
-	// Map [0, 255] to [-255.0, 255.0]	
-	controller.input = saturate_input(input * 2 - 255);
+	// Map [0, 255] to [-127.0, 127.0]	
+	controller.input = saturate_input(input * 2 - 255) / 2;
 }
 
 ISR(TIMER3_OVF_vect) {
