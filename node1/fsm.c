@@ -24,7 +24,7 @@
 #define N_IO_DATA_LENGTH 8
 
 
-static const char * menu_games[N_GAMES] = {
+static const char * main_menu[N_GAMES] = {
     "Play",
     "Leaderboard",
     "Character",
@@ -92,7 +92,7 @@ static void game_timer_init(void)
     TCCR0 = (1 << CS02) | (1 << CS00);
 }
 
-uint8_t fsm_play_game(const uint8_t player_diff)
+static uint8_t fsm_play_game(const uint8_t player_diff)
 {
 	score = 0;
 	n_lives = N_LIVES;
@@ -141,7 +141,7 @@ uint8_t fsm_play_game(const uint8_t player_diff)
 
 void fsm_main_loop(void)
 {
-	game_state state = MENU_GAMES;
+	game_state state = MAIN_MENU;
 
 	char * player_img = "mario64";
 	uint8_t player_diff = DIFF_EASY;
@@ -150,9 +150,9 @@ void fsm_main_loop(void)
 	{
 		switch(state)
 	    {
-	        case MENU_GAMES:
+	        case MAIN_MENU:
 	        {	//oled_init();
-	            menu_draw_options(menu_games, N_GAMES);
+	            menu_draw_options(main_menu, N_GAMES);
 	            uint8_t result = menu_select_option(N_GAMES);
 	            switch(result)
 	            {
@@ -171,7 +171,7 @@ void fsm_main_loop(void)
 	            		state = MENU_DIFFICULTY;
 	            		break;
 	            	case 99:
-	            		state = MENU_GAMES;
+	            		state = MAIN_MENU;
 	            		break;
 	            	default:
 	            		return;
@@ -194,24 +194,21 @@ void fsm_main_loop(void)
 					break;
 				}
 				// PLAYER QUIT
-				state = MENU_GAMES;
+				state = MAIN_MENU;
 	        	break;
 	        }
 	        case GAME_OVER:
 	        {
-
-				buttons_status buttons;
-				usb_multifunction_buttons_get_status(&buttons);
-
+	        	fetch_io_values();
 	        	if (buttons.left)
 	        	{	
-	        		state = MENU_GAMES;
+	        		state = MAIN_MENU;
 	        	}
 	        	if (buttons.right)
 	        	{
 	        		menu_save_score(score);
     				_delay_ms(4000);
-	        		state = MENU_GAMES;
+	        		state = MAIN_MENU;
 	        	}
 	        	break;
 	        }
@@ -220,7 +217,7 @@ void fsm_main_loop(void)
 	        	_delay_ms(100);
 	        	fetch_io_values();
 	        	if (buttons.left || joystick.dir == LEFT)
-	        		state = MENU_GAMES;
+	        		state = MAIN_MENU;
 	        	break;
 	        }
 	        case MENU_CHARACTERS:
@@ -230,27 +227,21 @@ void fsm_main_loop(void)
 	            switch(result)
 	            {
 	            	case 0:
-		            	state = MENU_GAMES;
 		            	player_img = "mario64";
 		            	break;
 	            	case 1:
-	            		state = MENU_GAMES;
 	            		player_img = "dv64";
 		            	break;
 	            	case 2:
-	            		state = MENU_GAMES;
 	            		player_img = "kimk64";
 		            	break;
 	            	case 3:
-	            		state = MENU_GAMES;
 	            		player_img = "kimy64";
 		            	break;
-		            case 99:
-	            		state = MENU_GAMES;
-	            		break;
 		            default:
 		            	return;
 	            }
+	            state = MAIN_MENU;
 	            break;
 	        }
 	        case MENU_DIFFICULTY:
@@ -261,22 +252,17 @@ void fsm_main_loop(void)
 	        	{
 	        		case 0:
 	        			player_diff = DIFF_EASY;
-	        			state = MENU_GAMES;
 	        			break;
 	        		case 1:
 	        			player_diff = DIFF_MEDIUM;
-	        			state = MENU_GAMES;
 	        			break;
 	        		case 2:
 	        			player_diff = DIFF_HARD;
-	        			state = MENU_GAMES;
 	        			break;
-	        		case 99:
-	            		state = MENU_GAMES;
-	            		break;
 	        		default:
 	        			return;
 	        	}
+           		state = MAIN_MENU;
 	        	break;
 	        }
 	        default:

@@ -3,7 +3,7 @@
 
 typedef enum game_state_enum
 {
-    MENU_GAMES = 0,
+    MAIN_MENU = 0,
     MENU_CHARACTERS,
     LEADERBOARD,
     MENU_DIFFICULTY,
@@ -18,7 +18,6 @@ typedef enum player_diffs_enum
 	DIFF_HARD,
 } player_diffs;
 
-uint8_t fsm_play_game(const uint8_t player_diff);
 void fsm_main_loop(void);
 
 #endif
