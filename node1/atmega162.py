@@ -47,7 +47,7 @@ def do_command(cmd, ser):
 			for i in s:
 				write_line(i, ser)
 			print("Sending image")
-	if cmd.startswith("lread"):
+	if cmd.startswith("lr"):
 		# Read leaderboard
 		with open("game_data/leaderboard.txt") as f:
 			s = f.readlines()
@@ -57,7 +57,7 @@ def do_command(cmd, ser):
 
 			for n in range(n_lines):
 				write_line(s[n].encode("utf-8"), ser)
-	if cmd.startswith("lsave"):
+	if cmd.startswith("ls"):
 		# Save to leaderboard
 		score = cmd.split()[1]
 

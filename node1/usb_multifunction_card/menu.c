@@ -184,11 +184,11 @@ void menu_game_over(uint8_t score)
     oled_set_page(GAME_OVER_PAGE + 2);
     oled_printf(str_score);
 
-    oled_set_column(GAME_OVER_COL - 15);
+    oled_set_column(GAME_OVER_COL + 33);
     oled_set_page(GAME_OVER_PAGE + 5);
-    oled_printf("SAVE SCORE: R");
+    oled_printf("SAVE: R");
 
-    oled_set_column(GAME_OVER_COL + 17);
+    oled_set_column(GAME_OVER_COL + 33);
     oled_set_page(QUIT_POS_PAGE);
     oled_printf("QUIT: L");
 }
@@ -201,7 +201,7 @@ void menu_leaderboard(void)
     oled_printf("LEADERBOARD");
 
     // Request leaderboard
-    printf("@lread\n");
+    printf("@lr\n");
 
     // Read leaderboard from computer
     uart_write_leaderboard_to_SRAM(leaderboard_buffer_start_address, LEADERBOARD_LINE_LENGTH);
@@ -229,13 +229,13 @@ void menu_save_score(uint16_t score)
 {   
     _delay_ms(50);
 
-    oled_clear_screen();
+    /*oled_clear_screen();
     oled_set_column(LEADERBOARD_SCORES_COL);
     oled_set_page(LEADERBOARD_SCORES_PAGE);
     oled_printf("WRITE NAME");
     oled_set_column(LEADERBOARD_SCORES_COL);
     oled_set_page(LEADERBOARD_SCORES_PAGE+1);
-    oled_printf("<--");
+    oled_printf("<--");*/
     // Request leaderboard
-    printf("@lsave %u\n", score);
+    printf("@ls %u\n", score);
 }

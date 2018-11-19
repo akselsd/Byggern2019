@@ -161,7 +161,7 @@ void fsm_main_loop(void)
 	            		break;
 	            	case 1:
 	            		state = LEADERBOARD;
-	        			//menu_leaderboard();
+	        			menu_leaderboard();
 	            		break;
 	            	case 2:
 	            		oled_clear_screen();
