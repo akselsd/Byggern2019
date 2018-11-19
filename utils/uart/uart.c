@@ -8,10 +8,45 @@
 #include "bit_macros.h"
 #include "uart.h"
 
-static ringbuffer send_buffer = {{0}, 0, 0, 0};
-static ringbuffer recieve_buffer = {{0}, 0, 0, 0};
-static image_buffer img_buffer = {NULL, 0, 0, 0};
-static leaderboard_buffer lb_buffer = {NULL, 0, 0, 0, 0};
+#define BUFFER_SIZE 64
+#define PAGE_LENGTH 128
+
+#define LEADERBOARD_SIZE 32
+
+struct ringbuffer
+{
+	volatile char buffer[BUFFER_SIZE];
+	volatile int next_out;
+	volatile int next_in;
+	volatile int size;
+};
+
+struct image_buffer
+{
+	volatile char * buffer;
+	volatile unsigned int n_bytes;
+	volatile unsigned int n_pages;
+	volatile unsigned int size;
+};
+
+/*typedef struct leaderboard_buffer_struct
+{
+	volatile char * buffer;
+	volatile uint8_t n_bytes;
+	volatile uint8_t n_lines;
+	volatile uint8_t lines_left;
+	volatile uint8_t line_length;
+} leaderboard_buffer;
+*/
+
+struct ringbuffer send_buffer = {{0}, 0, 0, 0};
+struct ringbuffer recieve_buffer = {{0}, 0, 0, 0};
+struct image_buffer img_buffer = {NULL, 0, 0, 0};
+//static leaderboard_buffer lb_buffer = {NULL, 0, 0, 0, 0};
+
+volatile char leaderboard_data[33];
+volatile uint8_t leaderboard_load = 0;
+volatile uint8_t leaderboard_current_char = 0;
 
 void uart_init(const unsigned int ubrr)
 {
@@ -82,10 +117,10 @@ int uart_recieve_char(FILE* dummy)
 	return c;
 }
 
-uint8_t uart_leaderboard_get_n_lines(void)
+/*uint8_t uart_leaderboard_get_n_lines(void)
 {
 	return lb_buffer.n_lines;
-}
+}*/
 
 // UART receive interrupt
 ISR(RX_VECTOR)
@@ -118,7 +153,28 @@ ISR(RX_VECTOR)
 		return;
 	}
 	
-	if (lb_buffer.buffer)
+	else if (leaderboard_load)
+	{
+		leaderboard_data[leaderboard_current_char] = UDR0;
+
+
+		//if (leaderboard_data[leaderboard_current_char] == '\n')
+		//	leaderboard_data[leaderboard_current_char] = '\0';
+
+		//printf("%c\n", leaderboard_data[leaderboard_current_line][leaderboard_current_char]);
+
+		if (++leaderboard_current_char >= 32)
+		{
+			leaderboard_current_char = 0;
+			leaderboard_load = 0;
+			printf("LB = 0\n");
+			leaderboard_data[32] = '\0';
+		}
+
+		return;
+	}
+
+	/*if (lb_buffer.buffer)
 	{	
 		// If lines_left is not defined
 		if (lb_buffer.lines_left == 0)
@@ -149,7 +205,7 @@ ISR(RX_VECTOR)
 			}
 		}
 		return;
-	}
+	}*/
 
 	if (recieve_buffer.size == BUFFER_SIZE){
 		//printf("Recieve buffer overflow\n");
@@ -209,11 +265,17 @@ void uart_write_image_to_SRAM(volatile char * buffer, unsigned int img_size)
 	sei();
 }
 
-void uart_write_leaderboard_to_SRAM(volatile char * buffer, uint8_t n_bytes)
+
+volatile char ** uart_write_leaderboard_RAM(void)
 {
+	leaderboard_load = 1;
+
+	return leaderboard_data;
+	/*
 	cli();
+	UDR0 = 0;
 	lb_buffer.buffer = buffer;
 	lb_buffer.n_bytes = n_bytes;
 	lb_buffer.line_length = n_bytes;
-	sei();
+	sei();*/
 }

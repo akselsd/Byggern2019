@@ -9,6 +9,7 @@
 #include "joystick.h"
 #include "uart/uart.h"
 
+
 #define CURSOR ">"
 #define CURSOR_SPACE 16
 // 4800 ticks per sec
@@ -174,7 +175,7 @@ void menu_game_over(uint8_t score)
     oled_clear_screen();
     oled_set_column(GAME_OVER_COL);
     oled_set_page(GAME_OVER_PAGE);
-    oled_printf("GAME OVER!");
+    //oled_printf("GAME OVER!");
 
     char str_score[10];
     char score_text[] = "SCORE: ";
@@ -186,43 +187,55 @@ void menu_game_over(uint8_t score)
 
     oled_set_column(GAME_OVER_COL + 33);
     oled_set_page(GAME_OVER_PAGE + 5);
-    oled_printf("SAVE: R");
+    //oled_printf("SAVE: R");
 
     oled_set_column(GAME_OVER_COL + 33);
     oled_set_page(QUIT_POS_PAGE);
-    oled_printf("QUIT: L");
+    //oled_printf("QUIT: L");
 }
 
 void menu_leaderboard(void)
 {
     oled_clear_screen();
+
     oled_set_column(LEADERBOARD_TITLE_COL);
     oled_set_page(LEADERBOARD_TITLE_PAGE);
     oled_printf("LEADERBOARD");
 
-    // Request leaderboard
-    printf("@lr\n");
 
     // Read leaderboard from computer
-    uart_write_leaderboard_to_SRAM(leaderboard_buffer_start_address, LEADERBOARD_LINE_LENGTH);
-    _delay_ms(50);
-   
-    uint8_t line_no = 0;
+    volatile char * leaderboard_data = uart_write_leaderboard_RAM();
 
-    uint8_t n_display_lines = uart_leaderboard_get_n_lines();
+    // Request leaderboard
+    printf("@lr\n");
+    
+    _delay_ms(1000);
+   
+    printf("%s", leaderboard_data);
+
+    oled_set_column(LEADERBOARD_SCORES_COL);
+    oled_set_page(LEADERBOARD_SCORES_PAGE);
+    oled_printf_lines(leaderboard_data, LEADERBOARD_SCORES_COL);
+    //printf("%s", leaderboard_data[1]);
+    //printf("%s", leaderboard_data[2]);
+    //printf("%s", leaderboard_data[3]);
+
+    /*uint8_t line_no = 0;
+    uint8_t n_display_lines = 4;
+
     while (line_no < n_display_lines)
     {   
-        printf("%u\n", n_display_lines);
         oled_set_column(LEADERBOARD_SCORES_COL);
         oled_set_page(LEADERBOARD_SCORES_PAGE + line_no);
 
         // Print correct (name and score) string to oled
-        char * line_str = leaderboard_buffer_start_address + line_no * LEADERBOARD_LINE_LENGTH;
-        printf("%d %s\n", line_no, line_str);
-        oled_printf(line_str);
+        char line_str[8];
+        strcpy(line_str, leaderboard_data[line_no]);
+        //printf("%d %s\n", line_no, line_str);
+        //oled_printf(line_str);
 
         ++line_no;
-    }
+    }*/
 }
 
 void menu_save_score(uint16_t score)

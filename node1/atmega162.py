@@ -30,7 +30,11 @@ def read_line(ser):
 
 def write_line(line, ser):
 	data = bytearray(line)
+	print(data)
 	ser.write(data)
+
+def getKeyStr(item):
+	return item[4:]
 
 def do_command(cmd, ser):
 	if cmd.startswith("i"):
@@ -52,11 +56,17 @@ def do_command(cmd, ser):
 		with open("game_data/leaderboard.txt") as f:
 			s = f.readlines()
 
-			n_lines = min(4, len(s))
-			ser.write(struct.pack('>B', n_lines))
+			s = sorted(s, key=getKeyStr, reverse=True)
+			n_lines = 4
+
+			#n_lines = min(4, len(s))
+			#ser.write(struct.pack('>B', n_lines))
 
 			for n in range(n_lines):
+				if n >= len(s):
+					s.append("NaN 000")
 				write_line(s[n].encode("utf-8"), ser)
+
 	if cmd.startswith("ls"):
 		# Save to leaderboard
 		score = cmd.split()[1]

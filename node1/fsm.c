@@ -151,7 +151,7 @@ void fsm_main_loop(void)
 		switch(state)
 	    {
 	        case MENU_GAMES:
-	        {
+	        {	
 	            menu_draw_options(menu_games, N_GAMES);
 	            uint8_t result = menu_select_option(N_GAMES);
 	            switch(result)

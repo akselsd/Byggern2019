@@ -5,6 +5,7 @@
 void oled_init(void);
 void oled_test(void);
 void oled_printf(const char* string);
+void oled_printf_lines(const char* string, uint8_t column_start);
 void oled_set_page(uint8_t page);
 void oled_set_column(uint8_t column);
 void oled_clear_screen(void);

@@ -5,32 +5,6 @@
 #define BUFFER_SIZE 64
 #define PAGE_LENGTH 128
 
-typedef struct ringbuffer_struct
-{
-	volatile char buffer[BUFFER_SIZE];
-	volatile int next_out;
-	volatile int next_in;
-	volatile int size;
-} ringbuffer;
-
-typedef struct image_buffer_struct
-{
-	volatile char * buffer;
-	volatile unsigned int n_bytes;
-	volatile unsigned int n_pages;
-	volatile unsigned int size;
-} image_buffer;
-
-typedef struct leaderboard_buffer_struct
-{
-	volatile char * buffer;
-	volatile uint8_t n_bytes;
-	volatile uint8_t n_lines;
-	volatile uint8_t lines_left;
-	volatile uint8_t line_length;
-} leaderboard_buffer;
-
-
 /**
  * Initialize uart communication and provide streams for stdout, stderr and stdin.
  * @param ubrr Baud Rate Register Value defined as CPU_FREQUENCY/(16*BAUDRATE) - 1.
@@ -54,12 +28,12 @@ void uart_write_image_to_SRAM(volatile char * buffer, unsigned int img_size);
  * Bypass the input buffer and write directily to SRAM
  * Used for loading leaderboard from computer
 */
-void uart_write_leaderboard_to_SRAM(volatile char * buffer, uint8_t line_length);
+volatile char ** uart_write_leaderboard_RAM(void);
 
 /* Functions not used outside uart.c Make static and hide from interface? */
 int uart_send_char(char c, FILE* neverused);
 int uart_recieve_char(FILE* neverused);
 
-uint8_t uart_leaderboard_get_n_lines(void);
+//uint8_t uart_leaderboard_get_n_lines(void);
 
 #endif

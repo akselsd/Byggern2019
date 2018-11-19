@@ -130,8 +130,26 @@ void oled_printf(const char* string)
 {
     char* stringPtr = string;
 
-    while(*stringPtr != '\0') {
+    while(*stringPtr != '\0')
+    {
         print_char(*stringPtr);
+        ++stringPtr;
+    }
+}
+
+void oled_printf_lines(const char* string, uint8_t column_start)
+{
+    char* stringPtr = string;
+
+    while(*stringPtr != '\0')
+    {
+        if (*stringPtr == '\n')
+        {
+            oled_data.page++;
+            oled_data.column = column_start;
+        }
+        else
+            print_char(*stringPtr);
         ++stringPtr;
     }
 }
