@@ -64,7 +64,7 @@ def do_command(cmd, ser):
 
 			for n in range(n_lines):
 				if n >= len(s):
-					s.append("NaN 000")
+					s.append("NaN 000\n")
 				write_line(s[n].encode("utf-8"), ser)
 
 	if cmd.startswith("ls"):
