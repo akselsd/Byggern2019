@@ -44,9 +44,9 @@ static const char * menu_diffs[N_DIFFS] = {
 	"Hard",
 };
 
-static uint8_t ticks;
-static uint16_t score;
-static uint8_t n_lives;
+static volatile uint8_t ticks;
+static volatile uint16_t score;
+static volatile uint8_t n_lives;
 
 static joystick_status joystick;
 static slider_status slider;
@@ -151,7 +151,7 @@ void fsm_main_loop(void)
 		switch(state)
 	    {
 	        case MENU_GAMES:
-	        {	
+	        {	//oled_init();
 	            menu_draw_options(menu_games, N_GAMES);
 	            uint8_t result = menu_select_option(N_GAMES);
 	            switch(result)
