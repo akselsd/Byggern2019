@@ -33,21 +33,21 @@ static void controll_game_board(CAN_message * msg)
 {
     switch(current_diff)
     {
-	case DIFF_EASY:
-	    game_board_shoot(msg->data[5], msg->data[3]); // Joystick UP, L button pressed
-	    // Controll controller input with joystick x
-	    controller_set_input(msg->data[0]); 
-	    break;
-	case DIFF_MEDIUM:
-	    update_pwm(msg->data[0]); // Joystick x
-	    controller_set_reference(msg->data[7]); // Slider right
-	    game_board_shoot(msg->data[5], msg->data[3]); // Joystick UP, L button pressed
-	    break;
-	case DIFF_HARD:
-	    update_pwm(msg->data[0]); // Joystick x
-	    controller_set_reference(255 - msg->data[7]); // Invert reference
-	    game_board_shoot(msg->data[5], msg->data[3]); // Joystick UP, L button pressed
-	    break;
+		case DIFF_EASY:
+		    game_board_shoot(msg->data[5], msg->data[3]); // Joystick UP, L button pressed
+		    // Controll controller input with joystick x
+		    controller_set_input(msg->data[0]); 
+		    break;
+		case DIFF_MEDIUM:
+		    update_pwm(msg->data[0]); // Joystick x
+		    controller_set_reference(msg->data[7]); // Slider right
+		    game_board_shoot(msg->data[5], msg->data[3]); // Joystick UP, L button pressed
+		    break;
+		case DIFF_HARD:
+		    update_pwm(msg->data[0]); // Joystick x
+		    controller_set_reference(255 - msg->data[7]); // Invert reference
+		    game_board_shoot(msg->data[5], msg->data[3]); // Joystick UP, L button pressed
+		    break;
     }
 }
 
@@ -97,7 +97,7 @@ void game_board_handle_msg(CAN_message * msg)
 		switch (msg->id)
 		{
 			case ID_RESET_GB:
-				if ((msg->data[0]) && (msg->length == 2))
+				if (msg->data[0]) // Reset == true
 					game_board_reset(msg->data[1]); // msg->data[1] - diff
 				break;
 			case ID_IO:

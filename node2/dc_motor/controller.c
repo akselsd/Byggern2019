@@ -31,7 +31,7 @@ void controller_init(uint8_t ext_input_ctrl)
 	controller.error_sum = 0;
 	controller.old_error = 0;
 	controller.input = 0;
-	controller.ext_input_ctrl = ext_input_ctr;
+	controller.ext_input_ctrl = ext_input_ctrl;
 
 	/* Set controller parameters */
 	controller.kp = KP;
