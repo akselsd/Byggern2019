@@ -160,3 +160,8 @@ Motorbox|Motor|comment
 Encoder (in)|Encoder (out)|white mark matching on cable
 M+|+|
 M-|-|
+
+
+#### Speaker
+speaker+ -> 5 on shield (arduino PWML ?)
+speaker- -> 5 V
