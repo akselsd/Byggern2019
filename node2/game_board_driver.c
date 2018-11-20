@@ -121,6 +121,8 @@ void game_board_shoot(uint8_t r_pressed, uint8_t joystick_dir)
 		if (!scoring_enabled)
 			scoring_enabled = 1;
 
+		speaker_play_shoot();
+		
 		CLEAR_BIT(PORTC, SOLENOID);
 		_delay_ms(5);
 	}

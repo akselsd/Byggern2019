@@ -49,7 +49,7 @@ void speaker_pwm_set_freq(uint16_t freq)
 void speaker_pwm_set_duty_cycle(float percentage) {
 	if ((percentage < -100) || (percentage > 100))
 	{	
-		printf("Error: Duty cycle percentage out of range: %d\n", (int)percentage);
+		//printf("Error: Duty cycle percentage out of range: %d\n", (int)percentage);
 		return;
 	}
 
