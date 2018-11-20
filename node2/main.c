@@ -16,6 +16,7 @@
 #include "servo_motor/pwm_driver.h"
 #include "uart/uart.h"
 #include "ir_sensors/ir_driver.h"
+#include "speaker/speaker_driver.h"
 
 void init_all(void)
 {
@@ -45,7 +46,7 @@ int main()
 		if(game_board_check_goal())
 		{	
 			game_board_transmit_goal();
-			printf("Send goal.\n");
+			speaker_life_lost();
 		}
 	}
 }

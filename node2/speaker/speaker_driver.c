@@ -14,7 +14,7 @@
 #define SILENT_BEATS 3
 #define BEATS_PER_SEC 16
 
-typedef struct note_struct {
+/*typedef struct note_struct {
     uint16_t n;
     uint8_t time_left;
     uint8_t silent;
@@ -23,9 +23,11 @@ typedef struct note_struct {
 uint16_t beat_count = 0;
 uint16_t ticks = 300;
 
-static note curr_note = {0, 0, 0};
+static note curr_note = {0, 0, 0};*/
 
 static uint8_t shoot = 0;
+static uint16_t ticks = 0;
+static uint8_t life_lost = 0;
 
 /*typedef struct song_struct {
     uint8_t * melody;
@@ -128,7 +130,7 @@ void speaker_init(void)
     sei();
 }
 
-void speaker_play_song(void)
+/*oid speaker_play_song(void)
 {
     // Reset timer
     TCNT4 = 0;
@@ -137,11 +139,18 @@ void speaker_play_song(void)
     curr_note.silent = 0;
     //curr_note.time_left = TEMPO[0];
     //speaker_play_tone(MELODY[0]);
-}
+}*/
 
 void speaker_play_shoot(void)
 {
   shoot = 1;
+  ticks = 300;
+}
+
+void speaker_life_lost(void)
+{
+  life_lost = 1;
+  ticks = 400;
 }
 
 ISR(TIMER4_OVF_vect)
@@ -153,12 +162,22 @@ ISR(TIMER4_OVF_vect)
     if (ticks >= 400)
     { 
       shoot = 0;
-      ticks = 300;
       speaker_play_silence();
     }
   }
 
-  //printf("%u\n",ticks);
+  if (life_lost)
+  {
+    speaker_play_tone(--ticks);
+
+    if (ticks <= 200)
+    { 
+      life_lost = 0;
+      speaker_play_silence();
+    }
+  }
+
+
   
 
   /* CODE FOR PLAYING MUSIC
