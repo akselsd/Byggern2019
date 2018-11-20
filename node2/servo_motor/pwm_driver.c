@@ -6,19 +6,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-/*
-#define WGM10 0
-#define WGM11 1
-#define WGM12 3
-#define WGM13 4
-
-#define COM1A0 6
-#define COM1A1 7
-
-#define CS10 0
-#define CS11 1
-#define CS12 2
-*/
 
 #define F_PWM 50
 #define PWM_CENTER_PERCENTAGE 1.5 / 20
@@ -65,7 +52,6 @@ void pwm_set_duty_cycle(float percentage) {
 
 	/* Map [-100, 100] linearly to [0.9 / 20, 2.1 / 20] */
 	float duty_cycle = PWM_CENTER_PERCENTAGE + PWM_GAIN_PERCENTAGE * percentage / 100;
-	//printf("PWM duty_cycle: %d\n", (int)(duty_cycle*100));
 	duty_cycle *= top;
 	cli();
 	OCR1B = (uint16_t) duty_cycle;

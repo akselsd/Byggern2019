@@ -1,11 +1,8 @@
 #include "dac_driver.h"
-
 #include <stdio.h>
-
 #include "TWI_Master.h"
 
-/* 0101 0000 */
-#define DAC_ADDRESS 0x50
+#define DAC_ADDRESS 0x50 //0101 0000
 #define DAC_OUTPUT_PIN 0
 
 /* DAC Command Bits */

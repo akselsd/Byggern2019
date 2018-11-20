@@ -55,13 +55,8 @@ def do_command(cmd, ser):
 		# Read leaderboard
 		with open("game_data/leaderboard.txt") as f:
 			s = f.readlines()
-
 			s = sorted(s, key=getKeyStr, reverse=True)
 			n_lines = 4
-
-			#n_lines = min(4, len(s))
-			#ser.write(struct.pack('>B', n_lines))
-
 			for n in range(n_lines):
 				if n >= len(s):
 					s.append("NaN 000\n")

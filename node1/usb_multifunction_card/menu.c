@@ -12,20 +12,18 @@
 
 #define CURSOR ">"
 #define CURSOR_SPACE 16
-// 4800 ticks per sec
-#define MENU_DELAY 2400
 
+#define MENU_DELAY 2400 //4800 ticks per sec
+
+#define TITLE_PAGE 1
 #define TEXT_LEFT_ALIGN 65
 #define DIFF_POS_PAGE 0
-#define LIVES_POS_PAGE 1
+#define LIVES_POS_PAGE 2
 #define SCORE_POS_PAGE 4
 #define QUIT_POS_PAGE 7
-#define GAME_OVER_PAGE 1
 #define GAME_OVER_COL 25
 #define LEADERBOARD_TITLE_COL 22
-#define LEADERBOARD_TITLE_PAGE 1
 #define LEADERBOARD_SCORES_COL 34
-#define LEADERBOARD_SCORES_PAGE 3
 
 #define LEADERBOARD_LINE_LENGTH 8
 
@@ -33,8 +31,6 @@
 static joystick_status prev;
 static joystick_status curr;
 
-//static volatile char * leaderboard_array="TOR 033\nBER 210\nTHE 001\nAKS 999\n\0";
-//leaderboard_array=["TOR 033\nBER 210\nTHE 001\nAKS 999\n\0"];
 volatile static char * leaderboard_data;
 
 
@@ -50,7 +46,7 @@ static void move_cursor(const int8_t menu_row)
 {
     oled_clear_area(0, 7, 0, CURSOR_SPACE);
     oled_set_column(0);
-    oled_set_page(menu_row);
+    oled_set_page(menu_row+2);
     oled_printf(CURSOR);
 }
 
@@ -58,12 +54,13 @@ void menu_draw_options(const char ** options, uint8_t n_options)
 {   
     _delay_ms(100);
     oled_clear_screen();
+    oled_set_set_column(CURSOR_SPACE+1);
+    oled_set_page(0);
+    oled_printf("Main menu");
     for (int8_t i = 0; i < n_options; i++)
     {
-        //Tight between cursor and text. Trying CURSOR_SPACE +1 -Helped!
         oled_set_column(CURSOR_SPACE+1);
-        //top of letters appear on bottom. Trying i+1 - did not help! Went too far.
-        oled_set_page(i);
+        oled_set_page(i+2);
         oled_printf(options[i]);
     }
 }
@@ -111,7 +108,6 @@ uint8_t menu_select_option(const uint8_t n_options)
             (curr.pressed != prev.pressed) ||
             (menu_timer_check()))
         {
-
             prev = curr;
             menu_timer_restart();
 
@@ -141,7 +137,6 @@ uint8_t menu_select_option(const uint8_t n_options)
             }
             move_cursor(current_menu_choice);
         }
-
     }
 }
 
@@ -154,7 +149,6 @@ void menu_display_game_state(const uint16_t score, const uint8_t n_lives, const 
     oled_set_column(TEXT_LEFT_ALIGN);
     oled_set_page(LIVES_POS_PAGE);
     oled_printf("LIVES:");
-
     char str_lives[10];
     sprintf(&str_lives[0], "%u", n_lives);
     oled_set_column(TEXT_LEFT_ALIGN);
@@ -164,7 +158,6 @@ void menu_display_game_state(const uint16_t score, const uint8_t n_lives, const 
     oled_set_column(TEXT_LEFT_ALIGN);
     oled_set_page(SCORE_POS_PAGE);
     oled_printf("SCORE:");
-
     oled_set_column(TEXT_LEFT_ALIGN);
     oled_set_page(SCORE_POS_PAGE + 1);
     char str_score[10];
@@ -180,7 +173,7 @@ void menu_game_over(uint8_t score)
 {    
     oled_clear_screen();
     oled_set_column(GAME_OVER_COL);
-    oled_set_page(GAME_OVER_PAGE);
+    oled_set_page(TITLE_PAGE);
     //oled_printf("GAME OVER!");
 
     char str_score[10];
@@ -188,83 +181,59 @@ void menu_game_over(uint8_t score)
     strcpy(str_score, score_text);
     sprintf(&str_score[7], "%03u", score);
     oled_set_column(GAME_OVER_COL);
-    oled_set_page(GAME_OVER_PAGE + 2);
+    oled_set_page(TITLE_PAGE + 2);
     oled_printf(str_score);
 
-    oled_set_column(GAME_OVER_COL + 33);
-    oled_set_page(GAME_OVER_PAGE + 5);
+    oled_set_column(TEXT_LEFT_ALIGN);
+    oled_set_page(QUIT_POS_PAGE);
     //oled_printf("SAVE: R");
 
-    oled_set_column(GAME_OVER_COL + 33);
+    oled_set_column(0);
     oled_set_page(QUIT_POS_PAGE);
     //oled_printf("QUIT: L");
 }
 
 void menu_leaderboard(const char * leaderboard)
 {
-
     oled_set_column(LEADERBOARD_TITLE_COL);
-    oled_set_page(LEADERBOARD_TITLE_PAGE);
+    oled_set_page(TITLE_PAGE);
     oled_printf(leaderboard);
 
-    
-    // Read leaderboard from computer
-    // Request leaderboard
-    
-
     oled_set_column(LEADERBOARD_SCORES_COL);
-    oled_set_page(LEADERBOARD_SCORES_PAGE);
+    oled_set_page(TITLE_PAGE+2);
     oled_printf_lines(leaderboard_data, LEADERBOARD_SCORES_COL);
     
-    /*
-    oled_set_column(LEADERBOARD_SCORES_COL);
-    oled_set_page(LEADERBOARD_SCORES_PAGE);
-    oled_printf_lines(leaderboard_array, LEADERBOARD_SCORES_COL);
-    */
-    //printf("%s", leaderboard_data[1]);
-    //printf("%s", leaderboard_data[2]);
-    //printf("%s", leaderboard_data[3]);
-
-    //OUTDATED
-
-    /*uint8_t line_no = 0;
-    uint8_t n_display_lines = 4;
-
-    while (line_no < n_display_lines)
-    {   
-        oled_set_column(LEADERBOARD_SCORES_COL);
-        oled_set_page(LEADERBOARD_SCORES_PAGE + line_no);
-
-        // Print correct (name and score) string to oled
-        char line_str[8];
-        strcpy(line_str, leaderboard_data[line_no]);
-        //printf("%d %s\n", line_no, line_str);
-        //oled_printf(line_str);
-
-        ++line_no;
-    }*/
 }
 
 
-void load_leaderboard()
+void menu_load_leaderboard()
 {
+    // Read leaderboard from computer
     leaderboard_data = uart_write_leaderboard_RAM();
+    // Request leaderboard
     printf("@lr\n");
+    // Wait for leaderboard to load
    _delay_ms(1000);
     
 }
     
-
+void menu_display_loading()
+{
+	oled_clear_screen();
+	oled_set_page(TITLE_PAGE+3);
+	oled_set_column(TEXT_LEFT_ALIGN-4);
+	oled_printf("LOADING");
+}
 void menu_save_score(uint16_t score)
 {   
     _delay_ms(50);
 
     /*oled_clear_screen();
     oled_set_column(LEADERBOARD_SCORES_COL);
-    oled_set_page(LEADERBOARD_SCORES_PAGE);
+    oled_set_page(TITLE_PAGE+2);
     oled_printf("WRITE NAME");
     oled_set_column(LEADERBOARD_SCORES_COL);
-    oled_set_page(LEADERBOARD_SCORES_PAGE+1);
+    oled_set_page(TITLE_PAGE+3);
     oled_printf("<--");*/
     // Request leaderboard
     printf("@ls %u\n", score);

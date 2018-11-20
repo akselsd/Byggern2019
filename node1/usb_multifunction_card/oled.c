@@ -16,14 +16,14 @@
 #define N_PAGES 8
 #define N_COLUMNS 128
 
+#define OLED_BUFFER_SIZE 1024
+#define CHAR_LENGTH 8
+#define FONT_NAME font8
 /* 
 Timer1 resolution is 16
 Generate interrput every 16.6 ms (60Hz)
 (4915200/1024)/60 = 80
 */
-#define OLED_BUFFER_SIZE 1024
-#define CHAR_LENGTH 8
-#define FONT_NAME font8
 
 static volatile uint8_t * OLED_CMD = (volatile uint8_t *) 0x1000; // A9 0
 static volatile uint8_t * OLED_DATA = (volatile uint8_t *) 0x1200; // A9 1
@@ -96,7 +96,7 @@ void oled_clear_screen(void)
     sei();
 }
 
-// Will clear an area of the OLED (including the _end column or page)
+// Will clear an area of the OLED (including the end column or page)
 void oled_clear_area(
     const uint8_t page_start,
     const uint8_t page_end,
@@ -243,7 +243,6 @@ ISR(TIMER1_COMPA_vect)
     }
     oled_data.changed = 0;
 
-    // 16 bit registers are handled automagically
     TCNT1 = 0;
 }
 

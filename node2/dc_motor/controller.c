@@ -55,7 +55,7 @@ void controller_init(uint8_t ext_input_ctrl)
 
 void controller_clear(void)
 {
-	//clear controller values
+	/*clear controller parameters*/
 	controller.kp = 0;
 	controller.ki = 0;
 	controller.kd = 0;

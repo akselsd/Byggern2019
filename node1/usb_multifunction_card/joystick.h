@@ -22,10 +22,6 @@ typedef struct joystick_status_struct
 	joystick_direction dir;
 } joystick_status;
 
-/* 
-	Returns current joystick input
-	@return x and y axis percentage (0-100). 0 is down/left 100 is up/right
-*/
 void joystick_get_status(joystick_status * status);
 const char * joystick_direction_to_string(joystick_direction dir);
 void joystick_calibrate_joystick(void);

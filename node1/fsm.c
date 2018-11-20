@@ -84,9 +84,6 @@ static void populate_io_msg(CAN_message * io_msg)
 
 static void game_timer_init(void)
 {
-	// Clear timer register
-    //TCNT0 = 0;
-
     // Set prescaler to 1024
     TCCR0 = 0;
     TCCR0 = (1 << CS02) | (1 << CS00);
@@ -119,7 +116,6 @@ static uint8_t fsm_play_game(const uint8_t player_diff)
 			break;
 
 		menu_display_game_state(score, n_lives, menu_diffs[player_diff]);
-
 		_delay_ms(100);
 
 		if (!n_lives)
@@ -127,13 +123,9 @@ static uint8_t fsm_play_game(const uint8_t player_diff)
 			game_over = 1;
 			break;
 		}
-
-		//printf("s: %u l: %u\n", score, n_lives);
 	}
-
 	// Disable game timer interrupt when game is done
 	CLEAR_BIT(TIMSK, TOIE0);
-
 	return game_over;
 }
 
@@ -182,8 +174,7 @@ void fsm_main_loop(void)
 	        }
 	        case PLAY:
 	        {
-				send_reset_msg(player_diff);
-
+			send_reset_msg(player_diff);
 	        	oled_display_image(player_img, 64, 0, 0);
 	        	_delay_ms(2000); // Wait for image to load
 
@@ -264,8 +255,14 @@ void fsm_main_loop(void)
            		state = MAIN_MENU;
 	        	break;
 	        }
+		case LOAD_LEADERBOARD:
+			menu_load_display();
+			load_leaderboard();
+			_delay_ms(1000);
+			state=LEADERBOARD;
+			break;
 	        default:
-	        	break; //changed from return
+	        	break;
 	    }
     }
 }

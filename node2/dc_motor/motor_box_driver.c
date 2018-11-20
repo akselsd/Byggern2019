@@ -89,10 +89,7 @@ int16_t motor_box_read(void)
 
 	encoder_output *= -1;
 
-	//printf("encoder: %d, ", encoder_output);
 	saturate_output(&encoder_output);
-
-	//printf("saturated: %d\n", encoder_output);
 
 	return encoder_output;
 }

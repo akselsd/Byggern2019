@@ -1,6 +1,6 @@
 #ifndef INCLUDE_UART_H
 #define INCLUDE_UART_H
-#include <stdio.h> // FILE
+#include <stdio.h> 
 
 /**
  * Initialize uart communication and provide streams for stdout, stderr and stdin.
@@ -31,6 +31,5 @@ volatile char ** uart_write_leaderboard_RAM(void);
 int uart_send_char(char c, FILE* neverused);
 int uart_recieve_char(FILE* neverused);
 
-//uint8_t uart_leaderboard_get_n_lines(void);
 
 #endif

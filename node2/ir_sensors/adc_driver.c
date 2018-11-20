@@ -2,13 +2,6 @@
 #include "adc_driver.h"
 #include "bit_macros.h"
 
-/*#define MUX0 0
-#define MUX1 1
-#define MUX2 2
-#define MUX3 3
-#define MUX4 4
-#define MUX5 3*/
-
 void adc_init(void) {
 	/* Prescale clock */
 	SET_BIT(ADCSRA, ADPS0);

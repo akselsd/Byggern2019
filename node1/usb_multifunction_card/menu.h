@@ -1,5 +1,6 @@
 #ifndef MENU_H
 #define MENU_H
+#include <stdint.h>
 
 void menu_init(void);
 void menu_draw_options(const char ** options, uint8_t n_options);

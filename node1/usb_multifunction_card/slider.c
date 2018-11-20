@@ -6,7 +6,7 @@
 #define CHANNEL_4 7
 #define ADC 0x1400
 
-static slider_status current; /* TODO: Move into transmit position? */
+static slider_status current; 
 
 void slider_get_status(slider_status * status)
 {
