@@ -39,18 +39,18 @@ void controller_init(uint8_t ext_input_ctrl)
 	controller.kd = KD;
 
 	/* Enable overflow interrupts */
-	SET_BIT(TIMSK3, TOIE3);
+	SET_BIT(TIMSK5, TOIE5);
 
-	/* Set up timer 3 in CTC mode with compare pin OCR3A*/
-	CLEAR_BIT(TCCR3B, WGM33);
-	CLEAR_BIT(TCCR3B, WGM32);
-	CLEAR_BIT(TCCR3A, WGM31);
-	CLEAR_BIT(TCCR3A, WGM30);
+	/* Set up timer 5 in CTC mode with compare pin OCR3A*/
+	CLEAR_BIT(TCCR5B, WGM53);
+	CLEAR_BIT(TCCR5B, WGM52);
+	CLEAR_BIT(TCCR5A, WGM51);
+	CLEAR_BIT(TCCR5A, WGM50);
 
 	/* Set prescaler to 8 */
-	CLEAR_BIT(TCCR3B, CS32);
-	SET_BIT(TCCR3B, CS31);
-	CLEAR_BIT(TCCR3B, CS30);
+	CLEAR_BIT(TCCR5B, CS52);
+	SET_BIT(TCCR5B, CS51);
+	CLEAR_BIT(TCCR5B, CS50);
 }
 
 void controller_clear(void)
@@ -68,7 +68,7 @@ void controller_clear(void)
 	controller.ext_input_ctrl = 0;
 
 	/* Disable overflow interrupts */
-	CLEAR_BIT(TIMSK3, TOIE3);
+	CLEAR_BIT(TIMSK5, TOIE5);
 }
 
 void controller_set_reference(uint8_t ref)
@@ -91,7 +91,7 @@ void controller_set_input(float input)
 	controller.input = saturate_input(input * 2 - 255) / 2;
 }
 
-ISR(TIMER3_OVF_vect) {
+ISR(TIMER5_OVF_vect) {
 	if (!controller.ext_input_ctrl)
 	{
 		/* Map motor position [0,-8700] to [0,255] */
