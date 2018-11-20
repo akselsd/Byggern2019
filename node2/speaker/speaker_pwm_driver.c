@@ -27,8 +27,8 @@ void speaker_pwm_init(void)
     SET_BIT(TCCR4B, CS41);
     CLEAR_BIT(TCCR4B, CS42);
 
-    speaker_pwm_set_freq(0);
-    speaker_pwm_set_duty_cycle(80);
+    speaker_pwm_set_freq(440);
+    speaker_pwm_set_duty_cycle(50);
 
     // Set PWM output mode to be non-inverted for channel B
     SET_BIT(TCCR4A, COM4B1);

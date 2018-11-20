@@ -74,6 +74,7 @@ void game_board_reset(uint8_t player_diff)
 	communication_enabled = 1;
 
 	speaker_init();
+	//speaker_play_song();
 }
 
 void game_board_init(void)
@@ -109,6 +110,7 @@ void game_board_handle_msg(CAN_message * msg)
 				printf("Unknown CAN message ID: %u\n", msg->id);
 				break;
 		}
+
 	}
 }
 

@@ -1,4 +1,6 @@
 #include <avr/io.h>
+#include <avr/interrupt.h>
+#include "bit_macros.h"
 #include "system_constants.h"
 #include "speaker_driver.h"
 #include "speaker_pwm_driver.h"
@@ -82,34 +84,42 @@ int mario_tempo[] = {
   12, 12, 12, 12,
 };
 
+static void speaker_play_tone(uint16_t tone) // Tone is in freq (Hz)
+{
+    speaker_pwm_set_freq(tone);
+}
+
 void speaker_init(void)
 {
     speaker_pwm_init();
     // Set up timer 5 to keep track of the beat
     
-    // Set timer 5 to mode 12: CTC
-    SET_BIT(TCCR5A, WGM10);
-    SET_BIT(TCCR5A, WGM11);
-    CLEAR_BIT(TCCR5B, WGM12);
-    CLEAR_BIT(TCCR5B, WGM13);
+    // Set timer 5 to mode 4: CTC with OCR5A as comp reg
+    CLEAR_BIT(TCCR4A, WGM40);
+    CLEAR_BIT(TCCR4A, WGM41);
+    SET_BIT(TCCR4B, WGM42);
+    CLEAR_BIT(TCCR4B, WGM43);
 
     // Set prescaler of clock to be 1024
-    SET_BIT(TCCR5B, CS50);
-    CLEAR_BIT(TCCR5B, CS51);
-    SET_BIT(TCCR5B, CS52);
+    SET_BIT(TCCR4B, CS40);
+    CLEAR_BIT(TCCR4B, CS41);
+    SET_BIT(TCCR4B, CS42);
 
     // Set normal port operation: Only want interrupt vector TIMER5_COMPA_vect
-    CLEAR_BIT(TCCR5A, COM5A1);
-    CLEAR_BIT(TCCR5A, COM5A0);
+    //CLEAR_BIT(TCCR5A, COM5A1);
+    //CLEAR_BIT(TCCR5A, COM5A0);
+
+
+    // Enable compare interrupts 
+    SET_BIT(TIMSK4, OCIE4A);
 
     // Set Compare register
-    ICR5 = COMP_REG_SIZE;
+    OCR4A = COMP_REG_SIZE;
 
-    // Enable interrupts 
-    SET_BIT(TIMSK5, OCIE5A);
+    // Enable overflow interrupts
+    SET_BIT(TIMSK4, TOIE4);
 
     // Start timer at 0
-    TCNT5 = 0;
 }
 
 void speaker_play_song(void)
@@ -124,41 +134,29 @@ void speaker_play_song(void)
     speaker_play_tone(MELODY[0]);
 }
 
-void speaker_play_tone(uint16_t tone) // Tone is in freq (Hz)
-{
-    speaker_pwm_set_freq(tone);
-}
+ISR(TIMER4_COMPA_vect)
+{ 
+  /*curr_note.time_left--;
 
-ISR(TIMER5_COMPA_vect)
-{   
-    curr_note.time_left--;
-
-    if (curr_note.time_left) // Nothing to be done
-	return;
-    else // Note or silence finished 
+  if (curr_note.time_left) // Nothing to be done
+    return;
+  else // Note or silence finished 
+  {
+    if (!curr_note.silent) // Note finished
     {
-	if (!curr_note.silent) // Note finished
-	{
-	    curr_note.silent = 1; // Play silent note
-	    curr_note.time_left = SILENT_BEATS; 
-	    speaker_play_tone(0);
-	    return;
-	}
-	else // Silence finished
-	{
-	    curr_note.silent = 0;
-	    ++curr_note.n; // Increment to next note
-	    curr_note.time_left = TEMPO[curr_note.n]; // Set new time left
-	    speaker_play_tone(MELODY[curr_note.n]); // Play new tone
-	    return;
-	}
+      curr_note.silent = 1; // Play silent note
+      curr_note.time_left = SILENT_BEATS; 
+      speaker_play_tone(0);
+      return;
     }
-
-    // Keep beat_count between 0 and 16
-    if (beat_count >= BEATS_PER_SEC)
-	beat_count = 0;
-
-    printf("B: %u\n", beat_count);
-    ++beat_count;
+    else // Silence finished
+    {
+      curr_note.silent = 0;
+      ++curr_note.n; // Increment to next note
+      curr_note.time_left = TEMPO[curr_note.n]; // Set new time left
+      speaker_play_tone(MELODY[curr_note.n]); // Play new tone
+      return;
+    }
+  }*/
+  printf("!\n");
 }
-
