@@ -13,26 +13,26 @@ void speaker_pwm_init(void)
 {
     cli();
     
-    // Enable PWM output on Timer 4B, PH3
-    SET_BIT(DDRH, PH4);
+    // Enable PWM output on Timer 5A, PL3
+    SET_BIT(DDRL, PL3);
 
     // Set timer mode to mode 14: Fast PWM mode
-    CLEAR_BIT(TCCR4A, WGM10);
-    SET_BIT(TCCR4A, WGM11);
-    SET_BIT(TCCR4B, WGM12);
-    SET_BIT(TCCR4B, WGM13);
+    CLEAR_BIT(TCCR5A, WGM50);
+    SET_BIT(TCCR5A, WGM51);
+    SET_BIT(TCCR5B, WGM52);
+    SET_BIT(TCCR5B, WGM53);
 
-    // Set prescaler of clock to be 8 for channel B
-    CLEAR_BIT(TCCR4B, CS40);
-    SET_BIT(TCCR4B, CS41);
-    CLEAR_BIT(TCCR4B, CS42);
+    // Set prescaler of clock to be 8 for channel A
+    CLEAR_BIT(TCCR5B, CS50);
+    SET_BIT(TCCR5B, CS51);
+    CLEAR_BIT(TCCR5B, CS52);
 
     speaker_pwm_set_freq(440);
     speaker_pwm_set_duty_cycle(50);
 
-    // Set PWM output mode to be non-inverted for channel B
-    SET_BIT(TCCR4A, COM4B1);
-    CLEAR_BIT(TCCR4A, COM4B0);
+    // Set PWM output mode to be non-inverted for channel A
+    SET_BIT(TCCR5A, COM5A1);
+    CLEAR_BIT(TCCR5A, COM5A0);
 
     sei();
 }
@@ -43,7 +43,7 @@ void speaker_pwm_set_freq(uint16_t freq)
     top = F_CPU / (PRESCALER * freq) - 1;
 
     // Set TOP reg to contain correct value for desired freq
-    ICR4 = top;
+    ICR5 = top;
 }
 
 void speaker_pwm_set_duty_cycle(float percentage) {
@@ -56,6 +56,6 @@ void speaker_pwm_set_duty_cycle(float percentage) {
 	float duty_cycle = percentage / 100;
 	duty_cycle *= top;
 	cli();
-	OCR4B = (uint16_t) duty_cycle;
+	OCR5A = (uint16_t) duty_cycle;
 	sei();
 }

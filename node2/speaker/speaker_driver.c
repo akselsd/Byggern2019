@@ -103,26 +103,26 @@ void speaker_init(void)
     cli();
 
     // Enable overflow interrupts
-    SET_BIT(TIMSK5, TOIE5);
+    SET_BIT(TIMSK4, TOIE4);
 
-    // Set timer 5 to mode 4: CTC with OCR5A as comp reg
-    CLEAR_BIT(TCCR5A, WGM40);
-    CLEAR_BIT(TCCR5A, WGM41);
-    CLEAR_BIT(TCCR5B, WGM42);
-    CLEAR_BIT(TCCR5B, WGM43);
+    // Set timer 4 to mode 4: CTC with OCR5A as comp reg
+    CLEAR_BIT(TCCR4A, WGM40);
+    CLEAR_BIT(TCCR4A, WGM41);
+    CLEAR_BIT(TCCR4B, WGM42);
+    CLEAR_BIT(TCCR4B, WGM43);
 
     // Set prescaler of clock to be 1024
-    SET_BIT(TCCR5B, CS40);
-    CLEAR_BIT(TCCR5B, CS41);
-    CLEAR_BIT(TCCR5B, CS42);
+    SET_BIT(TCCR4B, CS40);
+    CLEAR_BIT(TCCR4B, CS41);
+    CLEAR_BIT(TCCR4B, CS42);
 
     // Set normal port operation: Only want interrupt vector TIMER5_COMPA_vect
-    CLEAR_BIT(TCCR5A, COM5A1);
-    SET_BIT(TCCR5A, COM5A0);
+    CLEAR_BIT(TCCR4A, COM5A1);
+    SET_BIT(TCCR4A, COM5A0);
 
 
     // Set Compare register
-    OCR5A = 99999999;//COMP_REG_SIZE;
+    OCR4A = 99999999;//COMP_REG_SIZE;
 
 
     sei();
@@ -131,7 +131,7 @@ void speaker_init(void)
 void speaker_play_song(void)
 {
     // Reset timer
-    TCNT5 = 0;
+    TCNT4 = 0;
 
     curr_note.n = 0;
     curr_note.silent = 0;
@@ -144,7 +144,7 @@ void speaker_play_shoot(void)
   shoot = 1;
 }
 
-ISR(TIMER5_OVF_vect)
+ISR(TIMER4_OVF_vect)
 {
   if (shoot)
   {
@@ -158,8 +158,10 @@ ISR(TIMER5_OVF_vect)
     }
   }
 
-  //printf("%u\n",ticks);
-  /*
+  printf("%u\n",ticks);
+  
+
+  /* CODE FOR PLAYING MUSIC
   if (ticks % 1 == 0)
   {
     if (beat_count % 4 == 0) // Silence
@@ -174,29 +176,5 @@ ISR(TIMER5_OVF_vect)
 
     printf("%u\n", ticks);
     ++beat_count;
-  }*/
-  
-  /*
-  curr_note.time_left--;
-
-  if (curr_note.time_left) // Nothing to be done
-    return;
-  else // Note or silence finished 
-  {
-    if (!curr_note.silent) // Note finished
-    {
-      curr_note.silent = 1; // Play silent note
-      curr_note.time_left = SILENT_BEATS; 
-      speaker_play_silence();
-      return;
-    }
-    else // Silence finished
-    {
-      curr_note.silent = 0;
-      ++curr_note.n; // Increment to next note
-      curr_note.time_left = TEMPO[curr_note.n]; // Set new time left
-      speaker_play_tone(MELODY[curr_note.n]); // Play new tone
-      return;
-    }
   }*/
 }
