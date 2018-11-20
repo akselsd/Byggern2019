@@ -33,10 +33,6 @@ static joystick_status curr;
 
 volatile static char * leaderboard_data;
 
-
-// Free space on the SRAM: from 0x1800 to 0x1C00 (NOT including) 
-volatile static uint8_t * leaderboard_buffer_start_address = (volatile uint8_t *) 0x1800;
-
 static void display_character(const char * imgname)
 {
     oled_display_image(imgname, 64, 0, 0);
@@ -50,13 +46,13 @@ static void move_cursor(const int8_t menu_row)
     oled_printf(CURSOR);
 }
 
-void menu_draw_options(const char ** options, uint8_t n_options)
+void menu_draw_options(const char ** options, uint8_t n_options, const char * title)
 {   
     _delay_ms(100);
-    oled_clear_screen();
-    oled_set_set_column(CURSOR_SPACE+1);
+    oled_clear_screen();    
+    oled_set_column(CURSOR_SPACE+1);
     oled_set_page(0);
-    oled_printf("Main menu");
+    oled_printf(title);
     for (int8_t i = 0; i < n_options; i++)
     {
         oled_set_column(CURSOR_SPACE+1);
@@ -64,6 +60,7 @@ void menu_draw_options(const char ** options, uint8_t n_options)
         oled_printf(options[i]);
     }
 }
+
 
 static void menu_timer_restart(void)
 {
@@ -186,11 +183,11 @@ void menu_game_over(uint8_t score)
 
     oled_set_column(TEXT_LEFT_ALIGN);
     oled_set_page(QUIT_POS_PAGE);
-    //oled_printf("SAVE: R");
+    oled_printf("SAVE: R");
 
     oled_set_column(0);
     oled_set_page(QUIT_POS_PAGE);
-    //oled_printf("QUIT: L");
+    oled_printf("QUIT: L");
 }
 
 void menu_leaderboard(const char * leaderboard)
@@ -206,7 +203,7 @@ void menu_leaderboard(const char * leaderboard)
 }
 
 
-void menu_load_leaderboard()
+void menu_load_leaderboard(void)
 {
     // Read leaderboard from computer
     leaderboard_data = uart_write_leaderboard_RAM();
@@ -217,24 +214,25 @@ void menu_load_leaderboard()
     
 }
     
-void menu_display_loading()
+/*void menu_display_loading(void)
 {
 	oled_clear_screen();
-	oled_set_page(TITLE_PAGE+3);
-	oled_set_column(TEXT_LEFT_ALIGN-4);
+	oled_set_page(TITLE_PAGE+2);
+	oled_set_column(TEXT_LEFT_ALIGN-30);
 	oled_printf("LOADING");
-}
+}*/
+
 void menu_save_score(uint16_t score)
 {   
     _delay_ms(50);
 
-    /*oled_clear_screen();
+    oled_clear_screen();
     oled_set_column(LEADERBOARD_SCORES_COL);
     oled_set_page(TITLE_PAGE+2);
     oled_printf("WRITE NAME");
     oled_set_column(LEADERBOARD_SCORES_COL);
     oled_set_page(TITLE_PAGE+3);
-    oled_printf("<--");*/
+    oled_printf("<--");
     // Request leaderboard
     printf("@ls %u\n", score);
 }

@@ -30,7 +30,7 @@ def read_line(ser):
 
 def write_line(line, ser):
 	data = bytearray(line)
-	print(data)
+	#print(data)
 	ser.write(data)
 
 def getKeyStr(item):
@@ -61,6 +61,7 @@ def do_command(cmd, ser):
 				if n >= len(s):
 					s.append("NaN 000\n")
 				write_line(s[n].encode("utf-8"), ser)
+			print("Sending leaderboard")
 
 	if cmd.startswith("ls"):
 		# Save to leaderboard
@@ -68,12 +69,13 @@ def do_command(cmd, ser):
 
 		with open("game_data/leaderboard.txt", 'a') as f:
 			name = input("Enter name:")
-			#while len(name) != 3:
-			#	print("Name can only be three characters!")
-			#	 name = input("Enter name:")
+			while len(name) != 3:
+				print("Name must be three characters!")
+				name = input("Enter name:")
 
 			line = name + " " + score.zfill(3) + "\n"
 			f.write(line)
+			print("Saved score")
 
 
 def main():

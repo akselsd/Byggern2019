@@ -158,7 +158,7 @@ ISR(TIMER4_OVF_vect)
     }
   }
 
-  printf("%u\n",ticks);
+  //printf("%u\n",ticks);
   
 
   /* CODE FOR PLAYING MUSIC

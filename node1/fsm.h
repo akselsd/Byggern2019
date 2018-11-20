@@ -7,9 +7,9 @@ typedef enum game_state_enum
     LEADERBOARD,
     MENU_CHARACTERS,
     MENU_DIFFICULTY,
+    //LOAD_LEADERBOARD,
     PLAY,
     GAME_OVER,
-    LOAD_LEADERBOARD,
 } game_state;
 
 typedef enum player_diffs_enum

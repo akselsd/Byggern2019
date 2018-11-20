@@ -16,19 +16,27 @@
 
 #define CAN_REC_INT_VECT INT0_vect
 
-#define N_GAMES 4
+#define N_TITLES 4
+#define N_CHOICES 4 //5
 #define N_CHARS 4
 #define N_DIFFS 3
 #define N_LIVES 2
 
 #define N_IO_DATA_LENGTH 8
 
+static const char * titles[N_TITLES] = {
+	"MAIN MENU",
+	"LEADERBOARD",
+	"CHARACTERS",
+	"DIFFICULTY",
+};
 
-static const char * main_menu[N_GAMES] = {
+static const char * main_menu[N_CHOICES] = {
     "Play",
     "Leaderboard",
     "Character",
     "Difficulty",
+    //"Load scores",
 };
 
 static const char * menu_chars[N_CHARS] = {
@@ -130,7 +138,6 @@ static uint8_t fsm_play_game(const uint8_t player_diff)
 }
 
 
-
 void fsm_main_loop(void)
 {
 	game_state state = MAIN_MENU;
@@ -144,8 +151,8 @@ void fsm_main_loop(void)
 	    {
 	        case MAIN_MENU:
 	        {	
-	            menu_draw_options(main_menu, N_GAMES);
-	            uint8_t result = menu_select_option(N_GAMES);
+	            menu_draw_options(main_menu, N_CHOICES, titles[MAIN_MENU]);
+	            uint8_t result = menu_select_option(N_CHOICES);
 	            switch(result)
 	            {
 	            	case 0:
@@ -153,8 +160,7 @@ void fsm_main_loop(void)
 	            		break;
 	            	case 1:
     					oled_clear_screen();
-    					//To avoid constant refreshing?
-    					//menu_leaderboard(main_menu[LEADERBOARD])
+    					//menu_leaderboard(main_menu[LEADERBOARD])//To avoid constant refreshing?
 	            		state = LEADERBOARD;
 	            		break;
 	            	case 2:
@@ -164,6 +170,9 @@ void fsm_main_loop(void)
 	            	case 3:
 	            		state = MENU_DIFFICULTY;
 	            		break;
+	            	/*case 4:
+	            		state = LOAD_LEADERBOARD;
+	            		break;*/
 	            	case 99:
 	            		state = MAIN_MENU;
 	            		break;
@@ -212,7 +221,7 @@ void fsm_main_loop(void)
 	        }
 	        case MENU_CHARACTERS:
 	        {
-	            menu_draw_options(menu_chars, N_CHARS);
+	            menu_draw_options(menu_chars, N_CHARS, titles[MENU_CHARACTERS]);
 	            uint8_t result = menu_select_option(N_CHARS);
 	            switch(result)
 	            {
@@ -228,6 +237,9 @@ void fsm_main_loop(void)
 	            	case 3:
 	            		player_img = "kimy64";
 		            	break;
+	            	case 99:
+	            		state = MAIN_MENU;
+	            		break;
 		            default:
 		            	break;
 	            }
@@ -236,7 +248,7 @@ void fsm_main_loop(void)
 	        }
 	        case MENU_DIFFICULTY:
 	        {
-	        	menu_draw_options(menu_diffs, N_DIFFS);
+	        	menu_draw_options(menu_diffs, N_DIFFS, titles[MENU_DIFFICULTY]);
 	        	uint8_t result = menu_select_option(N_DIFFS);
 	        	switch(result)
 	        	{
@@ -249,20 +261,27 @@ void fsm_main_loop(void)
 	        		case 2:
 	        			player_diff = DIFF_HARD;
 	        			break;
+	        		case 99:
+	            		state = MAIN_MENU;
+	            		break;
 	        		default:
 	        			break;
 	        	}
            		state = MAIN_MENU;
 	        	break;
 	        }
+	        /*
 		case LOAD_LEADERBOARD:
-			menu_load_display();
-			load_leaderboard();
+		{
+			menu_display_loading();
+			menu_load_leaderboard();
 			_delay_ms(1000);
-			state=LEADERBOARD;
+			oled_clear_screen();
+			state = LEADERBOARD;
 			break;
-	        default:
-	        	break;
+		}*/
+	    default:
+	       	break;
 	    }
     }
 }

@@ -33,7 +33,6 @@ struct image_buffer
 struct ringbuffer send_buffer = {{0}, 0, 0, 0};
 struct ringbuffer recieve_buffer = {{0}, 0, 0, 0};
 struct image_buffer img_buffer = {NULL, 0, 0, 0};
-//static leaderboard_buffer lb_buffer = {NULL, 0, 0, 0, 0};
 
 volatile char leaderboard_data[33];
 volatile uint8_t leaderboard_load = 0;
@@ -145,7 +144,6 @@ ISR(RX_VECTOR)
 		{
 			leaderboard_current_char = 0;
 			leaderboard_load = 0;
-			printf("LB = 0\n");
 			leaderboard_data[32] = '\0';
 		}
 
